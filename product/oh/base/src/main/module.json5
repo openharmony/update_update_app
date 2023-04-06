@@ -1,0 +1,85 @@
+{
+  "module": {
+    "name": "ouc_oh_base",
+    "type": "entry",
+    "srcEntrance": "./ets/Application/AbilityStage.ts",
+    "description": "$string:description_mainability",
+    "mainElement": "MainAbility",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "metadata": [
+      {
+        "name": "ArkTSPartialUpdate",
+        "value": "true"
+      },
+      {
+        "name": "partialUpdateStrictCheck",
+        "value": "warn"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "com.ohos.updateapp.MainAbility",
+        "srcEntrance": "./ets/MainAbility/MainAbility.ts",
+        "description": "$string:description_mainability",
+        "icon": "$media:icon",
+        "label": "$string:entry_MainAbility",
+        "startWindowIcon": "$media:icon",
+        "startWindowBackground": "$color:white",
+        "visible": true,
+        "launchType": "singleton",
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          },
+          {
+            "actions": [
+              "action.settings.menu.v1"
+            ]
+          }
+        ],
+        "metadata": [
+          {
+            "name": "metadata.settings.menu.v1",
+            "value": '{"menu" : {"key": "com_hmos_ouc_software_update_settings", "menuType": "Entry","titleResource": "entry_MainAbility"}}'
+          },
+          {
+            "name": "com.ohos.systemui.notification_fixed",
+            "value": '1'
+          }
+        ]
+      }
+    ],
+    "extensionAbilities": [
+      {
+        "name": "ServiceExtAbility",
+        "icon": "$media:icon",
+        "description": "service",
+        "type": "service",
+        "visible": true,
+        "srcEntrance": "./ets/ServiceExtAbility/service.ts"
+      }
+    ],
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.UPDATE_SYSTEM"
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO"
+      },
+      {
+        "name": "ohos.permission.START_ABILITIES_FROM_BACKGROUND"
+      }
+    ]
+  }
+}

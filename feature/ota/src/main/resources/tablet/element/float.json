@@ -1,0 +1,44 @@
+{
+  "float": [
+    {
+      "name": "home_logo_bottom_margin",
+      "value": "32vp"
+    },
+    {
+      "name": "home_new_version_label_top_margin",
+      "value": "8vp"
+    },
+    {
+      "name": "text_size_progress_bar_percent",
+      "value": "18fp"
+    },
+    {
+      "name": "text_size_version_name",
+      "value": "18fp"
+    },
+    {
+      "name": "home_text_size_version_name",
+      "value": "16fp"
+    },
+    {
+      "name": "changelog_detail_content_margin_horizontal",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_end_content_margin_horizontal",
+      "value": "36vp"
+    },
+    {
+      "name": "changelog_detail_version_size_padding_left",
+      "value": "36vp"
+    },
+    {
+      "name": "changelog_detail_version_name_padding_left",
+      "value": "36vp"
+    },
+    {
+      "name": "changelog_detail_version_name_padding_right",
+      "value": "36vp"
+    }
+  ]
+}

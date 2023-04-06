@@ -1,0 +1,24 @@
+{
+  "float": [
+    {
+      "name": "custom_button_width",
+      "value": "240vp"
+    },
+    {
+      "name": "new_version_progress_bar_size",
+      "value": "152vp"
+    },
+    {
+      "name": "new_version_progress_bar_margin_top",
+      "value": "24vp"
+    },
+    {
+      "name": "new_version_download_status_label_margin_bottom",
+      "value": "24vp"
+    },
+    {
+      "name": "text_size_progress_bar",
+      "value": "40fp"
+    }
+  ]
+}

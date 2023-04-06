@@ -1,0 +1,48 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "release",
+        "material": {
+          "storePassword": "00000019B8544522BC95221384C7D806210726018124D74E7A569A888590F947783C840CAE2A5FED70",
+          "certpath": "signature/OpenHarmonyApplication.cer",
+          "keyAlias": "OpenHarmony Application Release",
+          "keyPassword": "000000197CE6E3BDEE9E232BC8E08439FC6A6EFDF18DB0AB0CA940010D72BB0B564D0ADAA965C97E47",
+          "profile": "signature/updateapp.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "signature/OpenHarmony.p12"
+        }
+      }
+    ],
+    "compileSdkVersion": 10,
+    "compatibleSdkVersion": 10,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "release",
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "ouc_oh_base",
+      "srcPath": "./product/oh/base",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "common",
+      "srcPath": "./common"
+    },
+    {
+      "name": "ota",
+      "srcPath": "./feature/ota"
+    }
+  ]
+}

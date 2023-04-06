@@ -1,0 +1,268 @@
+{
+    "string":[
+        {
+            "name":"btn_check_new_version",
+            "value":"Check for updates"
+        },
+        {
+            "name":"btn_download",
+            "value":"Download & install"
+        },
+        {
+            "name":"btn_upgrade",
+            "value":"Install"
+        },
+        {
+            "name":"title_new_version",
+            "value":"New version"
+        },
+        {
+            "name":"title_current_version",
+            "value":"Current version"
+        },
+        {
+            "name":"title_change_log",
+            "value":"Changelog"
+        },
+        {
+            "name":"button_know",
+            "value":"OK"
+        },
+        {
+            "name":"network_request",
+            "value":"No WLAN connection. Downloading with mobile data may result in additional fees. Continue?"
+        },
+        {
+            "name":"ok",
+            "value":"OK"
+        },
+        {
+            "name":"cancel",
+            "value":"Cancel"
+        },
+        {
+            "name":"continue",
+            "value":"Resume"
+        },
+        {
+            "name":"net_error_title",
+            "value":"Network error"
+        },
+        {
+            "name":"net_error_content",
+            "value":"Download paused. Check your network connection and try again."
+        },
+        {
+            "name":"space_not_enough_title",
+            "value":"Insufficient storage"
+        },
+        {
+            "name":"space_not_enough_content",
+            "value":"Insufficient storage available. Free up some space and try again."
+        },
+        {
+            "name":"package_verify_fail",
+            "value":"Update verification failed."
+        },
+        {
+            "name":"package_verifying",
+            "value":"Authenticating installation package…"
+        },
+        {
+            "name":"package_prepare_install",
+            "value":"Preparing for installation…"
+        },
+        {
+            "name":"later",
+            "value":"Later"
+        },
+        {
+            "name":"install_now",
+            "value":"Install now (%d)"
+        },
+        {
+            "name":"software_update",
+            "value":"Software update"
+        },
+        {
+            "name":"software_download_progress",
+            "value":"Downloading"
+        },
+        {
+            "name":"reboot_wait",
+            "value":"Restarting…"
+        },
+        {
+            "name":"battery_not_enough_title",
+            "value":"Low battery"
+        },
+        {
+            "name":"battery_not_enough_content",
+            "value":"Battery level too low. Charge your device to at least %s and try again."
+        },
+        {
+            "name":"download_fail",
+            "value":"Download failed. Please check for updates again."
+        },
+        {
+            "name":"update_fail",
+            "value":"Installation failed. Please check for updates again."
+        },
+        {
+            "name":"check_version_status_has_new",
+            "value":"Update available"
+        },
+        {
+            "name":"check_version_status_no_new",
+            "value":"Your software is up to date"
+        },
+        {
+            "name":"check_version_status_checking",
+            "value":"Checking for updates"
+        },
+        {
+            "name":"download_status_downloading",
+            "value":"Downloading…"
+        },
+        {
+            "name":"download_status_download_pause",
+            "value":"Download paused"
+        },
+        {
+            "name":"download_status_download_failed",
+            "value":"Download failed"
+        },
+        {
+            "name":"download_status_download_success",
+            "value":"Downloaded"
+        },
+        {
+            "name":"network_err_toast",
+            "value":"Network error. Please try again."
+        },
+        {
+            "name":"count_down_install_label",
+            "value":"%s is ready to be installed."
+        },
+        {
+            "name":"title_setting",
+            "value":"Settings"
+        },
+        {
+            "name":"setting_auto_download_title",
+            "value":"Auto-download over WLAN"
+        },
+        {
+            "name":"setting_auto_download_description",
+            "value":"Updates will be downloaded over WLAN."
+        },
+        {
+            "name":"setting_auto_update_title",
+            "value":"Update overnight"
+        },
+        {
+            "name":"setting_auto_update_description",
+            "value":"When enabled, your device will automatically install updates and restart between %1$s–%2$s if it's not in use."
+        },
+        {
+            "name":"no_info_now",
+            "value":"No content"
+        },
+        {
+            "name":"night_install",
+            "value":"Update overnight"
+        },
+        {
+            "name":"install",
+            "value":"Install now"
+        },
+        {
+            "name":"detail",
+            "value":"Details"
+        },
+        {
+            "name":"check_success_message",
+            "value":"%s is available for your device."
+        },
+        {
+            "name":"download_success_message",
+            "value":"%s is ready to be installed."
+        },
+        {
+            "name":"install_success_message",
+            "value":"Update successfully installed"
+        },
+        {
+            "name":"install_fail_message",
+            "value":"Installation failed"
+        },
+        {
+            "name":"find_out_more",
+            "value":"Learn more"
+        },
+        {
+            "name":"no_network",
+            "value":"No network connection. Check your network settings or try again later."
+        },
+        {
+            "name":"no_network_connected",
+            "value":"No network connection. Check your network settings."
+        },
+        {
+            "name":"no_wifi_connected",
+            "value":"No WLAN connection. Playing this video will use mobile data."
+        },
+        {
+            "name":"installing_wait",
+            "value":"Installing…"
+        },
+        {
+            "name":"part_failed",
+            "value":"Update was only partially installed."
+        },
+        {
+            "name":"system_update",
+            "value":"System update"
+        },
+        {
+            "name":"title_change_log_more",
+            "value":"Changelog (Update package %1$d)"
+        },
+        {
+            "name":"system_err_toast",
+            "value":"System error. Try again later."
+        },
+        {
+            "name":"package_auth_failed",
+            "value":"Unable to authenticate installation package."
+        },
+        {
+            "name":"connect_server_Failed",
+            "value":"Server connection failed. Please try again."
+        },
+        {
+            "name":"patch_restart_now",
+            "value":"Restart now (%d)"
+        },
+        {
+            "name":"patch_btn_upgrade",
+            "value":"Update now (%d)"
+        },
+        {
+            "name":"software_install_progress",
+            "value":"installing"
+        },
+        {
+            "name":"new_version_status_installing",
+            "value":"Installing..."
+        },
+        {
+            "name":"new_version_status_install_success",
+            "value":"Installed"
+        },
+        {
+            "name":"btn_reboot",
+            "value":"reboot"
+        }
+    ]
+}

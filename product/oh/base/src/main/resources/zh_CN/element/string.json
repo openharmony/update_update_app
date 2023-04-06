@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "setting_auto_update_title",
+      "value": "夜间安装"
+    },
+    {
+      "name": "setting_auto_download_description",
+      "value": "开启后，在WLAN下自动下载升级包或者更新应用。"
+    },
+    {
+      "name": "setting_auto_update_description",
+      "value": "开启后，设备将在 %1$s-%2$s 且处于空闲状态时自动安装并重启。安装过程中将少量耗电。"
+    }
+  ]
+}

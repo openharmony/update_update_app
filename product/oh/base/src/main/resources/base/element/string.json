@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "setting_auto_update_title",
+      "value": "Update overnight"
+    },
+    {
+      "name": "setting_auto_download_description",
+      "value": "Automatically download newly available software updates over WLAN."
+    },
+    {
+      "name": "setting_auto_update_description",
+      "value": "When enabled, your device will automatically install downloaded updates and restart between %1$s-%2$s if not in use. Some battery power will be used."
+    }
+  ]
+}
