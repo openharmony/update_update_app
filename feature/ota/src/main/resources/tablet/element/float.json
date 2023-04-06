@@ -19,26 +19,6 @@
     {
       "name": "home_text_size_version_name",
       "value": "16fp"
-    },
-    {
-      "name": "changelog_detail_content_margin_horizontal",
-      "value": "24vp"
-    },
-    {
-      "name": "changelog_end_content_margin_horizontal",
-      "value": "36vp"
-    },
-    {
-      "name": "changelog_detail_version_size_padding_left",
-      "value": "36vp"
-    },
-    {
-      "name": "changelog_detail_version_name_padding_left",
-      "value": "36vp"
-    },
-    {
-      "name": "changelog_detail_version_name_padding_right",
-      "value": "36vp"
     }
   ]
 }

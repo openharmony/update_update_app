@@ -16,7 +16,6 @@
 import Ability from '@ohos.app.ability.UIAbility';
 import type Want from '@ohos.app.ability.Want';
 import type AbilityConstant from '@ohos.app.ability.AbilityConstant';
-import router from '@ohos.router';
 import type window from '@ohos.window';
 import type { Configuration } from '@ohos.app.ability.Configuration';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
@@ -47,21 +46,12 @@ export default class MainAbility extends Ability {
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     globalThis.AbilityStatus = null;
-    if (globalThis.abilityWant?.uri === 'pages/newVersion') {
-      windowStage.loadContent('pages/newVersion', null);
-    } else if (globalThis.abilityWant?.uri === 'pages/setting') {
-      windowStage.loadContent('pages/setting', null);
-    } else {
-      windowStage.loadContent('pages/index', null);
-    }
+    windowStage.loadContent('pages/index', null);
   }
 
   onNewWant(want: Want): void {
     this.log('BaseAbility onNewWant:' + JSON.stringify(want));
     globalThis.newPage = want.uri;
-    if (globalThis.AbilityStatus === 'ON_FOREGROUND') {
-      this.routePage();
-    }
   }
 
   onConfigurationUpdate(config: Configuration): void {
@@ -81,26 +71,11 @@ export default class MainAbility extends Ability {
   onForeground(): void {
     this.log('BaseAbility onForeground');
     globalThis.AbilityStatus = 'ON_FOREGROUND';
-    setTimeout(() => {
-      this.routePage();
-    }, MainAbility.WAITING_PREPARE_TIME); // for env prepare
   }
 
   onBackground(): void {
     globalThis.AbilityStatus = null;
     this.log('BaseAbility onBackground');
-  }
-
-  private routePage(): void {
-    if (globalThis.newPage && globalThis.currentPage) {
-      if (globalThis.currentPage !== globalThis.newPage) {
-        this.log('router.push page: ' + globalThis.newPage);
-        router.pushUrl({
-          url: globalThis.newPage,
-        });
-      }
-      globalThis.newPage = null;
-    }
   }
 
   protected log(message: string): void {
