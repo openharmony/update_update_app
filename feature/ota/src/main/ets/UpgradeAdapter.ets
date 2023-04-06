@@ -15,8 +15,7 @@
  */
 
 import { OtaPage } from './OtaPage';
-import { NotificationHelper } from './notify/NotificationHelper';
-import type { INotify, IPage } from '@ohos/common/src/main/ets/manager/UpgradeInterface';
+import type { IPage } from '@ohos/common/src/main/ets/manager/UpgradeInterface';
 
 /**
  * 升级适配器
@@ -24,7 +23,6 @@ import type { INotify, IPage } from '@ohos/common/src/main/ets/manager/UpgradeIn
  * @since 2022-12-01
  */
 export class UpgradeAdapter {
-  private _notifyInstance: INotify;
   private _page: IPage;
 
   private constructor() {
@@ -50,17 +48,5 @@ export class UpgradeAdapter {
       return this._page;
     }
     return new OtaPage();
-  }
-
-  /**
-   * 取提醒对象
-   *
-   * @return 提醒对象
-   */
-  getNotifyInstance(): INotify {
-    if (this._notifyInstance) {
-      return this._notifyInstance;
-    }
-    return new NotificationHelper();
   }
 }

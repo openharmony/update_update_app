@@ -151,11 +151,6 @@ struct Index {
     if (this.newVersionStatus === NewVersionStatus.CHECKING) {
       this.uiCheckLoop(true);
     }
-//    if (this.isNeedCheckNewVersion()) { //控制页面回退时是否执行搜包
-//      this.log('isNeedCheckNewVersion, start checkNewVersionIfNeed.');
-//      this.initUpdateStatus = OtaUpdateManager.getInstance().getUpdateState();
-//      this.checkNewVersionIfNeed();
-//    }
   }
 
   public onLanguageChange(): void {
@@ -250,16 +245,5 @@ struct Index {
 
   private async handleStateClicked() {
     this.log('handleStateClicked.');
-    if (this.newVersionStatus == NewVersionStatus.HAS_NEW_VERSION) {
-      if (await RouterUtils.isCanToNewVersion()) {
-        RouterUtils.openNewVersionPage();
-      } else {
-        this.checkNewVersionIfNeed();
-      }
-      return;
-    }
-    if (this.newVersionStatus == NewVersionStatus.NO_NEW_VERSION) {
-      RouterUtils.openCurrentVersion();
-    }
   }
 }

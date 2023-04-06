@@ -15,7 +15,6 @@
 
 import type common from '@ohos.app.ability.common';
 import update from '@ohos.update';
-import type { Features, ChangelogType, CountDownDialogType } from '../const/update_const';
 
 /**
  * 升级控制接口
@@ -54,26 +53,6 @@ export interface ChangelogInfo {
    * 更新日志
    */
   content: string;
-
-  /**
-   * 更新日志类型
-   */
-  displayType?: ChangelogType;
-
-  /**
-   * 更新日志--概述
-   */
-  headFeatures?: Features;
-
-  /**
-   * 更新日志--更新注意事项
-   */
-  endFeatures?: Features;
-
-  /**
-   * 更新日志--具体内容
-   */
-  contentFeatures?: Array<Features>;
 }
 
 /**
@@ -86,11 +65,6 @@ export interface CountDownDialogInfo {
    * 弹框消息体
    */
   dialogText: Resource;
-
-  /**
-   * 弹框类型
-   */
-  dialogType: CountDownDialogType;
 }
 
 /**

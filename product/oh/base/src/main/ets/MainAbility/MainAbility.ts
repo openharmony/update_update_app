@@ -17,13 +17,9 @@ import Ability from '@ohos.app.ability.UIAbility';
 import type Want from '@ohos.app.ability.Want';
 import type AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import router from '@ohos.router';
-import update from '@ohos.update';
 import type window from '@ohos.window';
 import type { Configuration } from '@ohos.app.ability.Configuration';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
-import type { OtaStatus } from '@ohos/common/src/main/ets/const/update_const';
-import { StateManager } from '@ohos/ota/src/main/ets/manager/StateManager';
-import { NotificationHelper } from '@ohos/ota/src/main/ets/notify/NotificationHelper';
 
 /**
  * 主Ability
@@ -84,11 +80,9 @@ export default class MainAbility extends Ability {
 
   onForeground(): void {
     this.log('BaseAbility onForeground');
-    new NotificationHelper().cancelAll();
     globalThis.AbilityStatus = 'ON_FOREGROUND';
     setTimeout(() => {
       this.routePage();
-      this.handleReceivedUpdatePageMessage();
     }, MainAbility.WAITING_PREPARE_TIME); // for env prepare
   }
 
@@ -106,16 +100,6 @@ export default class MainAbility extends Ability {
         });
       }
       globalThis.newPage = null;
-    }
-  }
-
-  private handleReceivedUpdatePageMessage(): void {
-    if (globalThis.reNotify) { // page页面弹出对话框
-      let otaStatus: OtaStatus = globalThis.otaStatusFromService;
-      let eventId: update.EventId = globalThis.eventIdFromService;
-      this.log('handleReceivedUpdatePageMessage otaStatus ' + JSON.stringify(otaStatus) + 'eventId is ' + eventId);
-      StateManager.createInstance(otaStatus).notify(globalThis.abilityContext, eventId);
-      globalThis.reNotify = undefined;
     }
   }
 

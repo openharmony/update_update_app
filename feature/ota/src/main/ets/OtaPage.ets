@@ -14,7 +14,6 @@
  */
 
 import update from '@ohos.update';
-import { ChangelogType, CountDownDialogType } from '@ohos/common/src/main/ets/const/update_const';
 import { IPage, VersionPageInfo } from '@ohos/common/src/main/ets/manager/UpgradeInterface';
 import { UpdateUtils } from '@ohos/common/src/main/ets/util/UpdateUtils';
 import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
@@ -51,12 +50,10 @@ export class OtaPage implements IPage {
       changelog: {
         version: component.displayVersion,
         size: FormatUtils.formatFileSize(component.size),
-        displayType: ChangelogType.PICTURE_AND_TEXT,
         content: description
       },
       countDownDialogInfo: {
         dialogText: $r('app.string.count_down_install_label', component.displayVersion),
-        dialogType: CountDownDialogType.OTA
       }
     };
   }

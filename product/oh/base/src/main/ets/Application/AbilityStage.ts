@@ -25,7 +25,9 @@ export default class MyAbilityStage extends AbilityStage {
   onCreate(): void {
     LogUtils.log('MyAbilityStage', 'onCreate');
     globalThis.stageContext = this.context;
-    AppStorage.SetOrCreate('updateStatus', 0); // 初始化 AppStorage ，避免出现undefined
+
+    // 初始化 AppStorage ，避免出现undefined
+    AppStorage.SetOrCreate('updateStatus', 0);
     AppStorage.SetOrCreate('downloadProgress', 0);
     AppStorage.SetOrCreate('isClickInstall', 0);
     AppStorage.SetOrCreate('configLanguage', '');
