@@ -1,0 +1,34 @@
+{
+  "app": {
+    "compileSdkVersion": 10,
+    "compatibleSdkVersion": 10,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "release",
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "ouc_oh_base",
+      "srcPath": "./product/oh/base",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "common",
+      "srcPath": "./common"
+    },
+    {
+      "name": "ota",
+      "srcPath": "./feature/ota"
+    }
+  ]
+}

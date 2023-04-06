@@ -1,0 +1,24 @@
+{
+    "string":[
+        {
+            "name":"btn_check_new_version",
+            "value":"Check for updates"
+        },
+        {
+            "name":"software_update",
+            "value":"Software update"
+        },
+        {
+            "name":"check_version_status_has_new",
+            "value":"Update available"
+        },
+        {
+            "name":"check_version_status_no_new",
+            "value":"Your software is up to date"
+        },
+        {
+            "name":"check_version_status_checking",
+            "value":"Checking for updates"
+        }
+    ]
+}

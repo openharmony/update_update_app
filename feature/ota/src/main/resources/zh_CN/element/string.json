@@ -1,0 +1,24 @@
+{
+    "string":[
+        {
+            "name":"btn_check_new_version",
+            "value":"检查更新"
+        },
+        {
+            "name":"software_update",
+            "value":"软件更新"
+        },
+        {
+            "name":"check_version_status_has_new",
+            "value":"发现新版本"
+        },
+        {
+            "name":"check_version_status_no_new",
+            "value":"已是最新版本"
+        },
+        {
+            "name":"check_version_status_checking",
+            "value":"正在检查更新"
+        }
+    ]
+}

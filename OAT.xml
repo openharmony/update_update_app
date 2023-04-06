@@ -68,11 +68,16 @@ Note:If the text contains special characters, please escape them according to th
         </policylist>
 		<filefilterlist>			
 			<filefilter name="binaryFileTypePolicyFilter" desc="Filters for binary file policies" >		
-				<filteritem type="filepath" name="entry/src/main/resources/base/media/icon.png" desc="升级客户端应用的资源文件"/>
-				<filteritem type="filepath" name="entry/src/main/js/default/common/load.png" desc="升级客户端应用的资源文件"/>
-				<filteritem type="filepath" name="entry/src/main/js/default/common/background.png" desc="升级客户端应用的资源文件"/>
-			</filefilter>				
-	
+				<filteritem type="filepath" name="common/src/main/resources/base/media/.*.png" desc="self developed image"/>
+				<filteritem type="filepath" name="common/src/main/resources/base/media/.*.mp4" desc="self developed image"/>
+				<filteritem type="filepath" name="feature/ota/src/main/resources/base/media/.*.png" desc="self developed image"/>
+			</filefilter>
+			<filefilter name="copyrightPolicyFilter" desc="Filters for copyright header policies">
+				<filteritem type="filename" name="README|README_zh|.*.json5|.*.json" desc=""/>
+			</filefilter>
+			<filefilter name="defaultPolicyFilter" desc="Filters for LICENSE file policies">
+				<filteritem type="filename" name="README|README_zh|*.json5|*.json" desc="json file"/>
+			</filefilter>
 		</filefilterlist>
 	
     </oatconfig>

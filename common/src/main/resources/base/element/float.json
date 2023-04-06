@@ -1,0 +1,153 @@
+{
+  "float": [
+    {
+      "name": "custom_button_width",
+      "value": "192vp"
+    },
+    {
+      "name": "custom_button_text_margin_left",
+      "value": "16vp"
+    },
+    {
+      "name": "custom_button_text_margin_right",
+      "value": "16vp"
+    },
+    {
+      "name": "custom_button_height",
+      "value": "40vp"
+    },
+    {
+      "name": "new_version_progress_bar_size",
+      "value": "136vp"
+    },
+    {
+      "name": "new_version_progress_bar_margin_top",
+      "value": "0"
+    },
+    {
+      "name": "new_version_progress_bar_margin_bottom",
+      "value": "16vp"
+    },
+    {
+      "name": "new_version_download_status_label_margin_bottom",
+      "value": "16vp"
+    },
+    {
+      "name": "text_size_title_bar",
+      "value": "20fp"
+    },
+    {
+      "name": "text_size_progress_bar",
+      "value": "36fp"
+    },
+    {
+      "name": "text_size_title",
+      "value": "16fp"
+    },
+    {
+      "name": "text_size_body",
+      "value": "14fp"
+    },
+    {
+      "name": "text_size_btn",
+      "value": "16fp"
+    },
+    {
+      "name": "text_size_os_version",
+      "value": "16fp"
+    },
+    {
+      "name": "title_bar_height",
+      "value": "56vp"
+    },
+    {
+      "name": "title_bar_icon_width",
+      "value": "24vp"
+    },
+    {
+      "name": "title_bar_icon_height",
+      "value": "24vp"
+    },
+    {
+      "name": "title_bar_icon_margin_left",
+      "value": "24vp"
+    },
+    {
+      "name": "title_bar_icon_margin_right",
+      "value": "24vp"
+    },
+    {
+      "name": "title_bar_text_margin_left",
+      "value": "16vp"
+    },
+    {
+      "name": "home_card_min_width",
+      "value": "300vp"
+    },
+    {
+      "name": "home_card_max_width",
+      "value": "624vp"
+    },
+    {
+      "name": "home_card_margin_horizontal",
+      "value": "20vp"
+    },
+    {
+      "name": "index_dot_width",
+      "value": "18vp"
+    },
+    {
+      "name": "progress_stroke_width",
+      "value": "18vp"
+    },
+    {
+      "name": "progress_number_margin_right",
+      "value": "2vp"
+    },
+    {
+      "name": "progress_logo_other_width",
+      "value": "221vp"
+    },
+    {
+      "name": "progress_logo_other_height",
+      "value": "40vp"
+    },
+    {
+      "name": "progress_logo_other_padding_top",
+      "value": "48vp"
+    },
+    {
+      "name": "progress_logo_other_padding_bottom",
+      "value": "40vp"
+    },
+    {
+      "name": "progress_logo_other_text_margin_top",
+      "value": "16vp"
+    },
+
+    {
+      "name": "setting_options_margin_top",
+      "value": "8vp"
+    },
+    {
+      "name": "setting_options_padding_vertical",
+      "value": "6vp"
+    },
+    {
+      "name": "setting_options_padding_horizontal",
+      "value": "12vp"
+    },
+    {
+      "name": "card_border_radius",
+      "value": "16vp"
+    },
+    {
+      "name": "dialog_location_offset_y",
+      "value": "-12vp"
+    },
+    {
+      "name": "divider_margin",
+      "value": "8vp"
+    }
+  ]
+}

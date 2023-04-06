@@ -1,0 +1,364 @@
+{
+  "float": [
+    {
+      "name": "home_logo_bottom_margin",
+      "value": "24vp"
+    },
+    {
+      "name": "home_new_version_label_top_margin",
+      "value": "12vp"
+    },
+    {
+      "name": "text_size_progress_bar_percent",
+      "value": "18fp"
+    },
+    {
+      "name": "text_size_version_name",
+      "value": "18fp"
+    },
+    {
+      "name": "home_text_size_version_name",
+      "value": "18fp"
+    },
+    {
+      "name": "text_size_version_size",
+      "value": "14fp"
+    },
+    {
+      "name": "text_size_dialog_title",
+      "value": "20fp"
+    },
+    {
+      "name": "text_size_dialog_body",
+      "value": "16fp"
+    },
+    {
+      "name": "index_version_name_margin_top",
+      "value": "24vp"
+    },
+    {
+      "name": "index_version_name_margin_bottom",
+      "value": "8vp"
+    },
+    {
+      "name": "index_has_new_version_margin_left",
+      "value": "8vp"
+    },
+    {
+      "name": "index_content_padding_horizontal",
+      "value": "20vp"
+    },
+    {
+      "name": "index_content_padding_bottom",
+      "value": "24vp"
+    },
+    {
+      "name": "progress_logo_phone_width",
+      "value": "120vp"
+    },
+    {
+      "name": "progress_logo_phone_height",
+      "value": "120vp"
+    },
+    {
+      "name": "progress_logo_phone_padding_top",
+      "value": "54vp"
+    },
+    {
+      "name": "progress_logo_phone_padding_bottom",
+      "value": "36vp"
+    },
+    {
+      "name": "new_version_size_margin_top",
+      "value": "8vp"
+    },
+    {
+      "name": "new_version_size_margin_bottom",
+      "value": "32vp"
+    },
+    {
+      "name": "new_version_button_padding_top",
+      "value": "24vp"
+    },
+    {
+      "name": "new_version_button_padding_bottom",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_phone_detail_margin_top",
+      "value": "8vp"
+    },
+    {
+      "name": "changelog_phone_content_padding",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_phone_padding",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_tablet_title_padding_top",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_tablet_start_content_padding_horizontal",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_tablet_start_content_padding_top",
+      "value": "16vp"
+    },
+    {
+      "name": "changelog_tablet_start_content_padding_bottom",
+      "value": "16vp"
+    },
+    {
+      "name": "changelog_tablet_start_content_margin_bottom",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_tablet_start_content_radius",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_end_content_margin_horizontal",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_tablet_end_content_margin_bottom",
+      "value": "36vp"
+    },
+    {
+      "name": "changelog_tablet_has_feature_padding_top",
+      "value": "8vp"
+    },
+    {
+      "name": "changelog_tablet_no_feature_padding_top",
+      "value": "4vp"
+    },
+    {
+      "name": "changelog_tablet_start_more_padding_top",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_tablet_start_detail_padding_top",
+      "value": "8vp"
+    },
+    {
+      "name": "changelog_detail_content_padding_horizontal",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_detail_content_padding_bottom",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_detail_content_margin_horizontal",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_detail_version_name_padding_left",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_detail_version_name_padding_top",
+      "value": "12vp"
+    },
+    {
+      "name": "changelog_detail_version_size_text_padding_top",
+      "value": "8vp"
+    },
+    {
+      "name": "changelog_detail_version_size_padding_left",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_detail_icon_title_icon_width",
+      "value": "40vp"
+    },
+    {
+      "name": "changelog_detail_icon_title_icon_height",
+      "value": "40vp"
+    },
+    {
+      "name": "changelog_detail_icon_title_title_padding_left",
+      "value": "16vp"
+    },
+    {
+      "name": "changelog_detail_icon_title_first_padding_top",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_detail_icon_title_other_padding_top",
+      "value": "48vp"
+    },
+    {
+      "name": "changelog_detail_sub_title_padding_top",
+      "value": "16vp"
+    },
+    {
+      "name": "changelog_detail_body_first_padding_top",
+      "value": "8vp"
+    },
+    {
+      "name": "changelog_detail_body_other_padding_top",
+      "value": "4vp"
+    },
+    {
+      "name": "current_version_name_margin_bottom",
+      "value": "8vp"
+    },
+    {
+      "name": "current_version_name_margin_bottom_single",
+      "value": "32vp"
+    },
+    {
+      "name": "setting_content_padding_top",
+      "value": "16vp"
+    },
+    {
+      "name": "setting_content_padding_horizontal",
+      "value": "24vp"
+    },
+    {
+      "name": "setting_options_margin_bottom",
+      "value": "16vp"
+    },
+    {
+      "name": "dialog_content_margin_vertical",
+      "value": "23vp"
+    },
+    {
+      "name": "dialog_divider_height",
+      "value": "24vp"
+    },
+    {
+      "name": "dialog_margin_horizontal",
+      "value": "24vp"
+    },
+    {
+      "name": "dialog_margin_bottom",
+      "value": "16vp"
+    },
+    {
+      "name": "dialog_margin_top",
+      "value": "12vp"
+    },
+    {
+      "name": "message_dialog_margin_vertical",
+      "value": "32vp"
+    },
+    {
+      "name": "message_dialog_text_padding_left",
+      "value": "12vp"
+    },
+    {
+      "name": "message_dialog_loading_progress_height",
+      "value": "40vp"
+    },
+    {
+      "name": "message_dialog_loading_progress_width",
+      "value": "40vp"
+    },
+    {
+      "name": "changelog_load_error_width",
+      "value": "120vp"
+    },
+    {
+      "name": "changelog_load_error_height",
+      "value": "120vp"
+    },
+    {
+      "name": "changelog_load_error_margin_top",
+      "value": "200vp"
+    },
+    {
+      "name": "changelog_load_error_margin",
+      "value": "120vp"
+    },
+    {
+      "name": "loading_progress_width",
+      "value": "72vp"
+    },
+    {
+      "name": "loading_progress_height",
+      "value": "72vp"
+    },
+    {
+      "name": "toast_bottom",
+      "value": "120vp"
+    },
+    {
+      "name": "changelog_detail_version_size_text_padding_bottom",
+      "value": "8vp"
+    },
+    {
+      "name": "changelog_load_err_view_margin_horizontal",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_detail_content_padding_top",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_detail_version_name_padding_right",
+      "value": "24vp"
+    },
+    {
+      "name": "changelog_content_title",
+      "value": "16fp"
+    },
+    {
+      "name": "changelog_content_word",
+      "value": "14fp"
+    },
+    {
+      "name": "changelog_content_learn_more",
+      "value": "14fp"
+    },
+    {
+      "name": "changelog_content_end_title",
+      "value": "14fp"
+    },
+    {
+      "name": "changelog_end_word",
+      "value": "12fp"
+    },
+    {
+      "name": "changelog_page_icon_title",
+      "value": "18fp"
+    },
+    {
+      "name": "text_version_size",
+      "value": "14fp"
+    },
+    {
+      "name": "changelog_content_SubTitle",
+      "value": "16fp"
+    },
+    {
+      "name": "dialog_button_height",
+      "value": "40vp"
+    },
+    {
+      "name": "ic_arrow_width",
+      "value": "14vp"
+    },
+    {
+      "name": "ic_arrow_height",
+      "value": "7vp"
+    },
+    {
+      "name": "version_padding",
+      "value": "24vp"
+    },
+    {
+      "name": "current_version_changelog_margin_bottom",
+      "value": "8vp"
+    },
+    {
+      "name": "dialog_row_margin_horizontal",
+      "value": "12vp"
+    }
+  ]
+}
