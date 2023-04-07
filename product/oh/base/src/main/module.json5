@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "ouc_oh_base",
+    "name": "updateapp",
     "type": "entry",
     "srcEntrance": "./ets/Application/AbilityStage.ts",
     "description": "$string:description_mainability",
@@ -51,7 +51,7 @@
         "metadata": [
           {
             "name": "metadata.settings.menu.v1",
-            "value": '{"menu" : {"key": "com_hmos_ouc_software_update_settings", "menuType": "Entry","titleResource": "entry_MainAbility"}}'
+            "value": '{"menu" : {"key": "com_ohos_updateapp_software_update_settings", "menuType": "Entry","titleResource": "entry_MainAbility"}}'
           },
           {
             "name": "com.ohos.systemui.notification_fixed",
