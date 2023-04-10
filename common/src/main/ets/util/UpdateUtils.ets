@@ -17,6 +17,11 @@ import update from '@ohos.update';
 import { LogUtils } from './LogUtils';
 
 /**
+ * 日志TAG
+ */
+const TAG = 'UpdateUtils';
+
+/**
  * 接口工具
  *
  * @since 2022-06-06
@@ -45,5 +50,23 @@ export namespace UpdateUtils {
       }
     }
     return '';
+  }
+  /**
+   * 启动Ability
+   *
+   * @param context 要启动Ability的context
+   * @param want 要启动Ability的want
+   * @param options 配置项
+   */
+  export function startAbility(context: any, want, options): void {
+    if (!context || !want) {
+      LogUtils.error(TAG, 'Failed to start ability with error: context or want is null.');
+      return;
+    }
+    context.startAbility(want, options).then((data) => {
+      LogUtils.info(TAG, 'Succeed to start ability with data: ' + JSON.stringify(data));
+    }).catch((error) => {
+      LogUtils.error(TAG, 'Failed to start ability with error: ' + JSON.stringify(error));
+    });
   }
 }

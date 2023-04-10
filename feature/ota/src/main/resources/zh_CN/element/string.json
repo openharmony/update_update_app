@@ -5,8 +5,100 @@
             "value":"检查更新"
         },
         {
+            "name":"btn_download",
+            "value":"下载并安装"
+        },
+        {
+            "name":"btn_upgrade",
+            "value":"安装"
+        },
+        {
+            "name":"title_new_version",
+            "value":"新版本"
+        },
+        {
+            "name":"title_current_version",
+            "value":"当前版本"
+        },
+        {
+            "name":"title_change_log",
+            "value":"更新日志"
+        },
+        {
+            "name":"button_know",
+            "value":"知道了"
+        },
+        {
+            "name":"network_request",
+            "value":"当前未连接 WLAN，下载将会产生流量费用。是否开启 WLAN 下载？"
+        },
+        {
+            "name":"ok",
+            "value":"确认"
+        },
+        {
+            "name":"cancel",
+            "value":"取消"
+        },
+        {
+            "name":"continue",
+            "value":"继续"
+        },
+        {
+            "name":"net_error_title",
+            "value":"网络异常"
+        },
+        {
+            "name":"net_error_content",
+            "value":"检测到网络异常，下载已暂停。请检查网络连接后重试。"
+        },
+        {
+            "name":"space_not_enough_title",
+            "value":"空间不足"
+        },
+        {
+            "name":"space_not_enough_content",
+            "value":"升级所需存储空间不足，请清理设备存储空间后重试。"
+        },
+        {
+            "name":"package_verify_fail",
+            "value":"升级包校验失败。"
+        },
+        {
+            "name":"later",
+            "value":"稍后"
+        },
+        {
+            "name":"install_now",
+            "value":"现在安装 (%d)"
+        },
+        {
             "name":"software_update",
             "value":"软件更新"
+        },
+        {
+            "name":"software_download_progress",
+            "value":"下载进度"
+        },
+        {
+            "name":"reboot_wait",
+            "value":"重启中请稍候…"
+        },
+        {
+            "name":"battery_not_enough_title",
+            "value":"电量不足"
+        },
+        {
+            "name":"battery_not_enough_content",
+            "value":"电量过低，请充电至 %s 后再次尝试更新。"
+        },
+        {
+            "name":"download_fail",
+            "value":"下载失败，请重新搜索更新包。"
+        },
+        {
+            "name":"update_fail",
+            "value":"安装失败，请重新搜索更新包。"
         },
         {
             "name":"check_version_status_has_new",
@@ -19,6 +111,65 @@
         {
             "name":"check_version_status_checking",
             "value":"正在检查更新"
+        },
+        {
+            "name":"download_status_downloading",
+            "value":"正在下载…"
+        },
+        {
+            "name":"download_status_download_pause",
+            "value":"下载暂停"
+        },
+        {
+            "name":"download_status_download_failed",
+            "value":"下载失败"
+        },
+        {
+            "name":"download_status_download_success",
+            "value":"下载完成"
+        },
+        {
+            "name":"network_err_toast",
+            "value":"网络异常，请重试"
+        },
+        {
+            "name":"no_info_now",
+            "value":"没有内容"
+        },
+        {
+            "name":"install_success_message",
+            "value":"新版本安装成功"
+        },
+        {
+            "name":"install_fail_message",
+            "value":"新版本安装失败"
+        },
+        {
+            "name":"software_install_progress",
+            "value":"安装进度"
+        },
+        {
+            "name":"new_version_status_installing",
+            "value":"正在安装..."
+        },
+        {
+            "name":"new_version_status_install_success",
+            "value":"安装完成"
+        },
+        {
+            "name":"btn_reboot",
+            "value":"重启"
+        },
+        {
+            "name":"count_down_message_recovery",
+            "value":"%s 将在 %d 秒后开始安装。"
+        },{
+            "name":"count_down_message_ab",
+            "value":"%s 将在 %d 秒后开始重启。"
+        },
+        {
+            "name":"reboot_now",
+            "value":"现在重启 (%d)"
         }
     ]
 }

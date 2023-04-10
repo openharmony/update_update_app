@@ -242,7 +242,7 @@
     },
     {
       "name": "dialog_margin_top",
-      "value": "12vp"
+      "value": "16vp"
     },
     {
       "name": "message_dialog_margin_vertical",

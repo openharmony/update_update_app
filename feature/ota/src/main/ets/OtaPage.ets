@@ -14,6 +14,7 @@
  */
 
 import update from '@ohos.update';
+import { ChangelogType, CountDownDialogType } from '@ohos/common/src/main/ets/const/update_const';
 import { IPage, VersionPageInfo } from '@ohos/common/src/main/ets/manager/UpgradeInterface';
 import { UpdateUtils } from '@ohos/common/src/main/ets/util/UpdateUtils';
 import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
@@ -42,6 +43,8 @@ export class OtaPage implements IPage {
     if (componentDescriptions) {
       description = UpdateUtils.obtainDescription(componentDescriptions, componentId);
     }
+    let isABInstall = await VersionUtils.isABInstall();
+    const countDownTimes = 20;
 
     return {
       version: component.displayVersion,
@@ -50,10 +53,14 @@ export class OtaPage implements IPage {
       changelog: {
         version: component.displayVersion,
         size: FormatUtils.formatFileSize(component.size),
+        displayType: ChangelogType.PICTURE_AND_TEXT,
         content: description
       },
       countDownDialogInfo: {
-        dialogText: $r('app.string.count_down_install_label', component.displayVersion),
+        dialogText: isABInstall ?
+          $r('app.string.count_down_message_ab', component.displayVersion, countDownTimes) :
+          $r('app.string.count_down_message_recovery', component.displayVersion, countDownTimes),
+        dialogType: isABInstall ? CountDownDialogType.OTA_AB : CountDownDialogType.OTA
       }
     };
   }
