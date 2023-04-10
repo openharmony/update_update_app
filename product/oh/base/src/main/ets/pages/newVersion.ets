@@ -74,7 +74,11 @@ struct NewVersion {
       },
       confirm: () => {
         globalThis.displayCountdownDialog = false;
-        this.upgrade();
+        if (this.isABInstall()) {
+          this.reboot();
+        } else {
+          this.upgrade();
+        }
       }
     }),
     autoCancel: false,
@@ -170,7 +174,7 @@ struct NewVersion {
     this.buttonText = FormatUtils.toUpperCase(globalThis.abilityContext, stateButtonText);
     this.isButtonVisible = this.updateStatus !== UpdateState.INSTALLING
       && this.updateStatus !== UpdateState.INSTALL_FAILED
-      && this.updateStatus !== UpdateState.INSTALL_SUCCESS
+      && (this.isABInstall() || this.updateStatus !== UpdateState.INSTALL_SUCCESS)
       && this.updateStatus !== UpdateState.UPGRADING
       && this.updateStatus !== UpdateState.UPGRADE_FAILED
       && this.updateStatus !== UpdateState.UPGRADE_SUCCESS;
