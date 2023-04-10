@@ -17,7 +17,7 @@ import Ability from '@ohos.app.ability.UIAbility';
 import type Want from '@ohos.app.ability.Want';
 import type AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import router from '@ohos.router';
-import update from '@ohos.update';
+import type update from '@ohos.update';
 import type window from '@ohos.window';
 import type { Configuration } from '@ohos.app.ability.Configuration';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';

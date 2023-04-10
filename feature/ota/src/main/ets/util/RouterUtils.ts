@@ -80,9 +80,10 @@ namespace RouterUtils {
       OtaUpdateManager.getInstance().getOtaStatus().then((upgradeData) => {
         if (upgradeData?.callResult === UpgradeCallResult.OK) {
           if (upgradeData.data?.status === UpdateState.UPGRADING) {
-              resolve(false);
+            resolve(false);
           } else {
-            resolve(StateManager.isAllowExecute(upgradeData.data?.status, UpdateAction.SHOW_NEW_VERSION));
+            let isAllow: boolean = StateManager.isAllowExecute(upgradeData.data?.status, UpdateAction.SHOW_NEW_VERSION);
+            resolve(isAllow);
           }
         } else {
           resolve(false);

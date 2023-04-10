@@ -14,7 +14,7 @@
  */
 
 import type common from '@ohos.app.ability.common';
-import update from '@ohos.update';
+import type update from '@ohos.update';
 import type { OtaStatus } from '@ohos/common/src/main/ets/const/update_const';
 import { MAIN_ABILITY_NAME, PACKAGE_NAME, UpdateState } from '@ohos/common/src/main/ets/const/update_const';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
