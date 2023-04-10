@@ -14,6 +14,9 @@
  */
 
 import router from '@ohos.router';
+import { UpdateState, UpgradeCallResult } from '@ohos/common/src/main/ets/const/update_const';
+import { StateManager, UpdateAction } from '../manager/StateManager';
+import { OtaUpdateManager } from '../manager/OtaUpdateManager';
 
 /**
  * 一秒对应的时间(1000)
@@ -74,7 +77,18 @@ namespace RouterUtils {
    */
   export async function isCanToNewVersion(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      resolve(true);
+      OtaUpdateManager.getInstance().getOtaStatus().then((upgradeData) => {
+        if (upgradeData?.callResult === UpgradeCallResult.OK) {
+          if (upgradeData.data?.status === UpdateState.UPGRADING) {
+            resolve(false);
+          } else {
+            let isAllow: boolean = StateManager.isAllowExecute(upgradeData.data?.status, UpdateAction.SHOW_NEW_VERSION);
+            resolve(isAllow);
+          }
+        } else {
+          resolve(false);
+        }
+      });
     });
   }
 }

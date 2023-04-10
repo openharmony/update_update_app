@@ -1,5 +1,7 @@
 {
   "src": [
-    "pages/index"
+    "pages/index",
+    "pages/newVersion",
+    "pages/currentVersion"
   ]
 }

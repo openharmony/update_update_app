@@ -5,8 +5,100 @@
             "value":"Check for updates"
         },
         {
+            "name":"btn_download",
+            "value":"Download & install"
+        },
+        {
+            "name":"btn_upgrade",
+            "value":"Install"
+        },
+        {
+            "name":"title_new_version",
+            "value":"New version"
+        },
+        {
+            "name":"title_current_version",
+            "value":"Current version"
+        },
+        {
+            "name":"title_change_log",
+            "value":"Changelog"
+        },
+        {
+            "name":"button_know",
+            "value":"OK"
+        },
+        {
+            "name":"network_request",
+            "value":"No WLAN connection. Downloading with mobile data may result in additional fees. Continue?"
+        },
+        {
+            "name":"ok",
+            "value":"OK"
+        },
+        {
+            "name":"cancel",
+            "value":"Cancel"
+        },
+        {
+            "name":"continue",
+            "value":"Resume"
+        },
+        {
+            "name":"net_error_title",
+            "value":"Network error"
+        },
+        {
+            "name":"net_error_content",
+            "value":"Download paused. Check your network connection and try again."
+        },
+        {
+            "name":"space_not_enough_title",
+            "value":"Insufficient storage"
+        },
+        {
+            "name":"space_not_enough_content",
+            "value":"Insufficient storage available. Free up some space and try again."
+        },
+        {
+            "name":"package_verify_fail",
+            "value":"Update verification failed."
+        },
+        {
+            "name":"later",
+            "value":"Later"
+        },
+        {
+            "name":"install_now",
+            "value":"Install now (%d)"
+        },
+        {
             "name":"software_update",
             "value":"Software update"
+        },
+        {
+            "name":"software_download_progress",
+            "value":"Downloading"
+        },
+        {
+            "name":"reboot_wait",
+            "value":"Restarting¡­"
+        },
+        {
+            "name":"battery_not_enough_title",
+            "value":"Low battery"
+        },
+        {
+            "name":"battery_not_enough_content",
+            "value":"Battery level too low. Charge your device to at least %s and try again."
+        },
+        {
+            "name":"download_fail",
+            "value":"Download failed. Please check for updates again."
+        },
+        {
+            "name":"update_fail",
+            "value":"Installation failed. Please check for updates again."
         },
         {
             "name":"check_version_status_has_new",
@@ -19,6 +111,65 @@
         {
             "name":"check_version_status_checking",
             "value":"Checking for updates"
+        },
+        {
+            "name":"download_status_downloading",
+            "value":"Downloading¡­"
+        },
+        {
+            "name":"download_status_download_pause",
+            "value":"Download paused"
+        },
+        {
+            "name":"download_status_download_failed",
+            "value":"Download failed"
+        },
+        {
+            "name":"download_status_download_success",
+            "value":"Downloaded"
+        },
+        {
+            "name":"network_err_toast",
+            "value":"Network error. Please try again."
+        },
+        {
+            "name":"no_info_now",
+            "value":"No content"
+        },
+        {
+            "name":"install_success_message",
+            "value":"Update successfully installed"
+        },
+        {
+            "name":"install_fail_message",
+            "value":"Installation failed"
+        },
+        {
+            "name":"software_install_progress",
+            "value":"installing"
+        },
+        {
+            "name":"new_version_status_installing",
+            "value":"Installing..."
+        },
+        {
+            "name":"new_version_status_install_success",
+            "value":"Installed"
+        },
+        {
+            "name":"btn_reboot",
+            "value":"reboot"
+        },
+        {
+            "name":"count_down_message_recovery",
+            "value":"%s will start installation in %d seconds."
+        },{
+            "name":"count_down_message_ab",
+            "value":"%s will reboot in %d seconds."
+        },
+        {
+            "name":"reboot_now",
+            "value":"Reboot Now (%d)"
         }
     ]
 }

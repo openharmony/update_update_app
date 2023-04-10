@@ -13,6 +13,15 @@
  * limitations under the License.
  */
 
+import update from '@ohos.update';
+import {
+  ErrorCode,
+  OtaStatus,
+  UpdateConstant,
+  UpdateState,
+  UpgradeCallResult,
+  UpgradeData
+} from '@ohos/common/src/main/ets/const/update_const';
 import { TitleBar } from '@ohos/common/src/main/ets/component/TitleBar';
 import { HomeCardView } from '@ohos/common/src/main/ets/component/HomeCardView';
 import { CheckingDots } from '@ohos/common/src/main/ets/component/CheckingDots';
@@ -20,6 +29,9 @@ import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
 import RouterUtils from '@ohos/ota/src/main/ets/util/RouterUtils';
 import { VersionUtils } from '@ohos/ota/src/main/ets/util/VersionUtils';
+import { OtaUpdateManager } from '@ohos/ota/src/main/ets/manager/OtaUpdateManager';
+import { StateManager, UpdateAction } from '@ohos/ota/src/main/ets/manager/StateManager';
+import ToastUtils from '@ohos/ota/src/main/ets/util/ToastUtils';
 
 /**
  * 搜包的状态
@@ -43,8 +55,11 @@ struct Index {
   @State newVersionActionText: Resource = $r('app.string.check_version_status_no_new');
   @State dotTextPlay: boolean = false;
   @State newVersionStatus: string = NewVersionStatus.NO_NEW_VERSION;
+  @StorageProp('updateStatus')
+  private updateStatus: number = AppStorage.Get('updateStatus');
   private displayVersion: string = VersionUtils.getDisplayVersionForIndex();
   private videoController: VideoController = new VideoController();
+  private initUpdateStatus: number = OtaUpdateManager.getInstance().getUpdateState();
   private actionCallBack: Array<() => void> = [];
   private checkTimes: number= 0;
   private checkIntervalId: number;
@@ -103,9 +118,60 @@ struct Index {
     this.uiCheckLoop(true);
     this.checkLoopTimes = 0;
     this.notifyNewVersionStatus(NewVersionStatus.CHECKING);
-    setTimeout(() => {
-      this.notifyNewVersionStatus(NewVersionStatus.NO_NEW_VERSION);
-    }, 2000)
+    let upgradeData: UpgradeData<OtaStatus> = await OtaUpdateManager.getInstance().getOtaStatus();
+    let otaStatus: OtaStatus = upgradeData.callResult == UpgradeCallResult.OK ? upgradeData.data : null;
+    this.initUpdateStatus = otaStatus?.status;
+    if (StateManager.isAllowExecute(this.updateStatus, UpdateAction.CHECK_NEW_VERSION)) {
+      this.performCheckNewVersion();
+    } else {
+      OtaUpdateManager.getInstance().getNewVersion().then(upgradeData => {
+        if (upgradeData.callResult == UpgradeCallResult.OK) {
+          this.log('found new version.');
+          RouterUtils.isCanToNewVersion().then((isCan: boolean) => {
+            this.notifyNewVersionStatus(isCan ? NewVersionStatus.HAS_NEW_VERSION : NewVersionStatus.NO_NEW_VERSION);
+          });
+        } else {
+          this.log('no new version found.');
+          this.notifyNewVersionStatus(NewVersionStatus.NO_NEW_VERSION);
+        }
+      });
+    }
+  }
+
+  /**
+   * 开始进行手动新版本检测
+   * 通过checkNewVersion()方法
+   */
+  private async performCheckNewVersion(): Promise<void> {
+    this.log('checkNewVersion starting manually');
+    let upgradeData: UpgradeData<update.CheckResult> = await OtaUpdateManager.getInstance().checkNewVersion();
+    if (upgradeData.callResult == UpgradeCallResult.OK) {
+      this.log('handle checkNewVersion:' + JSON.stringify(upgradeData.data?.newVersionInfo));
+      if (await RouterUtils.isCanToNewVersion()) {
+        this.notifyNewVersionStatus(NewVersionStatus.HAS_NEW_VERSION);
+        return;
+      }
+    }
+    let errorCode: ErrorCode = upgradeData.error?.data?.[0]?.errorCode;
+    if (errorCode == ErrorCode.CHECK_SYSTEM_BUSY) {
+      setTimeout(() => {
+        if (this.checkLoopTimes >= UpdateConstant.CHECKING_RETRY_TIME) {
+          this.notifyNewVersionStatus(NewVersionStatus.NO_NEW_VERSION);
+        } else {
+          this.checkLoopTimes++;
+          this.performCheckNewVersion();
+        }
+      }, UpdateConstant.CHECKING_WAITING_TIME_IN_SECONDS * 1000);
+      return;
+    }
+
+    if (errorCode == ErrorCode.CHECK_NETWORK_ERR) {
+      this.actionCallBack.push(async () => {
+        let message = await globalThis.abilityContext.resourceManager.getString($r('app.string.network_err_toast').id);
+        ToastUtils.showToast(message);
+      })
+    }
+    this.notifyNewVersionStatus(NewVersionStatus.NO_NEW_VERSION);
   }
 
   /**
@@ -134,6 +200,7 @@ struct Index {
 
   aboutToAppear() {
     this.log('aboutToAppear');
+    globalThis.indexThis = this;
     this.checkNewVersionIfNeed();
   }
 
@@ -151,6 +218,11 @@ struct Index {
     if (this.newVersionStatus === NewVersionStatus.CHECKING) {
       this.uiCheckLoop(true);
     }
+    if (this.isNeedCheckNewVersion()) { //控制页面回退时是否执行搜包
+      this.log('isNeedCheckNewVersion, start checkNewVersionIfNeed.');
+      this.initUpdateStatus = OtaUpdateManager.getInstance().getUpdateState();
+      this.checkNewVersionIfNeed();
+    }
   }
 
   public onLanguageChange(): void {
@@ -164,6 +236,22 @@ struct Index {
   onPageHide() {
     this.log('onPageHide index');
     this.uiCheckLoop(false);
+  }
+
+  /**
+   * onpage show时判断，当前状态是否需要自动触发搜包
+   */
+  private isNeedCheckNewVersion(): boolean {
+    if (this.newVersionStatus == NewVersionStatus.CHECKING) {
+      return false;
+    }
+    let currentStatus = OtaUpdateManager.getInstance().getUpdateState();
+    this.log(`checkNewVersion, currentStatus = ${currentStatus} `);
+    if (this.initUpdateStatus != currentStatus) {
+      const checkedStatus = [UpdateState.INIT, UpdateState.UPGRADE_FAILED, UpdateState.UPGRADE_SUCCESS];
+      return currentStatus in checkedStatus;
+    }
+    return false;
   }
 
   build() {
@@ -245,5 +333,16 @@ struct Index {
 
   private async handleStateClicked() {
     this.log('handleStateClicked.');
+    if (this.newVersionStatus == NewVersionStatus.HAS_NEW_VERSION) {
+      if (await RouterUtils.isCanToNewVersion()) {
+        RouterUtils.openNewVersionPage();
+      } else {
+        this.checkNewVersionIfNeed();
+      }
+      return;
+    }
+    if (this.newVersionStatus == NewVersionStatus.NO_NEW_VERSION) {
+      RouterUtils.openCurrentVersion();
+    }
   }
 }
