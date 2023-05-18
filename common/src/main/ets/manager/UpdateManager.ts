@@ -18,6 +18,7 @@ import update from '@ohos.update';
 import { PACKAGE_NAME, UpdateState, UpgradeCallResult, } from '../const/update_const';
 import type { BusinessError, OtaStatus, UpgradeData} from '../const/update_const';
 import { LogUtils } from '../util/LogUtils';
+import { UpdateUtils } from '../util/UpdateUtils';
 
 /**
  * 方法超时控制装饰器
@@ -227,19 +228,19 @@ export class UpdateManager implements IUpdate {
       language: descLanguage
     };
     return new Promise((resolve, reject) => {
-      this.otaUpdater?.getCurrentVersionDescription(options).then((result: Array<update.ComponentDescription>) => {
+      this.otaUpdater?.getCurrentVersionDescription(options, (err, result) => {
         this.log('getCurrentVersionDescription result:' + JSON.stringify(result));
         let upgradeData: UpgradeData<Array<update.ComponentDescription>> = {
           callResult: UpgradeCallResult.OK,
-          data: result
+          data: result,
+          error: {
+            data: [{ errorCode: err?.data?.[0]?.errorCode }]
+          }
         };
-        resolve(upgradeData);
-      }).catch((err: BusinessError) => {
-        this.logError('getCurrentVersionDescription err:' + JSON.stringify(err));
-        let upgradeData: UpgradeData<Array<update.ComponentDescription>> = {
-          callResult: UpgradeCallResult.ERROR,
-          error: err
-        };
+        if (!UpdateUtils.isSuccessCallback(result, err)) {
+          this.logError('getCurrentVersionDescription error is ${JSON.stringify(err)}');
+          upgradeData.callResult = UpgradeCallResult.ERROR;
+        }
         resolve(upgradeData);
       });
     });
