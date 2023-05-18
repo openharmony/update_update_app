@@ -30,7 +30,7 @@
         },
         {
             "name":"network_request",
-            "value":"当前未连接 WLAN，下载将会产生流量费用。是否开启 WLAN 下载？"
+            "value":"当前非 WLAN 网络，下载会消耗流量。是否继续？"
         },
         {
             "name":"ok",
