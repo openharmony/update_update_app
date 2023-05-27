@@ -30,7 +30,7 @@
         },
         {
             "name":"network_request",
-            "value":"No WLAN connection. Downloading with mobile data may result in additional fees. Continue?"
+            "value":"No WLAN connection. This download will use mobile data. Continue?"
         },
         {
             "name":"ok",
@@ -82,7 +82,7 @@
         },
         {
             "name":"reboot_wait",
-            "value":"Restarting¡­"
+            "value":"Restarting"
         },
         {
             "name":"battery_not_enough_title",
@@ -114,7 +114,7 @@
         },
         {
             "name":"download_status_downloading",
-            "value":"Downloading¡­"
+            "value":"Downloading"
         },
         {
             "name":"download_status_download_pause",
