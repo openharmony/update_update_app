@@ -69,4 +69,14 @@ export namespace UpdateUtils {
       LogUtils.error(TAG, 'Failed to start ability with error: ' + JSON.stringify(error));
     });
   }
+
+  /**
+   * 接口调用结果判断
+   *
+   * @param err 返回信息
+   * @param return 接口调用结果
+   */
+  export function isSuccessCallback(result: unknow, err: any): boolean {
+    return result && !err;
+  }
 }
