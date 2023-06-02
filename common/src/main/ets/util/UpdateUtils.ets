@@ -76,7 +76,7 @@ export namespace UpdateUtils {
    * @param err 返回信息
    * @param return 接口调用结果
    */
-  export function isSuccessCallback(result: unknow, err: any): boolean {
+  export function isSuccessCallback(result: unknown, err: any): boolean {
     return result && !err;
   }
 }

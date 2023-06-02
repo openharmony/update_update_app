@@ -425,7 +425,7 @@ export enum CountDownDialogType {
   /**
    * ab升级20S倒计时
    */
-  OTA_AB = 0,
+  OTA_AB = 1,
 }
 
 
