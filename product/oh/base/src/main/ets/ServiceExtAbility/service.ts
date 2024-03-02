@@ -16,6 +16,7 @@
 import Extension from '@ohos.app.ability.ServiceExtensionAbility';
 import type Want from '@ohos.app.ability.Want';
 import type rpc from '@ohos.rpc';
+import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
 import { OtaUpdateManager } from '@ohos/ota/src/main/ets/manager/OtaUpdateManager';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 
@@ -30,12 +31,12 @@ export default class ServiceExtAbility extends Extension {
   private startIdArray: number[] = [];
 
   onCreate(want: Want): void {
-    LogUtils.log(ServiceExtAbility.TAG, 'onCreate:' + JSON.stringify(want));
+    LogUtils.log(ServiceExtAbility.TAG, 'onCreate:' + FormatUtils.stringify(want));
     globalThis.extensionContext = this.context; // when start ServiceExtAbility ,set context
   }
 
   async onRequest(want: Want, startId: number): Promise<void> {
-    LogUtils.log(ServiceExtAbility.TAG, `onRequest, want: ${want.abilityName}`);
+    LogUtils.log(ServiceExtAbility.TAG, `onRequest, want: ${want?.abilityName}`);
     this.startIdArray.push(startId);
     globalThis.extensionContext = this.context;
     await OtaUpdateManager.getInstance().handleWant(want, globalThis.extensionContext);
@@ -43,7 +44,7 @@ export default class ServiceExtAbility extends Extension {
   }
 
   onConnect(want: Want): rpc.RemoteObject {
-    LogUtils.log(ServiceExtAbility.TAG, `onConnect , want: ${want.abilityName}`);
+    LogUtils.log(ServiceExtAbility.TAG, `onConnect , want: ${want?.abilityName}`);
     return null;
   }
 
