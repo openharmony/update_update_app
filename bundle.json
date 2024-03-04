@@ -1,0 +1,38 @@
+{
+  "name": "@ohos/update_app",
+  "description": "The update app runs on the OHOS and provides an interactive GUI for users to perform version updates.",
+  "version": "3.0",
+  "license": "Apache License 2.0",
+  "publishAs": "code-segment",
+  "segment": {
+    "destPath": "base/update/update_app"
+  },
+  "dirs": {},
+  "scripts": {},
+  "component": {
+    "name": "update_app",
+    "subsystem": "update",
+    "syscap": [],
+    "features": [],
+    "adapted_system_type": [
+      "standard"
+    ],
+    "deps": {
+      "components": [
+        "update_service",
+        "ace_engine",
+        "ability_runtime",
+        "systemui",
+        "hisysevent",
+        "hilog",
+        "updater"
+      ],
+      "third_party": []
+    },
+    "build": {
+      "sub_component": [],
+      "inner_kits": [],
+      "test": []
+    }
+  }
+}
