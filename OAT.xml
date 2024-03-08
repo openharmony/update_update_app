@@ -74,6 +74,8 @@ Note:If the text contains special characters, please escape them according to th
                 <policyitem type="copyright" name="*" path="common/hvigorfile.ts" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="测试资源文件"/>
                 <policyitem type="license" name="*" path="product/oh/base/hvigorfile.ts" rule="may" group="defaultGroup" filefilter="defaultPolicyFilter" desc="测试资源文件"/>
                 <policyitem type="copyright" name="*" path="product/oh/base/hvigorfile.ts" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="测试资源文件"/>			        
+                <policyitem type="license" name="*" path="common/src/main/resources/base/media/video.mp4" rule="may" group="defaultGroup" filefilter="defaultPolicyFilter" desc="测试资源文件"/>
+                <policyitem type="copyright" name="*" path="common/src/main/resources/base/media/video.mp4" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="测试资源文件"/>
             </policy>
         </policylist>
 		<filefilterlist>			
