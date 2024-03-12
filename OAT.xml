@@ -90,9 +90,7 @@ Note:If the text contains special characters, please escape them according to th
 			</filefilter>
         	<filefilter name="defaultFilter" desc="files not to check">
 				<filteritem type="filename" name="hvigorfile.js" desc="json file"/>
-			</filefilter>
-            <filefilter name="defaultFilter" desc="files not to check">
-				<filteritem type="filename" name="hvigorfile.ts" desc="ts file"/>
+                <filteritem type="filename" name="hvigorfile.ts" desc="ts file"/>
 			</filefilter>
 		</filefilterlist>
     </oatconfig>
