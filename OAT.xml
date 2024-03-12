@@ -72,6 +72,8 @@ Note:If the text contains special characters, please escape them according to th
                 <policyitem type="copyright" name="*" path="common/src/main/resources/base/media/video.mp4" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="测试资源文件"/>
                 <policyitem type="license" name="*" path="product/oh/base/hvigorfile.ts" rule="may" group="defaultGroup" filefilter="defaultPolicyFilter" desc="测试资源文件"/>
                 <policyitem type="copyright" name="*" path="product/oh/base/hvigorfile.ts" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="测试资源文件"/>
+                <policyitem type="license" name="*" path="common/hvigorfile.ts" rule="may" group="defaultGroup" filefilter="defaultPolicyFilter" desc="测试资源文件"/>
+                <policyitem type="copyright" name="*" path="common/hvigorfile.ts" rule="may" group="defaultGroup" filefilter="copyrightPolicyFilter" desc="测试资源文件"/>
             </policy>
         </policylist>
 		<filefilterlist>			
@@ -86,7 +88,12 @@ Note:If the text contains special characters, please escape them according to th
 			<filefilter name="defaultPolicyFilter" desc="Filters for LICENSE file policies">
 				<filteritem type="filename" name="README|README_zh|*.json5|*.json" desc="json file"/>
 			</filefilter>
+        	<filefilter name="defaultFilter" desc="files not to check">
+				<filteritem type="filename" name="hvigorfile.js" desc="json file"/>
+			</filefilter>
+            <filefilter name="defaultFilter" desc="files not to check">
+				<filteritem type="filename" name="hvigorfile.ts" desc="ts file"/>
+			</filefilter>
 		</filefilterlist>
-	
     </oatconfig>
 </configuration>
