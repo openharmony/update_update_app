@@ -89,8 +89,8 @@ Note:If the text contains special characters, please escape them according to th
 				<filteritem type="filename" name="README|README_zh|*.json5|*.json" desc="json file"/>
 			</filefilter>
         	<filefilter name="defaultFilter" desc="files not to check">
-				<filteritem type="filename" name="hvigorfile.js" desc="json file"/>
-                <filteritem type="filename" name="hvigorfile.ts" desc="ts file"/>
+				<filteritem type="filename" name="hvigorfile.js" desc="hvigorfile configuration files"/>
+                <filteritem type="filename" name="hvigorfile.ts" desc="hvigorfile configuration files"/>
 			</filefilter>
 		</filefilterlist>
     </oatconfig>
