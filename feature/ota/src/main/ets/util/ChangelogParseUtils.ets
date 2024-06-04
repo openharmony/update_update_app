@@ -155,7 +155,7 @@ namespace ChangelogParseUtils {
         let typeString = featuresElement['_attributes']['type'];
         let id = featuresElement['_attributes']['id'];
         let featureElement = featuresElement['_elements'];
-        let featureList[] = new Array();
+        let featureList: Feature[] = [];
         features = {
           title: moduleString,
           id: id,
