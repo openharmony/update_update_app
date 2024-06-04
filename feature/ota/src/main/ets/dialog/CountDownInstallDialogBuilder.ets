@@ -105,8 +105,7 @@ export struct CountDownInstallDialogBuilder {
   }
 
   @Styles
-  buttonStyles()
-  {
+  buttonStyles(){
     .onClick(() => {
       this.controller.close();
       if (this.intervalID != null) {
