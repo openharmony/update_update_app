@@ -75,7 +75,7 @@ namespace ChangelogParseUtils {
 
   function parseRoot(root: any): void {
     // 倒序解析，先解析Icon
-    let icons = new Object();
+    let icons = {};
     logInfo('root length ' + root['_elements'].length);
     for (let index = root['_elements'].length; index > 0; index--) {
       let element = root['_elements'][index - 1];
@@ -155,7 +155,7 @@ namespace ChangelogParseUtils {
         let typeString = featuresElement['_attributes']['type'];
         let id = featuresElement['_attributes']['id'];
         let featureElement = featuresElement['_elements'];
-        let featureList = new Array();
+        let featureList[] = new Array();
         features = {
           title: moduleString,
           id: id,

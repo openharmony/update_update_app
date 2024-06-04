@@ -95,7 +95,7 @@ export struct ChangelogContent {
 
   private parseChangelog(): void {
     this.logInfo('parseChangelog');
-    let list: Array<ChangelogInfo> = null;
+    let list: ChangelogInfo[] = null;
     if (this.description) {
       list = JSON.parse(this.description);
     }
@@ -134,7 +134,7 @@ export struct ChangelogContent {
   }
 
   private getContentFeatures(changelog: Changelog, language: string): Array<Features> {
-    let featuresList: Array<Features> = [];
+    let featuresList: Features[] = [];
     if (changelog == null || language == null) {
       return featuresList;
     }

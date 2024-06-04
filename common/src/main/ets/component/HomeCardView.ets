@@ -22,7 +22,7 @@ import {DeviceUtils} from '../util/DeviceUtils'
  */
 @Component
 export struct HomeCardView {
-  @Prop @Watch("onChange")
+  @Prop @Watch('onChange')
   private playVideo: boolean;
   private indexImage: number = 1;
   private indexVideo: number = 99;
@@ -48,7 +48,7 @@ export struct HomeCardView {
   @Builder showLogoMedia(constraintSize) {
     Stack({ alignContent: Alignment.Center }) {
       Video({
-        src: $r("app.media.video"),
+        src: $r('app.media.video'),
         previewUri: $r('app.media.video_bg'),
         controller: this.videoController
       })
@@ -75,7 +75,7 @@ export struct HomeCardView {
     .constraintSize(constraintSize)
     .clip(true)
     .borderRadius($r('app.float.card_border_radius'))
-    .width(constraintSize?.maxWidth ? "100%" : "67%")
+    .width(constraintSize?.maxWidth ? '100%' : '67%')
   }
 
   build() {
