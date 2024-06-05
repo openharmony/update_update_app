@@ -104,8 +104,7 @@ export struct CountDownInstallDialogBuilder {
     this.confirmBtnText = FormatUtils.toUpperCase(globalThis.abilityContext, confirmBtnRes, this.count);
   }
 
-  @Styles
-  buttonStyles() {
+  @Styles buttonStyles() {
     .onClick(() => {
       this.controller.close();
       if (this.intervalID != null) {
