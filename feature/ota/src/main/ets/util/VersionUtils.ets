@@ -123,7 +123,7 @@ export namespace VersionUtils {
         this.log(`isABInstall upgradeData: ${upgradeData}`);
         return upgradeData.callResult == UpgradeCallResult.OK ? upgradeData.data : null;
       });
-    let components: Array<update.VersionComponent> = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
+    let components: update.VersionComponent[] = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
     let component: update.VersionComponent = components?.filter((component: update.VersionComponent) => {
       return component.componentType == update.ComponentType.OTA;
     })?.[0];

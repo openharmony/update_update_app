@@ -49,7 +49,7 @@ struct CurrentVersion {
       if (!upgradeData.data) {
         return;
       }
-      let components: Array<update.VersionComponent> = VersionUtils.sortComponents(
+      let components: update.VersionComponent[] = VersionUtils.sortComponents(
         upgradeData.data?.versionComponents);
       this.versionArray = components.map((component: update.VersionComponent) => {
         return UpgradeAdapter.getInstance()

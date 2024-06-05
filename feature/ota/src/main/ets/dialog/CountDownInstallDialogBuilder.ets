@@ -94,7 +94,7 @@ export struct CountDownInstallDialogBuilder {
   }
 
   private initButtonText(): void {
-    this.cancelBtnText = FormatUtils.toUpperCase(globalThis.abilityContext, $r("app.string.later"));
+    this.cancelBtnText = FormatUtils.toUpperCase(globalThis.abilityContext, $r('app.string.later'));
     let confirmBtnRes = null;
     if (this.dialogType == CountDownDialogType.OTA) {
       confirmBtnRes = $r('app.string.install_now');

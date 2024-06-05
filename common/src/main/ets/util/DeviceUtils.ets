@@ -47,10 +47,10 @@ export namespace DeviceUtils {
    */
   export function getSystemLanguage(): string {
     let language = i18n.getSystemLanguage();
-    if (language == "zh-Hans") {
-      language = "zh-cn";
+    if (language == 'zh-Hans') {
+      language = 'zh-cn';
     } else {
-      language = "en-us";
+      language = 'en-us';
     }
     return language;
   }

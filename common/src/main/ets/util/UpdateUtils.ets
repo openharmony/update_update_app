@@ -34,11 +34,12 @@ export namespace UpdateUtils {
    * @param componentId 组件id
    * @return changelog
    */
-  export function obtainDescription(componentDescriptions: Array<update.ComponentDescription>, componentId: string): string {
+  export function obtainDescription(componentDescriptions: Array<update.ComponentDescription>,
+    componentId: string): string {
     if (!componentDescriptions || componentId == null) {
       return '';
     }
-    let descArray: Array<update.ComponentDescription> = <Array<update.ComponentDescription>>componentDescriptions;
+    let descArray: update.ComponentDescription[] = componentDescriptions;
     for (let index = 0; index < descArray.length; index++) {
       if (componentId === descArray[index]?.componentId) {
         let description = descArray[index]?.descriptionInfo?.content;
