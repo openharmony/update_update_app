@@ -193,42 +193,42 @@ export class BaseState {
   /**
    * 状态对象
    */
-  otaStatus: OtaStatus;
+  public otaStatus: OtaStatus;
 
   /**
    * 进度
    */
-  percent: number = 0;
+  public percent: number = 0;
 
   /**
    * 状态
    */
-  state: number = UpdateState.INIT;
+  public state: number = UpdateState.INIT;
 
   /**
    * 升级行为
    */
-  actionSet: Array<UpdateAction> = [];
+  public actionSet: Array<UpdateAction> = [];
 
   /**
    * 下载状态描述
    */
-  downloadStateText: string | Resource = "";
+  public downloadStateText: string | Resource = "";
 
   /**
    * 下载安装文字描述
    */
-  buttonText: string | Resource = $r('app.string.btn_download');
+  public buttonText: string | Resource = $r('app.string.btn_download');
 
   /**
    * 按钮是否可点击
    */
-  isButtonClickable: boolean = true;
+  public isButtonClickable: boolean = true;
 
   /**
    * 按钮对应的升级行为
    */
-  buttonClickAction: UpdateAction;
+  public buttonClickAction: UpdateAction;
 
   /**
    * 数据刷新
@@ -285,7 +285,7 @@ export class CheckSuccess extends BaseState {
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
       switch (this.otaStatus.endReason) {
         case ErrorCode.NETWORK_ERROR:
-          let message = await context.resourceManager.getString($r("app.string.network_err_toast").id);
+          let message = await context.resourceManager.getString($r('app.string.network_err_toast').id);
           ToastUtils.showToast(message);
           break;
         case ErrorCode.NO_ENOUGH_MEMORY:
@@ -355,7 +355,7 @@ export class DownloadPause extends BaseState {
           if (eventId == update.EventId.EVENT_DOWNLOAD_PAUSE) {
             DialogUtils.showDownloadNoNetworkDialog(context, this.otaStatus, eventId);
           } else {
-            let message = await context.resourceManager.getString($r("app.string.network_err_toast").id);
+            let message = await context.resourceManager.getString($r('app.string.network_err_toast').id);
             ToastUtils.showToast(message);
           }
           break;
@@ -532,7 +532,7 @@ export class InstallFailed extends BaseState {
       DialogUtils.showUpgradeFailDialog(context, this.otaStatus);
     } else {
       let versionName = globalThis.lastVersionName;
-      LogUtils.log('StateManager', "InstallFailed versionName is " + versionName);
+      LogUtils.log('StateManager', 'InstallFailed versionName is ' + versionName);
       await UpgradeAdapter.getInstance().getNotifyInstance()?.showUpgradeFailed(versionName, context);
     }
 
@@ -580,7 +580,7 @@ export class UpgradeSuccess extends BaseState {
     AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
     await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
     let versionName = globalThis.lastVersionName;
-    LogUtils.log('StateManager', "UpgradeSuccess versionName is " + versionName);
+    LogUtils.log('StateManager', 'UpgradeSuccess versionName is ' + versionName);
     await UpgradeAdapter.getInstance().getNotifyInstance()?.showUpgradeSuccess(versionName, context);
   }
 }
