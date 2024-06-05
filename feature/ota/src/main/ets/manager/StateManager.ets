@@ -213,7 +213,7 @@ export class BaseState {
   /**
    * 下载状态描述
    */
-  public downloadStateText: string | Resource = "";
+  public downloadStateText: string | Resource = '';
 
   /**
    * 下载安装文字描述
