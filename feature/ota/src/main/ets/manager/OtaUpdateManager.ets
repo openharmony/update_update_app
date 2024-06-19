@@ -32,6 +32,7 @@ import { StateManager } from '../manager/StateManager';
 import { NotificationManager } from '../notify/NotificationManager';
 import VersionUtils from '../util/VersionUtils';
 import { UpgradeAdapter } from '../UpgradeAdapter';
+import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
 
 /**
  * 升级接口管理类
@@ -388,10 +389,9 @@ export class OtaUpdateManager {
   }
 
   private wantParser(want: Want): update.EventInfo {
-    let eventInfo: update.EventInfo;
-    let eventInfoStr = want?.parameters?.[OtaUpdateManager.KEY];
-    if (typeof eventInfoStr === 'string') {
-      eventInfo = JSON.parse(eventInfoStr);
+    let eventInfo: update.EventInfo = want?.parameters?.[OtaUpdateManager.KEY];
+    if (typeof eventInfo === 'string') {
+      eventInfo = FormatUtils.parseJson(eventInfo);
     }
     return eventInfo;
   }

@@ -117,6 +117,24 @@ export namespace FormatUtils {
         return '';
       }
     }
-    return;
+    return '';
+  }
+
+  /**
+   * json 字符串解析
+   *
+   * @param content json 字符串
+   * @return T 解析后返回值
+   */
+  export function parseJson<T>(content: string): T | null {
+    if (!content) {
+      return null;
+    }
+    try {
+      return JSON.parse(content) as T;
+    } catch (exception) {
+      Logutils.error('FormateUtils', 'paramJson failed !!');
+    }
+    return null;
   }
 }
