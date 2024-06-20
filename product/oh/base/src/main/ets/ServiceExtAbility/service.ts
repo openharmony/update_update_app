@@ -19,6 +19,7 @@ import type rpc from '@ohos.rpc';
 import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
 import { OtaUpdateManager } from '@ohos/ota/src/main/ets/manager/OtaUpdateManager';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
+import { ServiceExtStub } from './serviceStub';
 
 /**
  * service extension ability.
@@ -28,7 +29,11 @@ import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
  */
 export default class ServiceExtAbility extends Extension {
   private static readonly TAG = 'ServiceExtAbility';
+  private static readonly CONNECT_TIMEOUT: string = 'Timeout';
+  private static readonly START_ID_CONNECT = 10000;
   private startIdArray: number[] = [];
+  private connectTimeout: number = 15;
+  private connectTimeoutId: number | null = null;
 
   onCreate(want: Want): void {
     LogUtils.log(ServiceExtAbility.TAG, 'onCreate:' + FormatUtils.stringify(want));
@@ -45,7 +50,36 @@ export default class ServiceExtAbility extends Extension {
 
   onConnect(want: Want): rpc.RemoteObject {
     LogUtils.log(ServiceExtAbility.TAG, `onConnect , want: ${want?.abilityName}`);
-    return null;
+    this.startIdArray.push(ServiceExtAbility.START_ID_CONNECT);
+    this.connectTimeout = want?.parameters?.[ServiceExtAbility.CONNECT_TIMEOUT] as number ?? this.connectTimeout;
+    let objectIpc: rpc.RemoteObject = new ServiceExtStub(ServiceExtAbility.TAG, (message: string) => {
+      return this.remoteMessageCallback(message);
+    });
+    return objectIpc;
+  }
+
+  private remoteMessageCallback(message: string): void {
+    LogUtils.info(ServiceExtAbility.TAG,
+      `remoteMessageCallback, timeout: ${this.connectTimeout}s, message: ${message}.`);
+    if (this.connectTimeoutId !== null) {
+      clearTimeout(this.connectTimeoutId);
+    }
+    this.connectTimeoutId = setTimeout(()=> {
+      this.connectTimeoutId = null;
+      this.stopSelf(ServiceExtAbility.START_ID_CONNECT);
+    }, this.connectTimeout * 1000);
+
+    let want: Want = {
+      parameters: {
+        parameters: FormatUtils.parseJson(message)
+      }
+    };
+    OtaUpdateManager.getInstance().handleWant(want, globalThis.extensionContext);
+  }
+
+  onDisconnect(want: want) {
+    LogUtils.info(ServiceExtAbility.TAG, `onDisconnect, want: ${want?.abilityName}`);
+    this.stopSelf(ServiceExtAbility.START_ID_CONNECT);
   }
 
   private isTerminal(): boolean {
