@@ -38,7 +38,7 @@ export namespace UpdateUtils {
     if (!componentDescriptions || componentId == null) {
       return '';
     }
-    let descArray: Array<update.ComponentDescription> = <Array<update.ComponentDescription>>componentDescriptions;
+    let descArray: update.ComponentDescription[] = componentDescriptions;
     for (let index = 0; index < descArray.length; index++) {
       if (componentId === descArray[index]?.componentId) {
         let description = descArray[index]?.descriptionInfo?.content;

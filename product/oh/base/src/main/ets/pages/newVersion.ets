@@ -172,12 +172,12 @@ struct NewVersion {
     }
     let stateButtonText = StateManager.getButtonText(this.updateStatus);
     this.buttonText = FormatUtils.toUpperCase(globalThis.abilityContext, stateButtonText);
-    this.isButtonVisible = this.updateStatus !== UpdateState.INSTALLING
-      && this.updateStatus !== UpdateState.INSTALL_FAILED
-      && (this.isABInstall() || this.updateStatus !== UpdateState.INSTALL_SUCCESS)
-      && this.updateStatus !== UpdateState.UPGRADING
-      && this.updateStatus !== UpdateState.UPGRADE_FAILED
-      && this.updateStatus !== UpdateState.UPGRADE_SUCCESS;
+    this.isButtonVisible = this.updateStatus !== UpdateState.INSTALLING &&
+      this.updateStatus !== UpdateState.INSTALL_FAILED &&
+      (this.isABInstall() || this.updateStatus !== UpdateState.INSTALL_SUCCESS) &&
+      this.updateStatus !== UpdateState.UPGRADING &&
+      this.updateStatus !== UpdateState.UPGRADE_FAILED &&
+      this.updateStatus !== UpdateState.UPGRADE_SUCCESS;
   }
 
   public async initNewVersionPageInfo(): Promise<void> {
@@ -190,7 +190,7 @@ struct NewVersion {
     if (!newVersionInfo) {
       return;
     }
-    let components: Array<update.VersionComponent> = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
+    let components: update.VersionComponent[] = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
     let pageInfo: VersionPageInfo = await UpgradeAdapter.getInstance()
       .getPageInstance()?.getNewVersionPageInfo(components);
     this.displayNewVersionName = pageInfo?.version;
@@ -198,7 +198,7 @@ struct NewVersion {
     this.dialogType = pageInfo?.countDownDialogInfo?.dialogType;
     this.effectiveMode = pageInfo?.effectiveMode;
     let size: number = 0;
-    let array :Array<ChangelogInfo> = [];
+    let array: ChangelogInfo[] = [];
 
     for (let index = 0; index < components?.length; index ++) {
       let page: IPage = UpgradeAdapter.getInstance().getPageInstance();
@@ -346,8 +346,8 @@ struct NewVersion {
     }
     let otaStatus: OtaStatus = JSON.parse(this.installStatusRefresh);
     let status: UpdateState = otaStatus?.status;
-    if (status === UpdateState.INSTALL_FAILED || status === UpdateState.UPGRADE_FAILED
-      || status === UpdateState.UPGRADE_SUCCESS) {
+    if (status === UpdateState.INSTALL_FAILED || status === UpdateState.UPGRADE_FAILED ||
+      status === UpdateState.UPGRADE_SUCCESS) {
       this.closeUpgradeDialog();
     } else if (status === UpdateState.UPGRADING) {
       this.restartDialogController.open();

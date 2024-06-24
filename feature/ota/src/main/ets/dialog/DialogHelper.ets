@@ -71,7 +71,7 @@ export namespace DialogHelper {
         },
         alignment: DeviceUtils.getDialogLocation(),
         offset: ({
-          dx: "0vp",
+          dx: '0vp',
           dy: DeviceUtils.getDialogOffsetY()
         }),
         autoCancel: false
