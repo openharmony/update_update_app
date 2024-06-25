@@ -389,7 +389,7 @@ export class OtaUpdateManager {
   }
 
   private wantParser(want: Want): update.EventInfo {
-    let eventInfo: update.EventInfo = want?.parameters?.[OtaUpdateManager.KEY];
+    let eventInfo: update.EventInfo = want?.parameters?.[OtaUpdateManager.KEY] as update.EventInfo;
     if (typeof eventInfo === 'string') {
       eventInfo = FormatUtils.parseJson(eventInfo);
     }

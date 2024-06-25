@@ -15,7 +15,7 @@
 
 import type common from '@ohos.app.ability.common';
 import { DeviceUtils } from '../util/DeviceUtils';
-import { Logutils } from '../LogUtils';
+import { LogUtils } from './LogUtils';
 
 /**
  * 格式化工具
@@ -113,7 +113,7 @@ export namespace FormatUtils {
       try {
         return JSON.stringify(value);
       } catch (exception) {
-        Logutils.error('FormateUtils', 'JSON.stringify failed !!');
+        LogUtils.error('FormateUtils', 'JSON.stringify failed !!');
         return '';
       }
     }
@@ -133,7 +133,7 @@ export namespace FormatUtils {
     try {
       return JSON.parse(content) as T;
     } catch (exception) {
-      Logutils.error('FormateUtils', 'paramJson failed !!');
+      LogUtils.error('FormateUtils', 'paramJson failed !!');
     }
     return null;
   }

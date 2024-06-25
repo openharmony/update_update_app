@@ -77,7 +77,7 @@ export default class ServiceExtAbility extends Extension {
     OtaUpdateManager.getInstance().handleWant(want, globalThis.extensionContext);
   }
 
-  onDisconnect(want: want) {
+  onDisconnect(want: Want) {
     LogUtils.info(ServiceExtAbility.TAG, `onDisconnect, want: ${want?.abilityName}`);
     this.stopSelf(ServiceExtAbility.START_ID_CONNECT);
   }
