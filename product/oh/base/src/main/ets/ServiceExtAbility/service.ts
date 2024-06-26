@@ -70,10 +70,9 @@ export default class ServiceExtAbility extends Extension {
     }, this.connectTimeout * 1000);
 
     let want: Want = {
-      parameters: {
-        parameters: FormatUtils.parseJson(message)
-      }
+      parameters: FormatUtils.parseJson(message)
     };
+    LogUtils.log(ServiceExtAbility.TAG, 'onConnect:' + FormatUtils.stringify(want));
     OtaUpdateManager.getInstance().handleWant(want, globalThis.extensionContext);
   }
 

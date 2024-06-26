@@ -422,6 +422,7 @@ export class DownloadSuccess extends BaseState {
 
   async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
     let isABInstall = await VersionUtils.isABInstall();
+    LogUtils.info('StateManager:', 'notify ab flag ' + isABInstall + ',eventId:' + eventId);
     if (eventId == update.EventId.EVENT_DOWNLOAD_SUCCESS && isABInstall) {
       OtaUpdateManager.getInstance().upgrade(update.Order.INSTALL);
       return;

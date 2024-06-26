@@ -369,9 +369,11 @@ export class OtaUpdateManager {
   public async handleWant(want: Want, context: common.Context): Promise<void> {
     let action: string = want?.action ?? '';
     if (await NotificationManager.handleAction(action, context)) {
+      this.log('handleWant:' + FormatUtils.stringify(want));
       return;
     }
     let eventInfo = this.wantParser(want);
+    this.log('handleWant:' + ' eventInfo is ${FormatUtils.stringify(eventInfo)}');
     if (!eventInfo?.eventId) {
       this.log('eventInfo?.eventId is null');
       return;
