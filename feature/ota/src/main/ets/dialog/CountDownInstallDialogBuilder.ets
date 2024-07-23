@@ -112,7 +112,7 @@ export struct CountDownInstallDialogBuilder {
       }
       this.confirm();
     })
-    .backgroundColor($r('sys.float.ohos_id_corner_radius_button'))
+    .backgroundColor($r('sys.color.ohos_id_color_dialog_bg_transparent'))
     .height($r('app.float.dialog_button_height'))
     .layoutWeight(1)
     .padding({
@@ -147,7 +147,7 @@ export struct CountDownInstallDialogBuilder {
             }
             this.cancel();
           })
-          .backgroundColor($r('sys.float.ohos_id_corner_radius_button'))
+          .backgroundColor($r('sys.color.ohos_id_color_dialog_bg_transparent'))
           .fontColor($r('app.color.blue'))
           .height($r('app.float.dialog_button_height'))
           .fontSize($r('app.float.text_size_btn'))
