@@ -32,6 +32,7 @@ import { StateManager } from '../manager/StateManager';
 import { NotificationManager } from '../notify/NotificationManager';
 import VersionUtils from '../util/VersionUtils';
 import { UpgradeAdapter } from '../UpgradeAdapter';
+import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
 
 /**
  * 升级接口管理类
@@ -322,6 +323,7 @@ export class OtaUpdateManager {
       await this.getNewVersion();
     }
 
+    this.log('notifyUpdateStatus' + 'notify start');
     await StateManager.createInstance(otaStatus).notify(context, eventId);
   }
 
@@ -368,9 +370,11 @@ export class OtaUpdateManager {
   public async handleWant(want: Want, context: common.Context): Promise<void> {
     let action: string = want?.action ?? '';
     if (await NotificationManager.handleAction(action, context)) {
+      this.log('handleWant:' + FormatUtils.stringify(want));
       return;
     }
     let eventInfo = this.wantParser(want);
+    this.log('handleWant: eventInfo is ' + FormatUtils.stringify(eventInfo));
     if (!eventInfo?.eventId) {
       this.log('eventInfo?.eventId is null');
       return;
@@ -388,10 +392,9 @@ export class OtaUpdateManager {
   }
 
   private wantParser(want: Want): update.EventInfo {
-    let eventInfo: update.EventInfo;
-    let eventInfoStr = want.parameters[OtaUpdateManager.KEY];
-    if (typeof eventInfoStr === 'string') {
-      eventInfo = JSON.parse(eventInfoStr);
+    let eventInfo: update.EventInfo = want?.parameters?.[OtaUpdateManager.KEY] as update.EventInfo;
+    if (typeof eventInfo === 'string') {
+      eventInfo = FormatUtils.parseJson(eventInfo);
     }
     return eventInfo;
   }
