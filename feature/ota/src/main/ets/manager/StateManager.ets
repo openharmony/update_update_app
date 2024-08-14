@@ -577,12 +577,17 @@ export class UpgradeSuccess extends BaseState {
     this.isButtonClickable = false;
   }
 
-  async notify(context?: common.Context): Promise<void> {
-    AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
-    await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
-    let versionName = globalThis.lastVersionName;
-    LogUtils.log('StateManager', 'UpgradeSuccess versionName is ' + versionName);
-    await UpgradeAdapter.getInstance().getNotifyInstance()?.showUpgradeSuccess(versionName, context);
+  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
+    if (eventId == update.EventId.EVENT_UPGRADE_SUCCESS) {
+      LogUtils.log('StateManager', 'Upgrade success');
+      AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
+      await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
+      let versionName = globalThis.lastVersionName;
+      LogUtils.log('StateManager', 'UpgradeSuccess versionName is ' + versionName);
+      await UpgradeAdapter.getInstance().getNotifyInstance()?.showUpgradeSuccess(versionName, context);
+    } else {
+      LogUtils.log('StateManager', 'Upgrade EventId error');
+    }
   }
 }
 
