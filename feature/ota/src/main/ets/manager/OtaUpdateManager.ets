@@ -323,6 +323,7 @@ export class OtaUpdateManager {
       await this.getNewVersion();
     }
 
+    this.log('notifyUpdateStatus' + 'notify start');
     await StateManager.createInstance(otaStatus).notify(context, eventId);
   }
 
@@ -373,7 +374,7 @@ export class OtaUpdateManager {
       return;
     }
     let eventInfo = this.wantParser(want);
-    this.log('handleWant:' + ' eventInfo is ${FormatUtils.stringify(eventInfo)}');
+    this.log('handleWant: eventInfo is ' + FormatUtils.stringify(eventInfo));
     if (!eventInfo?.eventId) {
       this.log('eventInfo?.eventId is null');
       return;
