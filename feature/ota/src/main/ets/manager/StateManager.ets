@@ -579,6 +579,7 @@ export class UpgradeSuccess extends BaseState {
 
   async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
     if (eventId == update.EventId.EVENT_UPGRADE_SUCCESS) {
+      LogUtils.error('StateManager', 'Upgrade success');
       AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
       let versionName = globalThis.lastVersionName;

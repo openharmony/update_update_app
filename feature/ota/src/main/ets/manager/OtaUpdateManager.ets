@@ -323,7 +323,6 @@ export class OtaUpdateManager {
       await this.getNewVersion();
     }
 
-    this.log('notifyUpdateStatus' + 'notify start');
     await StateManager.createInstance(otaStatus).notify(context, eventId);
   }
 
