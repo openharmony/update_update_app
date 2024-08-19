@@ -226,6 +226,7 @@ export class NotificationHelper implements INotify {
         this.logError('notification service is not ready');
       } catch (err) {
         count++;
+        this.logError('notification service throw abnormal');
         continue;
       }
     };
