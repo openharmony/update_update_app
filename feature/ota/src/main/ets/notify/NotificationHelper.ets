@@ -222,6 +222,7 @@ export class NotificationHelper implements INotify {
       }
       count++;
       await new Promise<void>((resolve)) => setTimeout(() => resolve(), 1000));
+      this.logError('notification service is not ready');
     }
   }
 
