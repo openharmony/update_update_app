@@ -211,19 +211,24 @@ export class NotificationHelper implements INotify {
   async isServiceReady(): Promise<void> {
     const retryTimes: number = 10;
     let count: number = 0;
+    let isReady: boolean = false;
     while (count < retryTimes) {
-      let isReady = false;
-      await notification.isDistributedEnabled().then(() => {
-        this.logInfo('notification service is ready');
-        isReady = true;
-      });
-      if (isReady) {
-        break;
+      try {
+        await notification.isDistributedEnabled().then(() => {
+          this.logInfo('notification service is ready');
+          isReady = true;
+        });
+        if (isReady) {
+          break;
+        }
+        count++;
+        await new Promise<void>((resolve)) => setTimeout(() => resolve(), 1000));
+        this.logError('notification service is not ready');
+      } catch (err) {
+        count++;
+        continue;
       }
-      count++;
-      await new Promise<void>((resolve)) => setTimeout(() => resolve(), 1000));
-      this.logError('notification service is not ready');
-    }
+    };
   }
 
   /**
