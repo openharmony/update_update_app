@@ -206,6 +206,33 @@ export class NotificationHelper implements INotify {
   }
 
   /**
+   * 检查notification服务是否启动
+   */
+  async isServiceReady(): Promise<void> {
+    const retryTimes: number = 10;
+    let count: number = 0;
+    let isReady: boolean = false;
+    while (count < retryTimes) {
+      try {
+        await notification.isDistributedEnabled().then(() => {
+          this.logInfo('notification service is ready');
+          isReady = true;
+        });
+        if (isReady) {
+          break;
+        }
+        count++;
+        await new Promise<void>((resolve)) => setTimeout(() => resolve(), 1000));
+        this.logError('notification service is not ready');
+      } catch (err) {
+        count++;
+        this.logError('notification service throw abnormal');
+        continue;
+      }
+    };
+  }
+
+  /**
    * info级别日志打印
    *
    * @param message 日志内容
