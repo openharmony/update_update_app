@@ -200,6 +200,6 @@ export interface INotify {
   /**
    * 检查notification服务是否启动
    */
-   isServiceReady: Promise<void>;
+   isServiceReady(): Promise<void>;
 }
 
