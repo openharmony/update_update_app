@@ -196,5 +196,10 @@ export interface INotify {
    * 取消所有通知
    */
   cancelAll(): Promise<void>;
+
+  /**
+   * 检查notification服务是否启动
+   */
+   isServiceReady: Promise<void>;
 }
 

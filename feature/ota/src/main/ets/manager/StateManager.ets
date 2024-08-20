@@ -528,6 +528,7 @@ export class InstallFailed extends BaseState {
 
   async notify(context?: common.Context): Promise<void> {
     AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
+    await UpgradeAdapter.getInstance().getNotifyInstance()?.isServiceReady();
     await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
     if (VersionUtils.isInNewVersionPage()) {
       DialogUtils.showUpgradeFailDialog(context, this.otaStatus);
@@ -581,6 +582,7 @@ export class UpgradeSuccess extends BaseState {
     if (eventId == update.EventId.EVENT_UPGRADE_SUCCESS) {
       LogUtils.info('StateManager', 'Upgrade success');
       AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
+      await UpgradeAdapter.getInstance().getNotifyInstance()?.isServiceReady();
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
       let versionName = globalThis.lastVersionName;
       LogUtils.info('StateManager', 'UpgradeSuccess versionName is ' + versionName);
