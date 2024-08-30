@@ -15,6 +15,7 @@
 
 import type common from '@ohos.app.ability.common';
 import { DeviceUtils } from '../util/DeviceUtils';
+import { LogUtils } from './LogUtils';
 
 /**
  * 格式化工具
@@ -99,5 +100,41 @@ export namespace FormatUtils {
     let language: string = DeviceUtils.getSystemLanguage();
     let numfmt: Intl.NumberFormat = new Intl.NumberFormat(language, {style:'percent', notation:'standard'});
     return numfmt.format(num);
+  }
+
+  /**
+   * JSON stringify方法封装
+   *
+   * @param value JS对象
+   * @return json字符串
+   */
+  export function stringify<T>(value: T): string {
+    if (value) {
+      try {
+        return JSON.stringify(value);
+      } catch (exception) {
+        LogUtils.error('FormateUtils', 'JSON.stringify failed !!');
+        return '';
+      }
+    }
+    return '';
+  }
+
+  /**
+   * json 字符串解析
+   *
+   * @param content json 字符串
+   * @return T 解析后返回值
+   */
+  export function parseJson<T>(content: string): T | null {
+    if (!content) {
+      return null;
+    }
+    try {
+      return JSON.parse(content) as T;
+    } catch (exception) {
+      LogUtils.error('FormateUtils', 'paramJson failed !!');
+    }
+    return null;
   }
 }
