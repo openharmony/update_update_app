@@ -72,6 +72,11 @@ export enum UpdateState {
   INSTALL_SUCCESS = 82,
 
   /**
+   * 状态-安装暂停
+   */
+  INSTALL_PAUSE = 83,
+
+  /**
    * 状态--升级中
    */
   UPGRADING = 90,
@@ -107,6 +112,12 @@ export interface OtaStatus {
    * 终止原因
    */
   endReason?: string;
+}
+
+export enum OtaType {
+  NORMAL_OTA = 0,
+  AB_REGULAR_OTA = 1,
+  AB_STREAM_OTA = 2
 }
 
 /**
