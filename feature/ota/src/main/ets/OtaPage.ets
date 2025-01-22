@@ -50,7 +50,7 @@ export class OtaPage implements IPage {
       version: component.displayVersion,
       size: component.size,
       effectiveMode: component.effectiveMode,
-      otaType:component.otaType,
+      otaMode:component.otaMode,
       changelog: {
         version: component.displayVersion,
         size: FormatUtils.formatFileSize(component.size),

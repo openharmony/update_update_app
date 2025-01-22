@@ -114,10 +114,11 @@ export interface OtaStatus {
   endReason?: string;
 }
 
-export enum OtaType {
-  NORMAL_OTA = 0,
-  AB_REGULAR_OTA = 1,
-  AB_STREAM_OTA = 2
+export enum OtaMode {
+  REGULAR = 0,
+  STREAM = 1, // 1<<0
+  AB = 2, // 1<<1
+  AB_STREAM = 3 // STREAM|AB
 }
 
 /**

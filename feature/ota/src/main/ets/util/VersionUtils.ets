@@ -145,7 +145,7 @@ export namespace VersionUtils {
     let component: update.VersionComponent = components?.filter((component: update.VersionComponent) => {
       return component.componentType == update.ComponentType.OTA;
     })?.[0];
-    return component?.otaType === update.OtaType.AB_STREAM_OTA;
+    return component?.otaMode === update.OtaMode.AB_STREAM;
   }
 }
 

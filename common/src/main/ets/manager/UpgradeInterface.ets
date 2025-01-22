@@ -116,7 +116,7 @@ export interface VersionPageInfo {
   /**
    * 升级模式
    */
-  otaType?:update.OtaType;
+  otaMode?:update.OtaMode;
   /**
    * 更新日志
    */

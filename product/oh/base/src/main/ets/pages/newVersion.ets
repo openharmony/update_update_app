@@ -62,7 +62,7 @@ struct NewVersion {
   private dialogText: string | Resource = '';
   @State private isInitComplete: boolean = false;
   private effectiveMode: update.EffectiveMode = update.EffectiveMode.COLD;
-  @State otaType: update.OtaType = update.OtaType.AB_STREAM_OTA;
+  @State otaMode: update.OtaMode = update.OtaMode.AB_STREAM;
   private dialogType: CountDownDialogType = CountDownDialogType.OTA;
   @State private buttonText: string = '';
   @StorageProp('installStatusRefresh') @Watch('refresh')
@@ -202,7 +202,7 @@ struct NewVersion {
     this.dialogText = pageInfo?.countDownDialogInfo?.dialogText;
     this.dialogType = pageInfo?.countDownDialogInfo?.dialogType;
     this.effectiveMode = pageInfo?.effectiveMode;
-    this.otaType = pageInfo?.otaType;
+    this.otaMode = pageInfo?.otaMode;
     let size: number = 0;
     let array: ChangelogInfo[] = [];
 
@@ -243,14 +243,14 @@ struct NewVersion {
         if (await NetUtils.isCellularNetwork()) {
           DialogHelper.displayNetworkDialog({
             onConfirm: () => {
-              if(this.otaType === update.OtaType.AB_STREAM_OTA){
+              if(this.isABStreamInstall()){
                 this.upgrade();
               }else{
                 OtaUpdateManager.getInstance().download(update.NetType.CELLULAR);
               }
             } });
         } else {
-          if(this.otaType === update.OtaType.AB_STREAM_OTA){
+          if(this.isABStreamInstall()){
             this.upgrade();
           }else{
             OtaUpdateManager.getInstance().download();
@@ -267,7 +267,7 @@ struct NewVersion {
         OtaUpdateManager.getInstance().cancel();
         break;
       case UpdateAction.RESUME:
-        if(this.otaType === update.OtaType.AB_STREAM_OTA){
+        if(this.isABStreamInstall()){
           this.upgrade();
         }else{
           OtaUpdateManager.getInstance().resumeDownload();
@@ -355,11 +355,11 @@ struct NewVersion {
   }
 
   private isABInstall(): boolean {
-    return this.effectiveMode === update.EffectiveMode.LIVE_AND_COLD || this.otaType === update.OtaType.AB_STREAM_OTA;
+    return this.effectiveMode === update.EffectiveMode.LIVE_AND_COLD || this.isABStreamInstall();
   }
 
   private isABStreamInstall(): boolean {
-    return this.otaType === update.OtaType.AB_STREAM_OTA;
+    return this.otaMode === update.OtaMode.AB_STREAM;
   }
 
   private refresh() {
