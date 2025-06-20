@@ -115,10 +115,10 @@ export interface OtaStatus {
 }
 
 export enum OtaMode {
-  REGULAR = 0,
-  STREAM = 1, // 1<<0
-  AB = 2, // 1<<1
-  AB_STREAM = 3 // STREAM|AB
+  REGULAR_OTA = 0,
+  STREAM_OTA = 1,
+  AB_REGULAR_OTA = 2,
+  AB_STREAM_OTA = 3
 }
 
 /**

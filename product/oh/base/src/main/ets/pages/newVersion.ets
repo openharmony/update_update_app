@@ -62,7 +62,7 @@ struct NewVersion {
   private dialogText: string | Resource = '';
   @State private isInitComplete: boolean = false;
   private effectiveMode: update.EffectiveMode = update.EffectiveMode.COLD;
-  @State otaMode: update.OtaMode = update.OtaMode.AB_STREAM;
+  @State otaMode: update.OtaMode = update.OtaMode.AB_STREAM_OTA;
   private dialogType: CountDownDialogType = CountDownDialogType.OTA;
   @State private buttonText: string = '';
   @StorageProp('installStatusRefresh') @Watch('refresh')
@@ -359,7 +359,7 @@ struct NewVersion {
   }
 
   private isABStreamInstall(): boolean {
-    return this.otaMode === update.OtaMode.AB_STREAM;
+    return this.otaMode === update.OtaMode.AB_STREAM_OTA;
   }
 
   private refresh() {
