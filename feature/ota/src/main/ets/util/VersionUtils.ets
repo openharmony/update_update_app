@@ -129,6 +129,24 @@ export namespace VersionUtils {
     })?.[0];
     return component?.effectiveMode === update.EffectiveMode.LIVE_AND_COLD;
   }
+
+  /**
+   * 是否是AB升级
+   *
+   * @return 是否是AB升级
+   */
+  export async function isABStreamInstall(): Promise<boolean> {
+    let newVersionInfo = globalThis.cachedNewVersionInfo || await OtaUpdateManager.getInstance().getNewVersion()
+      .then(upgradeData => {
+        this.log(`isABInstall upgradeData: ${upgradeData}`);
+        return upgradeData.callResult == UpgradeCallResult.OK ? upgradeData.data : null;
+      });
+    let components: update.VersionComponent[] = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
+    let component: update.VersionComponent = components?.filter((component: update.VersionComponent) => {
+      return component.componentType == update.ComponentType.OTA;
+    })?.[0];
+    return component?.otaMode === update.OtaMode.AB_STREAM_OTA;
+  }
 }
 
 export default VersionUtils;

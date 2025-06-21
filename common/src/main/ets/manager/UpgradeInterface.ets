@@ -113,7 +113,10 @@ export interface VersionPageInfo {
    * 生效模式
    */
   effectiveMode?: update.EffectiveMode;
-
+  /**
+   * 升级模式
+   */
+  otaMode?:update.OtaMode;
   /**
    * 更新日志
    */

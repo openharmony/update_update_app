@@ -38,6 +38,8 @@ import { StateManager, UpdateAction } from '@ohos/ota/src/main/ets/manager/State
 import { UpgradeAdapter } from '@ohos/ota/src/main/ets/UpgradeAdapter';
 import { VersionUtils } from '@ohos/ota/src/main/ets/util/VersionUtils';
 import { NotificationHelper } from '@ohos/ota/src/main/ets/notify/NotificationHelper';
+import prompt from '@ohos.prompt';
+import RouterUtils from '@ohos/ota/src/main/ets/util/RouterUtils';
 
 /**
  * 新版本页面
@@ -60,6 +62,7 @@ struct NewVersion {
   private dialogText: string | Resource = '';
   @State private isInitComplete: boolean = false;
   private effectiveMode: update.EffectiveMode = update.EffectiveMode.COLD;
+  @State otaMode: update.OtaMode = update.OtaMode.AB_STREAM_OTA;
   private dialogType: CountDownDialogType = CountDownDialogType.OTA;
   @State private buttonText: string = '';
   @StorageProp('installStatusRefresh') @Watch('refresh')
@@ -172,12 +175,15 @@ struct NewVersion {
     }
     let stateButtonText = StateManager.getButtonText(this.updateStatus);
     this.buttonText = FormatUtils.toUpperCase(globalThis.abilityContext, stateButtonText);
-    this.isButtonVisible = this.updateStatus !== UpdateState.INSTALLING &&
-      this.updateStatus !== UpdateState.INSTALL_FAILED &&
-      (this.isABInstall() || this.updateStatus !== UpdateState.INSTALL_SUCCESS) &&
-      this.updateStatus !== UpdateState.UPGRADING &&
-      this.updateStatus !== UpdateState.UPGRADE_FAILED &&
-      this.updateStatus !== UpdateState.UPGRADE_SUCCESS;
+    this.isButtonVisible =
+    this.updateStatus !== UpdateState.INSTALL_FAILED &&
+    (this.isABInstall() || this.updateStatus !== UpdateState.INSTALL_SUCCESS) &&
+    this.updateStatus !== UpdateState.UPGRADING &&
+    this.updateStatus !== UpdateState.UPGRADE_FAILED &&
+    this.updateStatus !== UpdateState.UPGRADE_SUCCESS &&
+    (this.isABStreamInstall() ||
+    (this.updateStatus !== UpdateState.INSTALL_PAUSE &&
+    this.updateStatus !== UpdateState.INSTALLING));
   }
 
   public async initNewVersionPageInfo(): Promise<void> {
@@ -197,6 +203,7 @@ struct NewVersion {
     this.dialogText = pageInfo?.countDownDialogInfo?.dialogText;
     this.dialogType = pageInfo?.countDownDialogInfo?.dialogType;
     this.effectiveMode = pageInfo?.effectiveMode;
+    this.otaMode = pageInfo?.otaMode;
     let size: number = 0;
     let array: ChangelogInfo[] = [];
 
@@ -237,10 +244,18 @@ struct NewVersion {
         if (await NetUtils.isCellularNetwork()) {
           DialogHelper.displayNetworkDialog({
             onConfirm: () => {
-              OtaUpdateManager.getInstance().download(update.NetType.CELLULAR);
+              if (this.isABStreamInstall()) {
+                this.upgrade();
+              } else {
+                OtaUpdateManager.getInstance().download(update.NetType.CELLULAR);
+              }
             } });
         } else {
-          OtaUpdateManager.getInstance().download();
+          if (this.isABStreamInstall()) {
+            this.upgrade();
+          } else {
+            OtaUpdateManager.getInstance().download();
+          }
         }
         break;
       case UpdateAction.INSTALL:
@@ -253,7 +268,11 @@ struct NewVersion {
         OtaUpdateManager.getInstance().cancel();
         break;
       case UpdateAction.RESUME:
-        OtaUpdateManager.getInstance().resumeDownload();
+        if (this.isABStreamInstall()) {
+          this.upgrade();
+        } else {
+          OtaUpdateManager.getInstance().resumeDownload();
+        }
         break;
       default:
         break;
@@ -337,7 +356,11 @@ struct NewVersion {
   }
 
   private isABInstall(): boolean {
-    return this.effectiveMode === update.EffectiveMode.LIVE_AND_COLD;
+    return this.effectiveMode === update.EffectiveMode.LIVE_AND_COLD || this.isABStreamInstall();
+  }
+
+  private isABStreamInstall(): boolean {
+    return this.otaMode === update.OtaMode.AB_STREAM_OTA;
   }
 
   private refresh() {
