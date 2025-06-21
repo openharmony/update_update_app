@@ -176,13 +176,14 @@ struct NewVersion {
     let stateButtonText = StateManager.getButtonText(this.updateStatus);
     this.buttonText = FormatUtils.toUpperCase(globalThis.abilityContext, stateButtonText);
     this.isButtonVisible =
-      this.updateStatus !== UpdateState.INSTALL_FAILED &&
-      (this.isABInstall() || this.updateStatus !== UpdateState.INSTALL_SUCCESS) &&
-      this.updateStatus !== UpdateState.UPGRADING &&
-      this.updateStatus !== UpdateState.UPGRADE_FAILED &&
-      this.updateStatus !== UpdateState.UPGRADE_SUCCESS &&
-      (this.isABStreamInstall() || this.updateStatus !== UpdateState.INSTALL_PAUSE)&&
-      (this.isABStreamInstall() || this.updateStatus !== UpdateState.INSTALLING);
+    this.updateStatus !== UpdateState.INSTALL_FAILED &&
+    (this.isABInstall() || this.updateStatus !== UpdateState.INSTALL_SUCCESS) &&
+    this.updateStatus !== UpdateState.UPGRADING &&
+    this.updateStatus !== UpdateState.UPGRADE_FAILED &&
+    this.updateStatus !== UpdateState.UPGRADE_SUCCESS &&
+    (this.isABStreamInstall() ||
+    (this.updateStatus !== UpdateState.INSTALL_PAUSE &&
+    this.updateStatus !== UpdateState.INSTALLING));
   }
 
   public async initNewVersionPageInfo(): Promise<void> {
@@ -243,16 +244,16 @@ struct NewVersion {
         if (await NetUtils.isCellularNetwork()) {
           DialogHelper.displayNetworkDialog({
             onConfirm: () => {
-              if(this.isABStreamInstall()){
+              if (this.isABStreamInstall()) {
                 this.upgrade();
-              }else{
+              } else {
                 OtaUpdateManager.getInstance().download(update.NetType.CELLULAR);
               }
             } });
         } else {
-          if(this.isABStreamInstall()){
+          if (this.isABStreamInstall()) {
             this.upgrade();
-          }else{
+          } else {
             OtaUpdateManager.getInstance().download();
           }
         }
@@ -267,9 +268,9 @@ struct NewVersion {
         OtaUpdateManager.getInstance().cancel();
         break;
       case UpdateAction.RESUME:
-        if(this.isABStreamInstall()){
+        if (this.isABStreamInstall()) {
           this.upgrade();
-        }else{
+        } else {
           OtaUpdateManager.getInstance().resumeDownload();
         }
         break;

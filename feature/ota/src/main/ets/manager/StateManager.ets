@@ -109,7 +109,7 @@ export namespace StateManager {
         stateObject = new Installing();
         break;
       case UpdateState.INSTALL_PAUSE:
-        stateObject = new InstallPause();
+        stateObject = new InstallPaused();
         break;
       case UpdateState.INSTALL_FAILED:
         stateObject = new InstallFailed();
@@ -330,7 +330,7 @@ export class Downloading extends BaseState {
   }
 }
 
-export class InstallPause extends BaseState {
+export class InstallPaused extends BaseState {
   constructor() {
     super();
     this.actionSet.push(UpdateAction.SHOW_NEW_VERSION);
@@ -500,17 +500,15 @@ export class Installing extends BaseState {
 
   async checkAbStreamInstall() {
     let isABStreamInstall = await VersionUtils.isABStreamInstall();
+    this.state = UpdateState.INSTALLING;
+    this.downloadStateText = $r('app.string.new_version_status_installing');
     if (isABStreamInstall) {
-      this.state = UpdateState.INSTALLING;
       this.buttonText = $r('app.string.cancel');
       this.isButtonClickable = true;
-      this.downloadStateText = $r('app.string.new_version_status_installing');
       this.buttonClickAction = UpdateAction.CANCEL;
     } else {
-      this.state = UpdateState.INSTALLING;
       this.buttonText = $r('app.string.btn_upgrade');
       this.isButtonClickable = false;
-      this.downloadStateText = $r('app.string.new_version_status_installing');
     }
   }
 
