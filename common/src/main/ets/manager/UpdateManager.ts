@@ -18,7 +18,6 @@ import update from '@ohos.update';
 import { PACKAGE_NAME, UpdateState, UpgradeCallResult, } from '../const/update_const';
 import type { BusinessError, OtaStatus, UpgradeData} from '../const/update_const';
 import { LogUtils } from '../util/LogUtils';
-import { UpdateUtils } from '../util/UpdateUtils';
 
 /**
  * 方法超时控制装饰器
@@ -55,7 +54,7 @@ export function enableTimeOutCheck<T>(timeout?: number): MethodDecorator {
         result.then(innerRes => {
           clearTimeout(requestTimeout);
           resolve(innerRes);
-        }).catch(err => {
+        }).catch((err: BusinessError) => {
           LogUtils.error('UpdateManager', 'err: ' + JSON.stringify(err));
           clearTimeout(requestTimeout);
           upgradeData.callResult = UpgradeCallResult.ERROR;
@@ -68,7 +67,6 @@ export function enableTimeOutCheck<T>(timeout?: number): MethodDecorator {
 }
 
 export interface IUpdate {
-  bind(subType: number, callback : Function): void;
   getOtaStatus(): Promise<UpgradeData<OtaStatus>>;
   getNewVersion(): Promise<UpgradeData<update.NewVersionInfo>>;
   getNewVersionDescription(descVersionDigest: string, descFormat: update.DescriptionFormat,
@@ -90,30 +88,62 @@ export interface IUpdate {
 export class UpdateManager implements IUpdate {
   private otaUpdater: update.Updater;
 
-  public constructor() {
-  }
-
-  /**
-   * 绑定DUE
-   *
-   * @param subType 升级类型
-   * @param callback 回调
-   */
-  bind(subType: number, callback: update.UpgradeTaskCallback): void {
+  public constructor(subType: number, upgradeDeviceId?: string, deviceType?: number, packageName?: string) {
     let upgradeInfo: update.UpgradeInfo = {
-      upgradeApp: PACKAGE_NAME,
+      upgradeApp: packageName ?? PACKAGE_NAME,
       businessType: {
         vendor: update.BusinessVendor.PUBLIC,
         subType: subType
       }
     };
-
     try {
       this.otaUpdater = update.getOnlineUpdater(upgradeInfo);
-      let eventClassifyInfo: update.EventClassifyInfo = { eventClassify: 0x01000000, extraInfo: '' };
+    } catch (error) {
+      LogUtils.error('UpdateManager', `getOnlineUpdater fail ${error?.code} ${error?.message}`);
+    }
+  }
+
+  /**
+   * 绑定DUE
+   *
+   * @param callback 回调
+   */
+  on(callback: update.UpgradeTaskCallback): void {
+    if (!callback) {
+      LogUtils.error('UpdateManager', 'on callback null');
+      return;
+    }
+    let eventClassifyInfo: update.EventClassifyInfo = {
+      eventClassify: update.EventClassify.TASK,
+      extraInfo: ''
+    }
+
+    try {
       this.otaUpdater?.on(eventClassifyInfo, callback);
     } catch (error) {
-      LogUtils.error('UpdateManager', 'otaUpdater init fail ' + JSON.stringify(error));
+      LogUtils.error('UpdateManager', `otaUpdater on fail ${error?.code} ${error?.message}`);
+    }
+  }
+
+  /**
+   * 取消绑定DUE
+   *
+   * @param callback 回调
+   */
+  off(callback: update.UpgradeTaskCallback): void {
+    if (!callback) {
+      LogUtils.error('UpdateManager', 'off callback null');
+      return;
+    }
+    let eventClassifyInfo: update.EventClassifyInfo = {
+      eventClassify: update.EventClassify.TASK,
+      extraInfo: ''
+    }
+
+    try {
+      this.otaUpdater?.off(eventClassifyInfo, callback);
+    } catch (error) {
+      LogUtils.error('UpdateManager', `otaUpdater off fail ${error?.code} ${error?.message}`);
     }
   }
 
@@ -237,7 +267,7 @@ export class UpdateManager implements IUpdate {
             data: [{ errorCode: err?.data?.[0]?.errorCode }]
           }
         };
-        if (!UpdateUtils.isSuccessCallback(result, err)) {
+        if (!result && err) {
           this.logError('getCurrentVersionDescription error is ${JSON.stringify(err)}');
           upgradeData.callResult = UpgradeCallResult.ERROR;
         }
@@ -496,9 +526,9 @@ export interface Message {
  */
 export class MessageQueue {
   private queue: Array<Message>;
-  private handleMessage: (context: common.Context, eventInfo: update.EventInfo) => Promise<void>;
+  private handleMessage: (message: Message) => Promise<void>;
 
-  constructor(handleMessage: (context: common.Context, eventInfo: update.EventInfo) => Promise<void>) {
+  constructor(handleMessage: (message: Message) => Promise<void>) {
     this.queue = new Array<Message>();
     this.handleMessage = handleMessage;
   }
@@ -520,7 +550,7 @@ export class MessageQueue {
   private async loop(): Promise<void> {
     let message: Message = this.peek();
     if (message) {
-      await this.handleMessage?.(message.context, message.eventInfo).catch(err => {
+      await this.handleMessage?.(message).catch((err: BusinessError) => {
         LogUtils.error('MessageQueue', 'loop err:' + JSON.stringify(err));
       });
       this.poll();

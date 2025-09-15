@@ -52,7 +52,7 @@ export namespace VersionUtils {
    * @return 新版本名称
    */
   export async function obtainNewVersionName(info: update.NewVersionInfo | update.TaskBody): Promise<string> {
-    let component: update.VersionComponent = sortComponents(info?.versionComponents)?.[0];
+    let component: update.VersionComponent | undefined = sortComponents(info?.versionComponents)?.[0];
     return component?.displayVersion ?? '';
   }
 
@@ -80,7 +80,7 @@ export namespace VersionUtils {
    * @param components 升级包集合
    * @return 升级包集合
    */
-  export function sortComponents(components: Array<update.VersionComponent>): Array<update.VersionComponent> {
+  export function sortComponents(components: Array<update.VersionComponent>): Array<update.VersionComponent> | null {
     if (components) {
       return components.sort((component: update.VersionComponent, nextComponent: update.VersionComponent) => {
         return component.componentType - nextComponent.componentType;
@@ -118,13 +118,14 @@ export namespace VersionUtils {
    * @return 是否是AB升级
    */
   export async function isABInstall(): Promise<boolean> {
-    let newVersionInfo = globalThis.cachedNewVersionInfo || await OtaUpdateManager.getInstance().getNewVersion()
+    let newVersionInfo: update.NewVersionInfo = globalThis.cachedNewVersionInfo ||
+      await OtaUpdateManager.getInstance().getNewVersion()
       .then(upgradeData => {
-        this.log(`isABInstall upgradeData: ${upgradeData}`);
+        LogUtils.info(TAG, `isABInstall upgradeData: ${upgradeData}`);
         return upgradeData.callResult == UpgradeCallResult.OK ? upgradeData.data : null;
       });
-    let components: update.VersionComponent[] = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
-    let component: update.VersionComponent = components?.filter((component: update.VersionComponent) => {
+    let components: update.VersionComponent[] | null = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
+    let component: update.VersionComponent | undefined = components?.filter((component: update.VersionComponent) => {
       return component.componentType == update.ComponentType.OTA;
     })?.[0];
     return component?.effectiveMode === update.EffectiveMode.LIVE_AND_COLD;
@@ -136,13 +137,14 @@ export namespace VersionUtils {
    * @return 是否是AB升级
    */
   export async function isABStreamInstall(): Promise<boolean> {
-    let newVersionInfo = globalThis.cachedNewVersionInfo || await OtaUpdateManager.getInstance().getNewVersion()
+    let newVersionInfo: update.NewVersionInfo = globalThis.cachedNewVersionInfo ||
+      await OtaUpdateManager.getInstance().getNewVersion()
       .then(upgradeData => {
-        this.log(`isABInstall upgradeData: ${upgradeData}`);
+        LogUtils.info(TAG, `isABInstall upgradeData: ${upgradeData}`);
         return upgradeData.callResult == UpgradeCallResult.OK ? upgradeData.data : null;
       });
-    let components: update.VersionComponent[] = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
-    let component: update.VersionComponent = components?.filter((component: update.VersionComponent) => {
+    let components: update.VersionComponent[] | null = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
+    let component: update.VersionComponent | undefined = components?.filter((component: update.VersionComponent) => {
       return component.componentType == update.ComponentType.OTA;
     })?.[0];
     return component?.otaMode === update.OtaMode.AB_STREAM_OTA;

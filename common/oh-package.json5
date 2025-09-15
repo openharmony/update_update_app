@@ -5,9 +5,8 @@
     "org": ""
   },
   "version": "1.0.0",
-  "main": "index.ets",
   "types": "",
-  "repository": {},
+  "repository": "",
   "license": "ISC",
   "dependencies": {},
   "type": "module"

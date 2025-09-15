@@ -1,4 +1,5 @@
 {
+  "modelVersion": "5.0.2",
   "license": "ISC",
   "devDependencies": {},
   "author": "",
@@ -16,9 +17,7 @@
   },
   "version": "1.0.0",
   "dependencies": {
-    "@ohos/hvigor": "1.4.0",
-    "@ohos/hvigor-ohos-plugin": "1.4.0",
-    "hypium": "^1.0.0",
-    "@ohos/hypium": "1.0.3"
+    //"hypium": "^1.0.0",
+    //"@ohos/hypium": "1.0.3"
   }
 }

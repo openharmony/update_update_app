@@ -17,9 +17,10 @@ import type common from '@ohos.app.ability.common';
 import update from '@ohos.update';
 import type Want from '@ohos.app.ability.Want';
 import { ErrorCode } from '@ohos/common/src/main/ets/const/update_const';
-import type { OtaStatus, UpgradeData, } from '@ohos/common/src/main/ets/const/update_const';
+import type { BusinessError, OtaStatus, UpgradeData, CustomEventInfo }
+  from '@ohos/common/src/main/ets/const/update_const';
 import { UpdateState, UpgradeCallResult, } from '@ohos/common/src/main/ets/const/update_const';
-import type { Message } from '@ohos/common/src/main/ets/manager/UpdateManager';
+import { Message } from '@ohos/common/src/main/ets/manager/UpdateManager';
 import {
   UpdateManager,
   MessageQueue,
@@ -31,6 +32,7 @@ import type { BaseState } from '../manager/StateManager';
 import { StateManager } from '../manager/StateManager';
 import { NotificationManager } from '../notify/NotificationManager';
 import VersionUtils from '../util/VersionUtils';
+import { CommonUtils } from '@ohos/common/src/main/ets/util/CommonUtils';
 import { UpgradeAdapter } from '../UpgradeAdapter';
 import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
 
@@ -41,13 +43,14 @@ import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
  */
 export class OtaUpdateManager {
   private static readonly KEY = 'EventInfo';
-  private _updateStatus: number;
-  private _downloadProgress: number;
-  private lastStatus: number;
-  private stateObj: BaseState;
+  private _updateStatus: number | null = null;
+  private _downloadProgress?: number;
+  private lastStatus?: number;
+  private stateObj?: BaseState;
   private otaStatusHolder: OtaStatusHolder;
   private updateManager: UpdateManager;
   private messageQueue: MessageQueue;
+  private otaUpdaterCallBack: update.UpgradeTaskCallback;
 
   /**
    * 单例--升级管理类对象实例
@@ -62,10 +65,21 @@ export class OtaUpdateManager {
     this.log('OtaUpdateManager init.');
     globalThis.otaUpdateManager = this;
     this.otaStatusHolder = new OtaStatusHolder();
-    this.messageQueue = new MessageQueue(this.handleMessage.bind(this));
+    this.messageQueue = new MessageQueue((message: Message): Promise<void> => this.handleMessage(message));
+    this.updateManager = new UpdateManager(update.BusinessSubType.FIRMWARE);
+    this.otaUpdaterCallBack = (eventInfo: update.EventInfo): void => {
+      this.notifyUpdateStatusRemote(eventInfo);
+    };
+  }
 
-    this.updateManager = new UpdateManager();
-    this.updateManager.bind(update.BusinessSubType.FIRMWARE, this.notifyUpdateStatusRemote.bind(this));
+  off(): void {
+    this.log('otaUpdater off');
+    this.updateManager.off(this.otaUpdaterCallBack);
+  }
+
+  on(): void {
+    this.log('otaUpdater on');
+    this.updateManager.on(this.otaUpdaterCallBack);
   }
 
   /**
@@ -77,7 +91,7 @@ export class OtaUpdateManager {
     return new Promise((resolve, reject) => {
       this.updateManager.getOtaStatus().then((result: UpgradeData<OtaStatus>) => {
         if (result?.callResult === UpgradeCallResult.OK) {
-          this.refreshState(result?.data);
+          this.refreshState(result?.data as OtaStatus);
         }
         resolve(result);
       });
@@ -151,11 +165,11 @@ export class OtaUpdateManager {
     return new Promise((resolve, reject) => {
       this.updateManager.upgrade(versionDigest, order).then(()=> {
         resolve();
-      }).catch(err => {
+      }).catch((err: BusinessError) => {
         let status: OtaStatus = {
           status: order === update.Order.APPLY ? UpdateState.INSTALL_SUCCESS : UpdateState.DOWNLOAD_SUCCESS,
           percent: 100,
-          endReason: err?.data?.[0]?.errorCode?.toString() || ErrorCode.DEFAULT_ERROR,
+          endReason: err?.data?.[0]?.errorCode?.toString() || ErrorCode.DEFAULT_ERROR.toString(),
         };
         this.notifyUpdateStatus(status, globalThis.abilityContext);
         this.logError('upgrade err:' + JSON.stringify(err));
@@ -174,7 +188,7 @@ export class OtaUpdateManager {
     let versionDigest: string = await VersionUtils.getNewVersionDigest();
     this.setDownloadProgress(0);
     this.updateManager.download(versionDigest, downloadNetwork, update.Order.DOWNLOAD)
-      .catch(err => {
+      .catch((err: BusinessError) => {
         let status: OtaStatus = {
           status: UpdateState.CHECK_SUCCESS,
           percent: 0,
@@ -192,7 +206,7 @@ export class OtaUpdateManager {
     this.setUpdateState(UpdateState.DOWNLOADING);
     this.updateManager.resumeDownload(versionDigest, update.NetType.WIFI).then(result => {
       this.log('resumeDownload result:' + JSON.stringify(result));
-    }).catch(err => {
+    }).catch((err: BusinessError) => {
       let status: OtaStatus = {
         status: UpdateState.DOWNLOAD_PAUSE,
         percent: this.getDownloadProgress(),
@@ -226,7 +240,7 @@ export class OtaUpdateManager {
    *
    * @return 升级状态
    */
-  getUpdateState(): number {
+  getUpdateState(): number | null {
     return this._updateStatus;
   }
 
@@ -235,7 +249,7 @@ export class OtaUpdateManager {
    *
    * @param value 状态
    */
-  setUpdateState(value): void {
+  setUpdateState(value: number): void {
     if (this._updateStatus !== Number(value) && value !== undefined && value !== null) {
       this._updateStatus = Number(value);
       AppStorage.Set('updateStatus', this._updateStatus);
@@ -247,7 +261,7 @@ export class OtaUpdateManager {
    *
    * @return 升级进度
    */
-  getDownloadProgress(): number {
+  getDownloadProgress(): number | undefined {
     return this._downloadProgress;
   }
 
@@ -256,7 +270,7 @@ export class OtaUpdateManager {
    *
    * @param value 进度
    */
-  setDownloadProgress(value): void {
+  setDownloadProgress(value: number): void {
     if (this._downloadProgress !== value && value !== undefined && value !== null) {
       this._downloadProgress = value;
       AppStorage.Set('downloadProgress', this._downloadProgress);
@@ -301,13 +315,14 @@ export class OtaUpdateManager {
     this.messageQueue.execute(message);
   }
 
-  private async handleMessage(context: common.Context, eventInfo: update.EventInfo): Promise<void> {
+  private async handleMessage(message: Message): Promise<void> {
+    let eventInfo: CustomEventInfo = message.eventInfo as CustomEventInfo;
     let otaStatus: OtaStatus = this.getFormattedOtaStatus(eventInfo);
     if (this.isTerminalState(otaStatus)) {
       globalThis.lastVersionName = await VersionUtils.obtainNewVersionName(eventInfo?.taskBody);
     }
     let versionDigest: string = eventInfo?.taskBody?.versionDigestInfo?.versionDigest ?? '';
-    await this.notifyUpdateStatus(otaStatus, context, versionDigest, eventInfo?.eventId);
+    await this.notifyUpdateStatus(otaStatus, message.context, versionDigest, eventInfo?.eventId);
   }
 
   private async notifyUpdateStatus(otaStatus: OtaStatus, context: common.Context, verDigest?: string,
@@ -327,6 +342,9 @@ export class OtaUpdateManager {
   }
 
   private isTerminalState(otaStatus: OtaStatus): boolean {
+    if (CommonUtils.isEmpty(otaStatus)) {
+      return false;
+    }
     let status = otaStatus?.status ?? UpdateState.INIT;
     if (status === UpdateState.INIT || status === UpdateState.DOWNLOAD_FAILED ||
       status === UpdateState.INSTALL_FAILED || status === UpdateState.UPGRADE_SUCCESS ||
@@ -369,11 +387,11 @@ export class OtaUpdateManager {
   public async handleWant(want: Want, context: common.Context): Promise<void> {
     let action: string = want?.action ?? '';
     if (await NotificationManager.handleAction(action, context)) {
-      this.log('handleWant:' + FormatUtils.stringify(want));
+      this.log('handleWant:' + CommonUtils.stringify(want));
       return;
     }
     let eventInfo = this.wantParser(want);
-    this.log('handleWant: eventInfo is ' + FormatUtils.stringify(eventInfo));
+    this.log('handleWant: eventInfo is ' + CommonUtils.stringify(eventInfo));
     if (!eventInfo?.eventId) {
       this.log('eventInfo?.eventId is null');
       return;
@@ -387,13 +405,13 @@ export class OtaUpdateManager {
    * @return 是否升级终止
    */
   public isTerminal(): boolean {
-    return this.isTerminalState(this.stateObj?.otaStatus);
+    return this.isTerminalState(this.stateObj?.otaStatus as OtaStatus);
   }
 
   private wantParser(want: Want): update.EventInfo {
     let eventInfo: update.EventInfo = want?.parameters?.[OtaUpdateManager.KEY] as update.EventInfo;
     if (typeof eventInfo === 'string') {
-      eventInfo = FormatUtils.parseJson(eventInfo);
+      eventInfo = CommonUtils.parseJson(eventInfo);
     }
     return eventInfo;
   }
@@ -418,7 +436,7 @@ export class OtaUpdateManager {
     let otaStatus: OtaStatus = {
       status: eventInfo.taskBody?.status,
       percent: eventInfo.taskBody?.progress,
-      endReason: !endReason || endReason === '0' ? null : endReason,
+      endReason: !endReason || endReason === '0' ? '' : endReason,
     };
     if (!otaStatus.status) {
       otaStatus.status = this.getUpdateStateFromEventId(eventInfo.eventId);
@@ -426,8 +444,8 @@ export class OtaUpdateManager {
     return otaStatus;
   }
 
-  private getUpdateStateFromEventId(eventId: update.EventId): UpdateState {
-    let status: UpdateState;
+  private getUpdateStateFromEventId(eventId: update.EventId): UpdateState | undefined {
+    let status: UpdateState | undefined = undefined;
     switch (eventId) {
       case update.EventId.EVENT_TASK_RECEIVE:
         status = UpdateState.CHECK_SUCCESS;

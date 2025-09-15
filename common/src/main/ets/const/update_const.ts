@@ -101,12 +101,12 @@ export interface OtaStatus {
   /**
    * 状态
    */
-  status: number;
+  status?: number;
 
   /**
    * 进度
    */
-  percent: number;
+  percent?: number;
 
   /**
    * 终止原因
@@ -145,47 +145,47 @@ export enum ErrorCode {
   /**
    * 错误码--鉴权失败
    */
-  AUTH_FAIL = '-208',
+  AUTH_FAIL = -208,
 
   /**
    * 错误码--鉴权失败服务错误
    */
-  AUTH_SERVER_ERROR = '-209',
+  AUTH_SERVER_ERROR = -209,
 
   /**
    * 错误码--鉴权失败系统错误
    */
-  AUTH_SYSTEM_ERROR = '-210',
+  AUTH_SYSTEM_ERROR = -210,
 
   /**
    * 错误码--网络错误
    */
-  NETWORK_ERROR = '-301',
+  NETWORK_ERROR = -301,
 
   /**
    * 错误码--空间不足
    */
-  NO_ENOUGH_MEMORY = '-304',
+  NO_ENOUGH_MEMORY = -304,
 
   /**
    * 错误码--检验失败
    */
-  VERIFY_PACKAGE_FAIL = '-305',
+  VERIFY_PACKAGE_FAIL = -305,
 
   /**
    * 错误码--部分升級失敗
    */
-  UPDATE_PART_FAIL = '-409',
+  UPDATE_PART_FAIL = -409,
 
   /**
    * 错误码--电量不足
    */
-  NO_ENOUGH_BATTERY = '-830',
+  NO_ENOUGH_BATTERY = -830,
 
   /**
    * 错误码--网络不允许
    */
-  NETWORK_NOT_ALLOW = '3148800'
+  NETWORK_NOT_ALLOW = 3148800
 }
 
 /**
@@ -258,17 +258,17 @@ export interface Features {
   /**
    * 标题
    */
-  title: string;
+  title?: string;
 
   /**
    * 标识
    */
-  id: string;
+  id?: string;
 
   /**
    * 特性类型
    */
-  featureModuleType: string;
+  featureModuleType?: string;
 
   /**
    * 特性数组
@@ -278,7 +278,7 @@ export interface Features {
   /**
    * 图标
    */
-  icon: Icon;
+  icon?: Icon;
 }
 
 /**
@@ -290,7 +290,7 @@ export interface Feature {
   /**
    * 子标题
    */
-  subTitle: string;
+  subTitle?: string;
 
   /**
    * 内容数组
@@ -307,17 +307,17 @@ export interface Icon {
   /**
    * 标识
    */
-  id: string;
+  id?: string;
 
   /**
    * 包名
    */
-  pkg: string;
+  pkg?: string;
 
   /**
    * 数据流字串
    */
-  res: string;
+  res?: string;
 }
 
 /**
@@ -473,4 +473,21 @@ export const PACKAGE_NAME = 'com.ohos.updateapp';
 /**
  * 主ability名
  */
-export const MAIN_ABILITY_NAME = 'com.ohos.updateapp.MainAbility'; 
+export const MAIN_ABILITY_NAME = 'com.ohos.updateapp.MainAbility';
+
+/**
+ * Updater Event information
+ *
+ * @since 2024-08-27
+ */
+export interface CustomEventInfo {
+  /**
+   * Task event id
+   */
+  eventId: number;
+
+  /**
+   * Task body info
+   */
+  taskBody: update.TaskBody;
+}

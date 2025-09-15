@@ -28,8 +28,10 @@ export struct HomeCardView {
   private indexVideo: number = 99;
   private aspectRatioHorizontal: number = 16 / 7;
   private aspectRatioVertical: number = 1 / 1;
-  private onVideoFinished: () => boolean;
-  private videoController: VideoController;
+  private onVideoFinished: () => boolean = () => {
+    return false;
+  };
+  private videoController: VideoController = new VideoController();
   @State private handleVideoPlay: boolean = false;
 
   onChange() {
@@ -45,7 +47,7 @@ export struct HomeCardView {
     }
   }
 
-  @Builder showLogoMedia(constraintSize) {
+  @Builder showLogoMedia(constraintSize: ConstraintSizeOptions) {
     Stack({ alignContent: Alignment.Center }) {
       Video({
         src: $r('app.media.video'),

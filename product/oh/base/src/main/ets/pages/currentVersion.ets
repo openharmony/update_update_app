@@ -18,10 +18,10 @@ import { UpgradeCallResult } from '@ohos/common/src/main/ets/const/update_const'
 import { TitleBar } from '@ohos/common/src/main/ets/component/TitleBar';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import { VersionPageInfo } from '@ohos/common/src/main/ets/manager/UpgradeInterface';
-import { UpgradeAdapter } from '@ohos/ota/src/main/ets/UpgradeAdapter';
-import { ChangelogContent } from '@ohos/ota/src/main/ets/components/ChangelogContent';
-import { OtaUpdateManager } from '@ohos/ota/src/main/ets/manager/OtaUpdateManager';
-import { VersionUtils } from '@ohos/ota/src/main/ets/util/VersionUtils';
+import { UpgradeAdapter } from 'ota/src/main/ets/UpgradeAdapter';
+import { ChangelogContent } from 'ota/src/main/ets/components/ChangelogContent';
+import { OtaUpdateManager } from 'ota/src/main/ets/manager/OtaUpdateManager';
+import { VersionUtils } from 'ota/src/main/ets/util/VersionUtils';
 
 /**
  * 当前版本页面
@@ -32,7 +32,7 @@ import { VersionUtils } from '@ohos/ota/src/main/ets/util/VersionUtils';
 @Component
 struct CurrentVersion {
 
-  @State private versionArray: Array<VersionPageInfo> = null;
+  @State private versionArray: Array<VersionPageInfo> | null = null;
 
   aboutToAppear() {
     globalThis.currentVersionThis = this;
@@ -50,10 +50,11 @@ struct CurrentVersion {
         return;
       }
       let components: update.VersionComponent[] = VersionUtils.sortComponents(
-        upgradeData.data?.versionComponents);
+        upgradeData.data?.versionComponents) ?? [];
       this.versionArray = components.map((component: update.VersionComponent) => {
         return UpgradeAdapter.getInstance()
-          .getPageInstance()?.getCurrentVersionPageInfo(components, componentDescription?.data);
+          .getPageInstance()?.getCurrentVersionPageInfo(components, componentDescription?.data as
+          update.ComponentDescription[]);
       }).filter((versionPageInfo: VersionPageInfo) => {
         return versionPageInfo != null;
       });
@@ -104,16 +105,16 @@ struct CurrentVersion {
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .fontWeight(FontWeight.Medium)
                   .width('100%')
-                  .textAlign(this.versionArray.length > 1 ? TextAlign.Start : TextAlign.Center)
+                  .textAlign((this.versionArray && (this.versionArray.length > 1)) ? TextAlign.Start : TextAlign.Center)
                   .padding({
                     right: $r('app.float.version_padding'),
                     left: $r('app.float.version_padding'),
-                    bottom: this.versionArray.length > 1 ? $r('app.float.current_version_name_margin_bottom') :
+                    bottom: (this.versionArray && (this.versionArray.length > 1)) ? $r('app.float.current_version_name_margin_bottom') :
                     $r('app.float.current_version_name_margin_bottom_single')
                   })
                 ChangelogContent({
                   isCurrentPage: true,
-                  isNeedFold: this.versionArray?.length > 1,
+                  isNeedFold: (this.versionArray && (this.versionArray.length > 1)) ?? false,
                   description: JSON.stringify([pageInfo.changelog])
                 })
               })
