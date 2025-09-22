@@ -27,15 +27,15 @@ import RouterUtils from '../util/RouterUtils';
  * @since 2022-06-05
  */
 export interface DialogOperator {
-/**
- * 取消
- */
-onCancel(): void;
+  /**
+   * 取消
+   */
+  onCancel(): void;
 
-/**
- * 确认
- */
-onConfirm(): void;
+  /**
+   * 确认
+   */
+  onConfirm(): void;
 }
 
 /**
