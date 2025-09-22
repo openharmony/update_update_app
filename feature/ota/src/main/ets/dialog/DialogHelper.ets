@@ -21,22 +21,22 @@ import { UpdateState } from '@ohos/common/src/main/ets/const/update_const';
 import { OtaUpdateManager } from '../manager/OtaUpdateManager';
 import RouterUtils from '../util/RouterUtils';
 
-  /**
-   * 弹框操作接口
-   *
-   * @since 2022-06-05
-   */
-  export interface DialogOperator {
-    /**
-     * 取消
-     */
-    onCancel(): void;
+/**
+ * 弹框操作接口
+ *
+ * @since 2022-06-05
+ */
+export interface DialogOperator {
+/**
+ * 取消
+ */
+onCancel(): void;
 
-    /**
-     * 确认
-     */
-    onConfirm(): void;
-  }
+/**
+ * 确认
+ */
+onConfirm(): void;
+}
 
 /**
  * 重试检测动作
