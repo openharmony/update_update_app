@@ -7,10 +7,10 @@
     "directoryLevel": "module"
   },
   "description": "updateapp description",
-  "repository": {},
+  "repository": "",
   "license": "ISC",
   "dependencies": {
     "@ohos/common": "file:../../../common",
-    "@ohos/ota": "file:../../../feature/ota"
+    "ota": "file:../../../feature/ota"
   }
 }

@@ -19,81 +19,68 @@ import type { OtaStatus } from '@ohos/common/src/main/ets/const/update_const';
 import { MAIN_ABILITY_NAME, PACKAGE_NAME, UpdateState } from '@ohos/common/src/main/ets/const/update_const';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import { UpdateUtils } from '@ohos/common/src/main/ets/util/UpdateUtils';
+import { foregroundCheck } from '@ohos/common/src/main/ets/util/CommonUtils';
 import { OtaUpdateManager } from '../manager/OtaUpdateManager';
 import RouterUtils from '../util/RouterUtils';
 import { DialogHelper } from './DialogHelper';
 
-const TIME_OUT_FOR_START_ABILITY = 500;
-
 /**
- * 装饰器--弹框时，前台判断处理
+ * 弹框操作接口
+ * @since 2025-06-09
  */
-function foregroundCheck<T>() {
-  return function inner(target: unknown, propertyKey: string, descriptor: PropertyDescriptor): void {
-    const original = descriptor.value;
-    descriptor.value = function (context: common.Context, otaStatus: OtaStatus,
-      eventId?: update.EventId, ...args): void {
-      if (globalThis.AbilityStatus !== 'ON_FOREGROUND') {
-        globalThis.reNotify = true;
-        globalThis.otaStatusFromService = otaStatus;
-        globalThis.eventIdFromService = eventId;
-        LogUtils.log('foregroundCheck', 'do startMainAbilityIndex.');
+interface DialogOperator {
+  /**
+   * 取消
+   */
+  onCancel(): void;
 
-        // 应用在后台时，无法弹框，需杀掉ability后，重新拉起界面弹框
-        globalThis.abilityContext?.terminateSelf();
-        setTimeout(() => {
-          startMainAbilityIndex(context);
-        }, TIME_OUT_FOR_START_ABILITY);
-        return;
-      }
-      original.call(this, ...args);
-    };
-  };
-}
-
-function startMainAbilityIndex(context: common.Context): void {
-  let want = {
-    bundleName: PACKAGE_NAME,
-    abilityName: MAIN_ABILITY_NAME,
-    uri: 'pages/newVersion',
-  };
-  UpdateUtils.startAbility(context, want, null);
+  /**
+   * 确认
+   */
+  onConfirm(): void;
 }
 
 /**
  * 重试下载动作
  */
-const retryDownloadAction = {
-  onConfirm: (): void => {
+class RetryDownloadAction implements DialogOperator {
+  onConfirm(): void {
     OtaUpdateManager.getInstance().setUpdateState(UpdateState.CHECK_SUCCESS);
-  },
-  onCancel: (): void => {
+  }
+  onCancel(): void {
     OtaUpdateManager.getInstance().setUpdateState(UpdateState.CHECK_SUCCESS);
-  },
+  }
 };
+
+const retryDownloadAction: DialogOperator = new RetryDownloadAction();
 
 /**
  * 重试安装动作
  */
-const retryUpgradeAction = {
-  onConfirm: (): void => {
+class RetryUpgradeAction implements DialogOperator {
+  onConfirm(): void {
     OtaUpdateManager.getInstance().setUpdateState(UpdateState.DOWNLOAD_SUCCESS);
-  },
-  onCancel: (): void => {
+  }
+  onCancel(): void {
     OtaUpdateManager.getInstance().setUpdateState(UpdateState.DOWNLOAD_SUCCESS);
-  },
-};
+  }
+}
+
+const retryUpgradeAction: DialogOperator = new RetryUpgradeAction();
 
 /**
  * 重试检测动作
  */
-const retryCheckAction = {
-  onConfirm: (): void => {
+class RetryCheckAction implements DialogOperator {
+  onConfirm(): void {
     RouterUtils.singletonHomePage();
-  }, onCancel: (): void => {
+  }
+  onCancel(): void {
     RouterUtils.singletonHomePage();
-  },
+  }
 };
+
+ export const retryCheckAction: DialogOperator = new RetryCheckAction();
 
 /**
  * 弹框工具类
@@ -110,7 +97,7 @@ export class DialogUtils {
   static showDownloadNotEnoughSpaceDialog(context: common.Context, otaStatus: OtaStatus,
     eventId?: update.EventId): void {
     LogUtils.log('DialogUtils', 'showDownloadNotEnoughSpaceDialog');
-    DialogHelper.displayNotEnoughSpaceDialog(retryDownloadAction);
+    DialogHelper.displayDownloadNotEnoughSpaceDialog();
   }
 
   /**
@@ -131,9 +118,9 @@ export class DialogUtils {
    * @param context 上下文
    */
   @foregroundCheck()
-  static showVerifyFailDialog(context: common.Context, otaStatus: OtaStatus, eventId?: update.EventId): void {
+  static showVerifyFailDialog(context: common.Context, otaStatus?: OtaStatus, eventId?: update.EventId): void {
     LogUtils.log('DialogUtils', 'showVerifyFailDialog');
-    DialogHelper.displayVerifyFailDialog(retryCheckAction);
+    DialogHelper.displayVerifyFailDialog();
   }
 
   /**
@@ -142,9 +129,9 @@ export class DialogUtils {
    * @param context 上下文
    */
   @foregroundCheck()
-  static showDownloadFailDialog(context: common.Context, otaStatus: OtaStatus, eventId?: update.EventId): void {
+  static showDownloadFailDialog(context: common.Context, otaStatus?: OtaStatus, eventId?: update.EventId): void {
     LogUtils.log('DialogUtils', 'showDownloadFailDialog');
-    DialogHelper.displayDownloadFailDialog(retryCheckAction);
+    DialogHelper.displayDownloadFailDialog();
   }
 
   /**
@@ -156,7 +143,7 @@ export class DialogUtils {
   static showUpgradeNotEnoughSpaceDialog(context: common.Context, otaStatus: OtaStatus,
     eventId?: update.EventId): void {
     LogUtils.log('DialogUtils', 'showUpgradeNotEnoughSpaceDialog');
-    DialogHelper.displayNotEnoughSpaceDialog(retryUpgradeAction);
+    DialogHelper.displayUpgradeNotEnoughSpaceDialog();
   }
 
   /**
@@ -177,8 +164,8 @@ export class DialogUtils {
    * @param context 上下文
    */
   @foregroundCheck()
-  static showUpgradeFailDialog(context: common.Context, otaStatus: OtaStatus, eventId?: update.EventId): void {
+  static showUpgradeFailDialog(context: common.Context, otaStatus?: OtaStatus, eventId?: update.EventId): void {
     LogUtils.log('DialogUtils', 'showUpgradeFailDialog');
-    DialogHelper.displayUpgradeFailDialog(retryCheckAction);
+    DialogHelper.displayUpgradeFailDialog();
   }
 }

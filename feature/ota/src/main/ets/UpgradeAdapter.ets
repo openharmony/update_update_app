@@ -24,8 +24,8 @@ import type { INotify, IPage } from '@ohos/common/src/main/ets/manager/UpgradeIn
  * @since 2022-12-01
  */
 export class UpgradeAdapter {
-  private _notifyInstance: INotify;
-  private _page: IPage;
+  private _notifyInstance: INotify | undefined = undefined;
+  private _page: IPage | undefined = undefined;
 
   private constructor() {
     globalThis.upgradeAdapter = this;

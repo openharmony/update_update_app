@@ -17,13 +17,14 @@ import type common from '@ohos.app.ability.common';
 import { DeviceUtils } from '../util/DeviceUtils';
 import { LogUtils } from './LogUtils';
 
+const DECIMAL_POINT = 2;
+
 /**
  * 格式化工具
  *
  * @since 2022-06-06
  */
-export namespace FormatUtils {
-  const DECIMAL_POINT = 2;
+export class FormatUtils {
 
   /**
    * 格式化文件大小
@@ -32,7 +33,7 @@ export namespace FormatUtils {
    * @param decimalPoint 精确到小数点后两位
    * @return 格式化后的字符串
    */
-  export function formatFileSize(bytes: number, decimalPoint = DECIMAL_POINT): string {
+ static formatFileSize(bytes: number, decimalPoint = DECIMAL_POINT): string {
     if (bytes <= 0) {
       return '0 Bytes';
     }
@@ -54,7 +55,7 @@ export namespace FormatUtils {
    * @param args 待匹配的内容
    * @return 格式化后的字符串
    */
-  export function formatStr(message: string, ...args: (string | number)[]): string {
+  static formatStr(message: string, ...args: (string | number)[]): string {
     if (!message) {
       return '';
     }
@@ -78,7 +79,7 @@ export namespace FormatUtils {
    * @param args 待匹配的内容
    * @return 转大写后的字符串
    */
-  export function toUpperCase(context: common.Context, text: ResourceStr, ...args: (string | number)[]): string {
+  static toUpperCase(context: common.Context, text: ResourceStr, ...args: (string | number)[]): string {
     if (!text) {
       return '';
     }
@@ -86,7 +87,7 @@ export namespace FormatUtils {
       return text.toUpperCase();
     } else {
       let message: string = context?.resourceManager.getStringSync(text.id);
-      return formatStr(message, ...args).toUpperCase();
+      return FormatUtils.formatStr(message, ...args).toUpperCase();
     }
   }
 
@@ -96,45 +97,9 @@ export namespace FormatUtils {
    * @param num 待格式化数字
    * @return 格式化之后的数字
    */
-  export function getNumberFormat(num: number): string {
+  static getNumberFormat(num: number): string {
     let language: string = DeviceUtils.getSystemLanguage();
     let numfmt: Intl.NumberFormat = new Intl.NumberFormat(language, {style:'percent', notation:'standard'});
     return numfmt.format(num);
-  }
-
-  /**
-   * JSON stringify方法封装
-   *
-   * @param value JS对象
-   * @return json字符串
-   */
-  export function stringify<T>(value: T): string {
-    if (value) {
-      try {
-        return JSON.stringify(value);
-      } catch (exception) {
-        LogUtils.error('FormateUtils', 'JSON.stringify failed !!');
-        return '';
-      }
-    }
-    return '';
-  }
-
-  /**
-   * json 字符串解析
-   *
-   * @param content json 字符串
-   * @return T 解析后返回值
-   */
-  export function parseJson<T>(content: string): T | null {
-    if (!content) {
-      return null;
-    }
-    try {
-      return JSON.parse(content) as T;
-    } catch (exception) {
-      LogUtils.error('FormateUtils', 'paramJson failed !!');
-    }
-    return null;
   }
 }

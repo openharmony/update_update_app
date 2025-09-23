@@ -82,7 +82,8 @@ namespace RouterUtils {
           if (upgradeData.data?.status === UpdateState.UPGRADING) {
             resolve(false);
           } else {
-            let isAllow: boolean = StateManager.isAllowExecute(upgradeData.data?.status, UpdateAction.SHOW_NEW_VERSION);
+            let isAllow: boolean = StateManager.isAllowExecute(upgradeData.data?.status as number,
+              UpdateAction.SHOW_NEW_VERSION);
             resolve(isAllow);
           }
         } else {

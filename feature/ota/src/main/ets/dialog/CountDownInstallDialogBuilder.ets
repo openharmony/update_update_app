@@ -24,7 +24,7 @@ import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils'
 @CustomDialog
 export struct CountDownInstallDialogBuilder {
   @StorageProp('configLanguage')
-  @Watch('onLanguageChange') private configLanguage: string = AppStorage.Get('configLanguage');
+  @Watch('onLanguageChange') private configLanguage: string = AppStorage.Get('configLanguage') as string;
 
   /**
    * 控制器
@@ -34,7 +34,7 @@ export struct CountDownInstallDialogBuilder {
   /**
    * 文本显示内容
    */
-  textString: Resource | string;
+  textString: Resource | string = '';
 
   /**
    * 取消按钮显示内容
@@ -49,7 +49,7 @@ export struct CountDownInstallDialogBuilder {
   /**
    * 弹窗类型
    */
-  dialogType: CountDownDialogType;
+  dialogType: CountDownDialogType | undefined = undefined;
 
   /**
    * 倒计时
@@ -59,14 +59,16 @@ export struct CountDownInstallDialogBuilder {
   /**
    * 取消回调
    */
-  cancel: () => void;
+  cancel: () => void = () => {
+  };
 
   /**
    * 确认回调
    */
-  confirm: () => void;
+  confirm: () => void = () => {
+  };
 
-  private intervalID: number = null;
+  private intervalID: number | null = null;
 
   aboutToAppear() {
     this.getCount();
@@ -95,7 +97,7 @@ export struct CountDownInstallDialogBuilder {
 
   private initButtonText(): void {
     this.cancelBtnText = FormatUtils.toUpperCase(globalThis.abilityContext, $r('app.string.later'));
-    let confirmBtnRes = null;
+    let confirmBtnRes: ResourceStr = '';
     if (this.dialogType == CountDownDialogType.OTA) {
       confirmBtnRes = $r('app.string.install_now');
     } else if (this.dialogType == CountDownDialogType.OTA_AB) {
