@@ -104,7 +104,7 @@ export class UpdateManager implements IUpdate {
   }
 
   /**
-   * 绑定DUE
+   * 绑定UpdateService
    *
    * @param callback 回调
    */
@@ -126,7 +126,7 @@ export class UpdateManager implements IUpdate {
   }
 
   /**
-   * 取消绑定DUE
+   * 取消绑定UpdateService
    *
    * @param callback 回调
    */
@@ -180,7 +180,7 @@ export class UpdateManager implements IUpdate {
   }
 
   /**
-   * 从due数据库取新版本信息
+   * 从UpdateService数据库取新版本信息
    *
    * @return resolve 新版本信息/reject 错误信息
    */

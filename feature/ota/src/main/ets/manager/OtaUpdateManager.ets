@@ -99,7 +99,7 @@ export class OtaUpdateManager {
   }
 
   /**
-   * 从due数据库取新版本信息
+   * 从UpdateService数据库取新版本信息
    *
    * @return resolve 新版本信息/reject 错误信息
    */
