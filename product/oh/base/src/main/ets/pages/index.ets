@@ -94,6 +94,7 @@ struct Index {
         RouterUtils.openNewVersionPage();
       }, 50);
     } else if (this.checkEndStatus == NewVersionStatus.NO_NEW_VERSION) {
+      this.log('afterNewVersionFound no new version');
       this.newVersionStatus = NewVersionStatus.NO_NEW_VERSION;
       this.newVersionActionText = $r('app.string.check_version_status_no_new');
     }
@@ -267,7 +268,7 @@ struct Index {
             HomeCardView({ playVideo: this.displayVideo, videoController: this.videoController, onVideoFinished:
             (): boolean => {
               this.checkTimes++;
-              return this.onCheckAction.bind(this);
+              return this.onCheckAction.bind(this)();
             } })
             Text(this.displayVersion)
               .fontSize($r('app.float.home_text_size_version_name'))
