@@ -23,7 +23,7 @@ export struct CheckingDots {
   @Prop @Watch('onDotTextPlayChange')
   private dotTextPlay: boolean;
   private newVersionDotText: string= '.';
-  private checkingTid: number = null;
+  private checkingTid: number | null = null;
   @State private dotNumber: number = 0;
 
   aboutToDisappear() {

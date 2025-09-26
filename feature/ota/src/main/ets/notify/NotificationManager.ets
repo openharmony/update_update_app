@@ -14,6 +14,7 @@
  */
 
 import type common from '@ohos.app.ability.common';
+import { StartOptions } from '@kit.AbilityKit';
 import {
   Action,
   PACKAGE_NAME,
@@ -42,10 +43,10 @@ export class NotificationManager {
   static async handleAction(action: string, context: common.Context): Promise<boolean> {
     switch (action) {
       case Action.NOTIFICATION_CHECK:
-        this.handleCheckAction(context);
+        NotificationManager.handleCheckAction(context);
         return true;
       case Action.NOTIFICATION_DETAIL:
-        await this.handleDetailAction(context);
+        await NotificationManager.handleDetailAction(context);
         return true;
       default:
         return false;
@@ -54,31 +55,31 @@ export class NotificationManager {
 
   private static handleCheckAction(context: common.Context): void {
     LogUtils.log(TAG, 'handleCheckAction');
-    this.startAbility('pages/index', context);
+    NotificationManager.startAbility('pages/index', context);
   }
 
   private static async handleDetailAction(context: common.Context): Promise<void> {
     LogUtils.log(TAG, 'handleDetailAction');
     if (await RouterUtils.isCanToNewVersion()) {
-      this.startAbility('pages/newVersion', context);
+      NotificationManager.startAbility('pages/newVersion', context);
     } else {
-      this.startAbility('pages/index', context);
+      NotificationManager.startAbility('pages/index', context);
     }
   }
 
   public static async startToNewVersion(context: common.Context): Promise<void> {
     if (await RouterUtils.isCanToNewVersion()) {
-      this.startAbility('pages/newVersion', context);
+      NotificationManager.startAbility('pages/newVersion', context);
     }
   }
 
   private static startAbility(uri: string, context: common.Context): void {
-    let want = {
+    let want: Want = {
       bundleName: PACKAGE_NAME,
       abilityName: MAIN_ABILITY_NAME,
       uri: uri
     };
-    let options = {
+    let options: StartOptions = {
       windowMode: 0,
       displayId: 2
     };

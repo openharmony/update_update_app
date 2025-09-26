@@ -25,7 +25,7 @@
     "abilities": [
       {
         "name": "com.ohos.updateapp.MainAbility",
-        "srcEntrance": "./ets/MainAbility/MainAbility.ts",
+        "srcEntry": "./ets/MainAbility/MainAbility.ets",
         "description": "$string:description_mainability",
         "icon": "$media:icon",
         "label": "$string:entry_MainAbility",
@@ -67,7 +67,7 @@
         "description": "service",
         "type": "service",
         "visible": true,
-        "srcEntrance": "./ets/ServiceExtAbility/service.ts"
+        "srcEntrance": "./ets/ServiceExtAbility/service.ets"
       }
     ],
     "requestPermissions": [

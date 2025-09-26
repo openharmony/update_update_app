@@ -22,8 +22,8 @@ import type window from '@ohos.window';
 import type { Configuration } from '@ohos.app.ability.Configuration';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import type { OtaStatus } from '@ohos/common/src/main/ets/const/update_const';
-import { StateManager } from '@ohos/ota/src/main/ets/manager/StateManager';
-import { NotificationHelper } from '@ohos/ota/src/main/ets/notify/NotificationHelper';
+import { StateManager } from 'ota/src/main/ets/manager/StateManager';
+import { NotificationHelper } from 'ota/src/main/ets/notify/NotificationHelper';
 
 /**
  * 主Ability
@@ -32,7 +32,7 @@ import { NotificationHelper } from '@ohos/ota/src/main/ets/notify/NotificationHe
  */
 export default class MainAbility extends Ability {
   private static readonly WAITING_PREPARE_TIME = 1500;
-  private language: string = '';
+  private language: string | undefined = '';
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     this.log('BaseAbility onCreate:' + this.context.config.screenDensity);

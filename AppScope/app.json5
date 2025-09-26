@@ -3,8 +3,8 @@
     "bundleName": "com.ohos.updateapp",
     "debug": false,
     "vendor": "example",
-    "versionCode": 2040000127,
-    "versionName": "204.0.0.127",
+    "versionCode": 2040000128,
+    "versionName": "204.0.0.128",
     "icon": "$media:app_icon",
     "label": "$string:app_name",
     "distributedNotificationEnabled": true

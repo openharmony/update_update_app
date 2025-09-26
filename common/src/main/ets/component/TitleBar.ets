@@ -24,7 +24,7 @@ import { LogUtils } from '../util/LogUtils';
 @Component
 export struct TitleBar {
   private static readonly TAG = 'TitleBar';
-  private title: string | Resource;
+  private title: string | Resource = '';
   private onBack?: () => boolean;
 
   build() {

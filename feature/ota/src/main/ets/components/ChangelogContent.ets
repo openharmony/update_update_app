@@ -32,19 +32,19 @@ import ChangelogParseUtils from '../util/ChangelogParseUtils';
  */
 @Component
 export struct ChangelogContent {
-  @State private changelogInfoList: Array<ChangelogInfo> = null;
-  private isCurrentPage: boolean;
-  isNeedFold: boolean;
+  @State private changelogInfoList: Array<ChangelogInfo> | null = null;
+  private isCurrentPage: boolean = false;
+  isNeedFold: boolean = false;
   @Prop @Watch('parseChangelog') description: string;
   @State private isParseChangelogFinished: boolean = false;
 
   @Builder buildChangelog() {
     Column() {
       if (this.changelogInfoList && this.isParseChangelogFinished) {
-        ForEach(this.changelogInfoList, (item: ChangelogInfo, index?: number) => {
+        ForEach(this.changelogInfoList, (item: ChangelogInfo, index: number = 0) => {
           ChangelogCard({
             changelogInfo: item,
-            index: this.changelogInfoList?.length > 1 ? index + 1 : 0,
+            index: (this.changelogInfoList && this.changelogInfoList?.length > 1) ? index + 1 : 0,
             isCurrentPage: this.isCurrentPage
           });
         })
@@ -66,12 +66,12 @@ export struct ChangelogContent {
   }
 
   @Builder setEndFeature() {
-    Text(this.changelogInfoList?.[0].endFeatures.title)
+    Text(this.changelogInfoList?.[0].endFeatures?.title)
       .fontSize($r('app.float.changelog_content_end_title'))
       .fontColor($r('sys.color.ohos_fa_text_secondary'))
       .fontWeight(FontWeight.Medium)
       .width('100%')
-    ForEach(this.changelogInfoList?.[0].endFeatures.featureList, (feature: Feature) => {
+    ForEach(this.changelogInfoList?.[0].endFeatures?.featureList, (feature: Feature) => {
       Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Start, justifyContent: FlexAlign.Start }) {
         ForEach(feature.contents, (content: string) => {
           Text(content)
@@ -79,7 +79,7 @@ export struct ChangelogContent {
             .fontSize($r('app.float.changelog_end_word'))
             .fontWeight(FontWeight.Regular)
             .align(Alignment.Start)
-            .padding({ top: this.changelogInfoList?.[0].endFeatures.featureList.indexOf(feature) == 0 ?
+            .padding({ top: this.changelogInfoList?.[0].endFeatures?.featureList.indexOf(feature) == 0 ?
             $r('app.float.changelog_tablet_has_feature_padding_top') :
             $r('app.float.changelog_tablet_no_feature_padding_top')
             });
@@ -95,7 +95,7 @@ export struct ChangelogContent {
 
   private parseChangelog(): void {
     this.logInfo('parseChangelog');
-    let list: ChangelogInfo[] = null;
+    let list: ChangelogInfo[] | null = null;
     if (this.description) {
       list = JSON.parse(this.description);
     }
@@ -119,17 +119,17 @@ export struct ChangelogContent {
         });
       });
       this.isParseChangelogFinished = true;
-      this.changelogInfoList = isParseSuccess ? list : null;
+      this.changelogInfoList = isParseSuccess ? list : [];
     } else {
       this.logInfo('description is null');
     }
   }
 
-  private getHeaderFeatures(changelog: Changelog, language: string): Features {
+  private getHeaderFeatures(changelog: Changelog, language: string): Features | undefined {
     return this.getTargetFeatures(changelog, language, 'header');
   }
 
-  private getEndFeatures(changelog: Changelog, language: string): Features{
+  private getEndFeatures(changelog: Changelog, language: string): Features | undefined {
     return this.getTargetFeatures(changelog, language, 'end');
   }
 
@@ -138,7 +138,7 @@ export struct ChangelogContent {
     if (changelog == null || language == null) {
       return featuresList;
     }
-    let lang: Language = changelog.language.get(language);
+    let lang: Language | undefined = changelog.language.get(language);
     if (lang == null) {
       return featuresList;
     }
@@ -152,20 +152,22 @@ export struct ChangelogContent {
     return featuresList;
   }
 
-  private getTargetFeatures(changelog: Changelog, language: string, type: string): Features {
+  private getTargetFeatures(changelog: Changelog, language: string, type: string): Features | undefined {
     if (changelog == null || language == null) {
-      return null;
+      return;
     }
-    let lang: Language = changelog.language.get(language);
+    let lang: Language | undefined = changelog.language.get(language);
     if (lang == null) {
-      return null;
+      return;
     }
+    let _features: Features | undefined;
     for (let index = 0; index < lang.featuresArray.length; index++) {
       const features = lang.featuresArray[index];
       if (features != null && features.featureModuleType == type) {
         return features;
       }
     }
+    return _features;
   }
 
   build(): void{
@@ -188,8 +190,8 @@ export struct ChangelogContent {
  */
 @Component
 struct ChangelogCard {
-  changelogInfo: ChangelogInfo;
-  index: number;
+  changelogInfo: ChangelogInfo | null = null;
+  index: number = 0;
   isCurrentPage: boolean = false;
 
   aboutToAppear() {
@@ -241,7 +243,7 @@ struct ChangelogCard {
   }
 
   @Builder setStartFeature(changelogInfo: ChangelogInfo) {
-    if (changelogInfo.headFeatures.featureList) {
+    if (changelogInfo.headFeatures && changelogInfo.headFeatures.featureList) {
       this.setFeatureContent(changelogInfo.headFeatures.featureList)
     }
   }

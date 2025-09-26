@@ -21,10 +21,10 @@ import { StateManager, UpdateAction } from '../manager/StateManager';
  * @param progress 进度值
  * @return 显示进度值
  */
-function getDisplayProgress(progress): number {
+function getDisplayProgress(progress: number): number {
   let displayProgress = 0;
   if (!isNaN(progress)) {
-    displayProgress = (progress).toFixed(0);
+    displayProgress = Number((progress).toFixed(0));
   }
   return displayProgress;
 }
@@ -37,9 +37,9 @@ function getDisplayProgress(progress): number {
 @Component
 export struct ProgressContent {
   @StorageProp('updateStatus')
-  private updateStatus: number = AppStorage.Get('updateStatus');
+  private updateStatus: number = AppStorage.Get('updateStatus') as number;
   @StorageProp('downloadProgress')
-  private downloadProgress: number = AppStorage.Get('downloadProgress');
+  private downloadProgress: number = AppStorage.Get('downloadProgress') as number;
 
   @Builder ProgressView() {
     Stack({ alignContent: Alignment.Center }) {

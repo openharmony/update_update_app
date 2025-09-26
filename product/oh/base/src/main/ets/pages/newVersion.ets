@@ -1,4 +1,3 @@
-import { DialogUtils } from '../../../../../../../feature/ota/src/main/ets/dialog/DialogUtils';
 /*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +18,8 @@ import {
   OtaStatus,
   UpdateState,
   UpgradeCallResult,
-  UpgradeData
+  UpgradeData,
+  BusinessError
 } from '@ohos/common/src/main/ets/const/update_const';
 import update from '@ohos.update';
 import { TitleBar } from '@ohos/common/src/main/ets/component/TitleBar';
@@ -28,18 +28,17 @@ import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import { DeviceUtils } from '@ohos/common/src/main/ets/util/DeviceUtils';
 import { ChangelogInfo, IPage, VersionPageInfo } from '@ohos/common/src/main/ets/manager/UpgradeInterface';
 import { NetUtils } from '@ohos/common/src/main/ets/util/NetUtils';
-import { DialogHelper } from '@ohos/ota/src/main/ets/dialog/DialogHelper';
-import { ChangelogContent } from '@ohos/ota/src/main/ets/components/ChangelogContent';
-import { ProgressContent } from '@ohos/ota/src/main/ets/components/ProgressContent';
-import { OtaUpdateManager } from '@ohos/ota/src/main/ets/manager/OtaUpdateManager';
-import { CountDownInstallDialogBuilder } from '@ohos/ota/src/main/ets/dialog/CountDownInstallDialogBuilder';
-import { MessageDialogBuilder, } from '@ohos/ota/src/main/ets/dialog/MessageDialogBuilder';
-import { StateManager, UpdateAction } from '@ohos/ota/src/main/ets/manager/StateManager';
-import { UpgradeAdapter } from '@ohos/ota/src/main/ets/UpgradeAdapter';
-import { VersionUtils } from '@ohos/ota/src/main/ets/util/VersionUtils';
-import { NotificationHelper } from '@ohos/ota/src/main/ets/notify/NotificationHelper';
-import prompt from '@ohos.prompt';
-import RouterUtils from '@ohos/ota/src/main/ets/util/RouterUtils';
+import { DialogUtils } from 'ota/src/main/ets/dialog/DialogUtils';
+import { DialogHelper } from 'ota/src/main/ets/dialog/DialogHelper';
+import { ChangelogContent } from 'ota/src/main/ets/components/ChangelogContent';
+import { ProgressContent } from 'ota/src/main/ets/components/ProgressContent';
+import { OtaUpdateManager } from 'ota/src/main/ets/manager/OtaUpdateManager';
+import { CountDownInstallDialogBuilder } from 'ota/src/main/ets/dialog/CountDownInstallDialogBuilder';
+import { MessageDialogBuilder, } from 'ota/src/main/ets/dialog/MessageDialogBuilder';
+import { StateManager, UpdateAction } from 'ota/src/main/ets/manager/StateManager';
+import { UpgradeAdapter } from 'ota/src/main/ets/UpgradeAdapter';
+import { VersionUtils } from 'ota/src/main/ets/util/VersionUtils';
+import { NotificationHelper } from 'ota/src/main/ets/notify/NotificationHelper';
 
 /**
  * 新版本页面
@@ -56,17 +55,17 @@ struct NewVersion {
   @State private isButtonEnable: boolean = true;
   @State private isButtonVisible: boolean = true;
   @StorageProp('updateStatus')
-  @Watch('initDataByStatus') private updateStatus: number = AppStorage.Get('updateStatus');
+  @Watch('initDataByStatus') private updateStatus: number = AppStorage.Get('updateStatus') as number;
   @StorageProp('isClickInstall') @Watch('onInstallClick')
-  private isClickInstall: number = AppStorage.Get('isClickInstall');
-  private dialogText: string | Resource = '';
+  private isClickInstall: number = AppStorage.Get('isClickInstall') as number;
+  private dialogText: string | Resource | undefined = '';
   @State private isInitComplete: boolean = false;
-  private effectiveMode: update.EffectiveMode = update.EffectiveMode.COLD;
-  @State otaMode: update.OtaMode = update.OtaMode.AB_STREAM_OTA;
-  private dialogType: CountDownDialogType = CountDownDialogType.OTA;
+  private effectiveMode: update.EffectiveMode | undefined = update.EffectiveMode.COLD;
+  @State otaMode: update.OtaMode | undefined = update.OtaMode.AB_STREAM_OTA;
+  private dialogType: CountDownDialogType | undefined = CountDownDialogType.OTA;
   @State private buttonText: string = '';
   @StorageProp('installStatusRefresh') @Watch('refresh')
-  private installStatusRefresh: string = AppStorage.Get('installStatusRefresh');
+  private installStatusRefresh: string = AppStorage.Get('installStatusRefresh') as string;
 
   private countdownDialogController = new CustomDialogController({
     builder: CountDownInstallDialogBuilder({
@@ -122,7 +121,8 @@ struct NewVersion {
 
   private async handleAbnormalState(): Promise<void> {
     let upgradeData: UpgradeData<OtaStatus> = await OtaUpdateManager.getInstance().getOtaStatus();
-    let otaStatus: OtaStatus = upgradeData.callResult == UpgradeCallResult.OK ? upgradeData.data : null;
+    let otaStatus: OtaStatus | null | undefined = upgradeData.callResult ==
+      UpgradeCallResult.OK ? upgradeData.data : null;
     let state = otaStatus?.status;
     if (!state || state === UpdateState.INIT || state === UpdateState.UPGRADE_SUCCESS ||
     state === UpdateState.UPGRADE_FAILED || state === UpdateState.INSTALL_FAILED) {
@@ -135,7 +135,7 @@ struct NewVersion {
     this.log('onPageHide NewVersionPage');
   }
 
-  onBackPress() {
+  onBackPress(): boolean {
     return globalThis.displayCountdownDialog;
   }
 
@@ -187,7 +187,8 @@ struct NewVersion {
   }
 
   public async initNewVersionPageInfo(): Promise<void> {
-    let newVersionInfo = globalThis.cachedNewVersionInfo || await OtaUpdateManager.getInstance().getNewVersion()
+    let newVersionInfo: update.NewVersionInfo = globalThis.cachedNewVersionInfo ||
+      await OtaUpdateManager.getInstance().getNewVersion()
       .then(upgradeData => {
         this.log(`initDataByStatus upgradeData: ${upgradeData}`);
         return upgradeData.callResult == UpgradeCallResult.OK ? upgradeData.data : null;
@@ -196,7 +197,8 @@ struct NewVersion {
     if (!newVersionInfo) {
       return;
     }
-    let components: update.VersionComponent[] = VersionUtils.sortComponents(newVersionInfo?.versionComponents);
+    let components: update.VersionComponent[] = VersionUtils.sortComponents(newVersionInfo?.versionComponents) ?? [] as
+      update.VersionComponent[];
     let pageInfo: VersionPageInfo = await UpgradeAdapter.getInstance()
       .getPageInstance()?.getNewVersionPageInfo(components);
     this.displayNewVersionName = pageInfo?.version;
@@ -213,7 +215,7 @@ struct NewVersion {
         continue;
       }
       let versionPageInfo: VersionPageInfo = await page.getNewVersionPageInfo(components, componentDescription.data);
-      size += versionPageInfo.size;
+      size += versionPageInfo.size ?? 0;
       array.push(versionPageInfo.changelog);
     }
     this.changelogArray = array;
@@ -225,7 +227,7 @@ struct NewVersion {
     this.log('upgrade effectiveMode ' + this.effectiveMode);
     this.isButtonEnable = false;
     let order = this.isABInstall() ? update.Order.INSTALL: update.Order.INSTALL_AND_APPLY
-    OtaUpdateManager.getInstance().upgrade(order).catch(err => {
+    OtaUpdateManager.getInstance().upgrade(order).catch((err: BusinessError) => {
       this.isButtonEnable = true;
     });
   }
@@ -242,14 +244,7 @@ struct NewVersion {
     switch (StateManager.getButtonClickAction(this.updateStatus)) {
       case UpdateAction.DOWNLOAD:
         if (await NetUtils.isCellularNetwork()) {
-          DialogHelper.displayNetworkDialog({
-            onConfirm: () => {
-              if (this.isABStreamInstall()) {
-                this.upgrade();
-              } else {
-                OtaUpdateManager.getInstance().download(update.NetType.CELLULAR);
-              }
-            } });
+          DialogHelper.displayNetworkDialog();
         } else {
           if (this.isABStreamInstall()) {
             this.upgrade();
@@ -268,11 +263,11 @@ struct NewVersion {
         OtaUpdateManager.getInstance().cancel();
         break;
       case UpdateAction.RESUME:
-        if (this.isABStreamInstall()) {
-          this.upgrade();
-        } else {
-          OtaUpdateManager.getInstance().resumeDownload();
-        }
+          if (this.isABStreamInstall()) {
+            this.upgrade();
+          } else {
+            OtaUpdateManager.getInstance().resumeDownload();
+          }
         break;
       default:
         break;
@@ -368,7 +363,7 @@ struct NewVersion {
       return;
     }
     let otaStatus: OtaStatus = JSON.parse(this.installStatusRefresh);
-    let status: UpdateState = otaStatus?.status;
+    let status: UpdateState | undefined = otaStatus?.status;
     if (status === UpdateState.INSTALL_FAILED || status === UpdateState.UPGRADE_FAILED ||
       status === UpdateState.UPGRADE_SUCCESS) {
       this.closeUpgradeDialog();

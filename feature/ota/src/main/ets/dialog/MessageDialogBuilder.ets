@@ -23,7 +23,7 @@ export struct MessageDialogBuilder {
   /**
    * 内容
    */
-  message: ResourceStr;
+  message: ResourceStr = '';
 
   /**
    * 控制器
