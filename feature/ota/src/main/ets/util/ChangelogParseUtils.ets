@@ -16,6 +16,35 @@
 import convertXml from '@ohos.convertxml';
 import type { Features, Language, Feature, Changelog, Icon } from '@ohos/common/src/main/ets/const/update_const';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
+import { CommonUtils } from '@ohos/common/src/main/ets/util/CommonUtils';
+
+/**
+ * xml 元素
+ *
+ * @since 2025-06-09
+ */
+interface XmlElement {
+  _elements?: XmlElement[];
+  _name?: string;
+  _type?: string;
+  _text?: string;
+  _attributes?: XmlAttributes
+}
+
+/**
+ * xml 元素属性
+ *
+ * @since 2025-06-09
+ */
+interface XmlAttributes {
+  name?: string;
+  id?:string;
+  pkg?: string;
+  res?: string;
+  module?: string;
+  type?: string;
+  title?: string;
+}
 
 let conv = new convertXml.ConvertXML();
 
@@ -48,24 +77,24 @@ namespace ChangelogParseUtils {
    * @param res 待解析的string
    * @param callback 解析结果回调
    */
-  export function parseXml(res: string, callback: (data: Changelog) => void): void {
+  export function parseXml(res: string, callback: (data?: Changelog) => void): void {
     logInfo('read file parse start');
     changelog = { language: new Map() };
     if (!res) {
       logError('res is null!');
-      callback(null);
+      callback();
       return;
     }
-    let xmlResult: Object = conv.convert(res, options);
-    if (!xmlResult || !xmlResult['_elements'] || xmlResult['_elements'].length <= 0) {
+    let xmlResult: XmlElement = conv.convert(res, options) as XmlElement;
+    if (!xmlResult || !xmlResult._elements || xmlResult._elements.length <= 0) {
       logError('xmlResult is null! ' + JSON.stringify(xmlResult));
-      callback(null);
+      callback();
       return;
     }
-    let root = xmlResult['_elements'][0];
-    if (!root || !root['_elements'] || root['_elements'].length <= 0) {
+    let root: XmlElement | undefined = xmlResult._elements[0];
+    if (!root || !root._elements || root._elements.length <= 0) {
       logError('root is null! ' + JSON.stringify(root));
-      callback(null);
+      callback();
       return;
     }
     parseRoot(root);
@@ -73,44 +102,47 @@ namespace ChangelogParseUtils {
     callback(changelog);
   }
 
-  function parseRoot(root: any): void {
+  function parseRoot(root: XmlElement): void {
     // 倒序解析，先解析Icon
-    let icons = {};
-    logInfo('root length ' + root['_elements'].length);
-    for (let index = root['_elements'].length; index > 0; index--) {
-      let element = root['_elements'][index - 1];
+    let icons: Map<string, Icon> = new Map();
+    if (root?._elements === undefined) {
+      return;
+    }
+    logInfo('root length ' + root?._elements?.length);
+    for (let index = root?._elements?.length; index > 0; index--) {
+      let element = root?._elements[index - 1];
       if (!element) {
         logError('element is null! ' + JSON.stringify(element));
         continue;
       }
-      if (element['_type'] === 'element' && element['_name'] === 'default-language') {
-        let attribute = element['_attributes']['name'];
+      if (element._type === 'element' && element._name === 'default-language') {
+        let attribute = element._attributes?.name;
         logInfo('default-language :' + attribute);
         changelog.defLanguage = attribute;
       }
-      if (element['_type'] === 'element' && element['_name'] === 'displayType') {
-        let attribute = element['_elements']?.[0]?.['_text'];
+      if (element._type === 'element' && element._name === 'displayType') {
+        let attribute = Number(element._elements?.[0]?._text);
         logInfo('displayType :' + attribute);
         changelog.displayType = attribute;
       }
-      if (element['_type'] === 'element' && element['_name'] === 'icons') {
-        let iconsElement = element['_elements'];
+      if (element._type === 'element' && element._name === 'icons') {
+        let iconsElement = element._elements ?? [];
         parseIcons(iconsElement, icons);
       }
       parseLanguage(element, icons);
     }
   }
 
-  function parseLanguage(element: any, icons: Object): void {
+  function parseLanguage(element: XmlElement, icons: Map<string, Icon>): void {
     let language: Language = { featuresArray: [] };
-    if (element['_type'] === 'element' && element['_name'] === 'language') {
+    if (element._type === 'element' && element._name === 'language') {
       let attribute: string;
-      if (!element['_attributes']) {
-        logError('language is null :' + JSON.stringify(element['_attributes']));
+      if (!element._attributes) {
+        logError('language is null :' + JSON.stringify(element._attributes));
         return;
       }
-      attribute = element['_attributes']['name'];
-      let languageElement = element['_elements'];
+      attribute = element._attributes.name ?? '';
+      let languageElement = element._elements;
       language.language = attribute;
       changelog.language.set(language.language, language);
 
@@ -122,7 +154,11 @@ namespace ChangelogParseUtils {
     }
   }
 
-  function parseIcons(iconsElement: any, icons: Object): void {
+  function parseIcons(iconsElement: XmlElement[], icons: Map<string, Icon>): void {
+    if (CommonUtils.isEmpty(iconsElement)) {
+      logError(`iconsElement is null${JSON.stringify(iconsElement)}`);
+      return;
+    }
     let icon: Icon;
     for (let index = 0; index < iconsElement.length; index++) {
       let iconElement = iconsElement[index];
@@ -130,18 +166,20 @@ namespace ChangelogParseUtils {
         logError('iconElement is null :' + JSON.stringify(iconElement));
         continue;
       }
-      if (iconElement['_type'] === 'element' && iconElement['_name'] === 'icon') {
+      if (iconElement._type === 'element' && iconElement._name === 'icon') {
         icon = {
-          id: iconElement['_attributes']['id'],
-          pkg: iconElement['_attributes']['pkg'],
-          res: iconElement['_attributes']['res'],
+          id: iconElement?._attributes?.id,
+          pkg: iconElement?._attributes?.pkg,
+          res: iconElement?._attributes?.res,
         };
-        icons[icon.id] = icon;
+        if (icon?.id !== null && icon.id !== undefined) {
+          icons.set(icon?.id, icon);
+        }
       }
     }
   }
 
-  function parseFeatures(languageElement: any, language: Language, icons: Object): void {
+  function parseFeatures(languageElement: XmlElement[], language: Language, icons: Map<string, Icon>): void {
     let features: Features;
     for (let index = 0; index < languageElement.length; index++) {
       let featuresElement = languageElement[index];
@@ -150,19 +188,21 @@ namespace ChangelogParseUtils {
         continue;
       }
 
-      if (featuresElement['_type'] === 'element' && featuresElement['_name'] === 'features') {
-        let moduleString = featuresElement['_attributes']['module'];
-        let typeString = featuresElement['_attributes']['type'];
-        let id = featuresElement['_attributes']['id'];
-        let featureElement = featuresElement['_elements'];
+      if (featuresElement._type === 'element' && featuresElement._name === 'features') {
+        let moduleString = featuresElement._attributes?.module;
+        let typeString = featuresElement._attributes?.type;
+        let id = featuresElement?._attributes?.id;
+        let featureElement = featuresElement._elements;
         let featureList: Feature[] = [];
         features = {
           title: moduleString,
           id: id,
           featureModuleType: typeString,
           featureList: featureList,
-          icon: icons[id],
         };
+        if (id !== null && id !== undefined) {
+          features.icon = icons.get(id)
+        }
         language.featuresArray.push(features);
 
         if (!featureElement || featureElement.length <= 0) {
@@ -174,11 +214,11 @@ namespace ChangelogParseUtils {
     }
   }
 
-  function parseFeature(featureElement: any, featureList: Array<Feature>): void {
-    let feature: Feature;
+  function parseFeature(featureElement: XmlElement[], featureList: Array<Feature>): void {
+    let feature: Feature | null = null;
     for (let index = 0; index < featureElement.length; index++) {
       let featureItem = featureElement[index];
-      if (featureItem['_type'] !== 'element' || featureItem['_name'] !== 'feature') {
+      if (featureItem._type !== 'element' || featureItem._name !== 'feature') {
         continue;
       }
       if (!featureItem) {
@@ -186,13 +226,13 @@ namespace ChangelogParseUtils {
         continue;
       }
 
-      let title: string;
-      if (featureItem['_attributes']) {
-        title = featureItem['_attributes']['title'];
+      let title: string | undefined;
+      if (featureItem._attributes) {
+        title = featureItem._attributes.title;
       }
-      let content: string;
-      if (featureItem['_elements']) {
-        content = featureItem['_elements'][0]['_text'];
+      let content: string | undefined;
+      if (featureItem._elements) {
+        content = featureItem._elements[0]._text as string;
       }
       if (title) {
         feature = { subTitle: title, contents: [] };

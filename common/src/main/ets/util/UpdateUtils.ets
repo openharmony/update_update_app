@@ -14,12 +14,16 @@
  */
 
 import update from '@ohos.update';
+import { StartOptions } from '@kit.AbilityKit';
+import type { BusinessError } from '../const/update_const';
+import type common from '@ohos.app.ability.common';
 import { LogUtils } from './LogUtils';
 
 /**
  * 日志TAG
  */
 const TAG = 'UpdateUtils';
+type unionContext = common.UIAbilityContext | common.ServiceExtensionContext | common.UIExtensionContext;
 
 /**
  * 接口工具
@@ -58,14 +62,14 @@ export namespace UpdateUtils {
    * @param want 要启动Ability的want
    * @param options 配置项
    */
-  export function startAbility(context: any, want, options): void {
+  export function startAbility(context: common.Context, want: Want, options?: StartOptions): void {
     if (!context || !want) {
       LogUtils.error(TAG, 'Failed to start ability with error: context or want is null.');
       return;
     }
-    context.startAbility(want, options).then((data) => {
-      LogUtils.info(TAG, 'Succeed to start ability with data: ' + JSON.stringify(data));
-    }).catch((error) => {
+    (context as unionContext).startAbility(want, options).then(() => {
+      LogUtils.info(TAG, 'Succeed to start ability');
+    }).catch((error: BusinessError) => {
       LogUtils.error(TAG, 'Failed to start ability with error: ' + JSON.stringify(error));
     });
   }
@@ -76,7 +80,7 @@ export namespace UpdateUtils {
    * @param err 返回信息
    * @param return 接口调用结果
    */
-  export function isSuccessCallback(result: unknown, err: any): boolean {
-    return result && !err;
+  export function isSuccessCallback(result: Object, err: Object): boolean {
+    return !!result && !err;
   }
 }

@@ -16,9 +16,10 @@
 import Extension from '@ohos.app.ability.ServiceExtensionAbility';
 import type Want from '@ohos.app.ability.Want';
 import type rpc from '@ohos.rpc';
-import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
-import { OtaUpdateManager } from '@ohos/ota/src/main/ets/manager/OtaUpdateManager';
+import { CommonUtils } from '@ohos/common/src/main/ets/util/CommonUtils';
+import { OtaUpdateManager } from 'ota/src/main/ets/manager/OtaUpdateManager';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
+import type { BusinessError } from '@ohos/common/src/main/ets/const/update_const';
 import { ServiceExtStub } from './serviceStub';
 
 /**
@@ -36,7 +37,7 @@ export default class ServiceExtAbility extends Extension {
   private connectTimeoutId: number | null = null;
 
   onCreate(want: Want): void {
-    LogUtils.log(ServiceExtAbility.TAG, 'onCreate:' + FormatUtils.stringify(want));
+    LogUtils.log(ServiceExtAbility.TAG, 'onCreate:' + CommonUtils.stringify(want));
     globalThis.extensionContext = this.context; // when start ServiceExtAbility ,set context
   }
 
@@ -70,9 +71,9 @@ export default class ServiceExtAbility extends Extension {
     }, this.connectTimeout * 1000);
 
     let want: Want = {
-      parameters: FormatUtils.parseJson(message)
+      parameters: CommonUtils.parseJson(message)
     };
-    LogUtils.log(ServiceExtAbility.TAG, 'onConnect:' + FormatUtils.stringify(want));
+    LogUtils.log(ServiceExtAbility.TAG, 'onConnect:' + CommonUtils.stringify(want));
     OtaUpdateManager.getInstance().handleWant(want, globalThis.extensionContext);
   }
 
@@ -93,7 +94,7 @@ export default class ServiceExtAbility extends Extension {
       const terminateDelayTime = 2000;
       setTimeout(()=> {
         LogUtils.info(ServiceExtAbility.TAG, 'stopSelf');
-        this.context?.terminateSelf().catch((err) => {
+        this.context?.terminateSelf().catch((err: BusinessError) => {
           LogUtils.error(ServiceExtAbility.TAG, 'stopSelf err is ' + JSON.stringify(err));
         });
       }, terminateDelayTime);

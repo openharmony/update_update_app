@@ -14,7 +14,8 @@
  */
 
 import connection from '@ohos.net.connection';
-import { LogUtils } from '../util/LogUtils';
+import { BusinessError } from '../const/update_const';
+import { LogUtils } from './LogUtils';
 
 /**
  * 网络判断工具类
@@ -34,11 +35,11 @@ export namespace NetUtils {
         connection.getNetCapabilities(netHandle).then((info) => {
           LogUtils.log('NetUtils', 'getNetCapabilities data ' + JSON.stringify(info));
           resolve(info?.bearerTypes?.length !== 0);
-        }).catch((err) => {
+        }).catch((err: BusinessError) => {
           LogUtils.log('NetUtils', 'getNetCapabilities err ' + JSON.stringify(err));
           resolve(false);
         });
-      }).catch((err) => {
+      }).catch((err: BusinessError) => {
         LogUtils.log('NetUtils', 'getDefaultNet err ' + JSON.stringify(err));
         resolve(false);
       });
@@ -57,11 +58,11 @@ export namespace NetUtils {
         connection.getNetCapabilities(netHandle).then((info) => {
           LogUtils.log('NetUtils', 'getNetCapabilities data ' + JSON.stringify(info));
           resolve(info?.bearerTypes?.length === 1 && info?.bearerTypes?.[0] === connection.NetBearType.BEARER_CELLULAR);
-        }).catch((err) => {
+        }).catch((err: BusinessError) => {
           LogUtils.log('NetUtils', 'getNetCapabilities err ' + JSON.stringify(err));
           resolve(false);
         });
-      }).catch((err) => {
+      }).catch((err: BusinessError) => {
         LogUtils.log('NetUtils', 'getDefaultNet err ' + JSON.stringify(err));
         resolve(false);
       });

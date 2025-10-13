@@ -13,9 +13,72 @@
  * limitations under the License.
  */
 
+import update from '@ohos.update';
 import { DeviceUtils } from '@ohos/common/src/main/ets/util/DeviceUtils';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
+import { UpdateState } from '@ohos/common/src/main/ets/const/update_const';
+import { OtaUpdateManager } from '../manager/OtaUpdateManager';
+import RouterUtils from '../util/RouterUtils';
+
+/**
+ * 弹框操作接口
+ *
+ * @since 2022-06-05
+ */
+export interface DialogOperator {
+  /**
+   * 取消
+   */
+  onCancel(): void;
+
+  /**
+   * 确认
+   */
+  onConfirm(): void;
+}
+
+/**
+ * 重试检测动作
+ */
+class RetryCheckAction implements DialogOperator {
+  onConfirm(): void {
+    RouterUtils.singletonHomePage();
+  }
+  onCancel(): void {
+    RouterUtils.singletonHomePage();
+  }
+};
+
+export const retryCheckAction: DialogOperator = new RetryCheckAction();
+
+/**
+ * 重试下载动作
+ */
+class RetryDownloadAction implements DialogOperator {
+  onConfirm(): void {
+    OtaUpdateManager.getInstance().setUpdateState(UpdateState.CHECK_SUCCESS);
+  }
+  onCancel(): void {
+    OtaUpdateManager.getInstance().setUpdateState(UpdateState.CHECK_SUCCESS);
+  }
+};
+
+const retryDownloadAction: DialogOperator = new RetryDownloadAction();
+
+/**
+ * 重试安装动作
+ */
+class RetryUpgradeAction implements DialogOperator {
+  onConfirm(): void {
+    OtaUpdateManager.getInstance().setUpdateState(UpdateState.DOWNLOAD_SUCCESS);
+  }
+  onCancel(): void {
+    OtaUpdateManager.getInstance().setUpdateState(UpdateState.DOWNLOAD_SUCCESS);
+  }
+}
+
+const retryUpgradeAction: DialogOperator = new RetryUpgradeAction();
 
 /**
  * 弹框辅助者
@@ -24,28 +87,11 @@ import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
  */
 export namespace DialogHelper {
   /**
-   * 弹框操作接口
-   *
-   * @since 2022-06-05
-   */
-  export interface DialogOperator {
-    /**
-     * 取消
-     */
-    onCancel?: () => void;
-
-    /**
-     * 确认
-     */
-    onConfirm?: () => void;
-  }
-
-  /**
    * 网络弹框
    *
    * @param operator 回调
    */
-  export function displayNetworkDialog(operator: DialogOperator): void {
+  export function displayNetworkDialog(): void {
     AlertDialog.show(
       {
         title: $r('app.string.software_update'),
@@ -54,7 +100,8 @@ export namespace DialogHelper {
           value: FormatUtils.toUpperCase(globalThis.abilityContext, $r('app.string.cancel')),
           action: () => {
             logInfo('Callback when the first button is clicked');
-            operator.onCancel?.();
+            onCancel: () => {
+            };
           },
           backgroundColor: $r('sys.float.ohos_id_corner_radius_button')
         },
@@ -62,7 +109,9 @@ export namespace DialogHelper {
           value: $r('app.string.ok'),
           action: () => {
             logInfo('Callback when the second button is clicked');
-            operator.onConfirm?.();
+            onConfirm: () => {
+              OtaUpdateManager.getInstance().download(update.NetType.CELLULAR);
+            };
           },
           backgroundColor: $r('sys.float.ohos_id_corner_radius_button')
         },
@@ -84,8 +133,8 @@ export namespace DialogHelper {
    *
    * @param operator 回调
    */
-  export function displayUpgradeFailDialog(operator ?: DialogOperator): void {
-    defaultNoTitleDialog($r('app.string.update_fail'), operator);
+  export function displayUpgradeFailDialog(): void {
+    defaultNoTitleDialog($r('app.string.update_fail'), retryCheckAction);
   }
 
   /**
@@ -93,8 +142,8 @@ export namespace DialogHelper {
    *
    * @param operator 回调
    */
-  export function displayDownloadFailDialog(operator ?: DialogOperator): void {
-    defaultNoTitleDialog($r('app.string.download_fail'), operator);
+  export function displayDownloadFailDialog(): void {
+    defaultNoTitleDialog($r('app.string.download_fail'), retryCheckAction);
   }
 
   /**
@@ -102,8 +151,8 @@ export namespace DialogHelper {
    *
    * @param operator 回调
    */
-  export function displayNoNetworkDialog(operator ?: DialogOperator): void {
-    defaultKnowDialog($r('app.string.net_error_title'), $r('app.string.net_error_content'), operator);
+  export function displayNoNetworkDialog(): void {
+    defaultKnowDialog($r('app.string.net_error_title'), $r('app.string.net_error_content'));
   }
 
   /**
@@ -111,9 +160,19 @@ export namespace DialogHelper {
    *
    * @param operator 回调
    */
-  export function displayNotEnoughBatteryDialog(operator ?: DialogOperator): void {
+  export function displayNotEnoughBatteryDialog(): void {
     defaultKnowDialog($r('app.string.battery_not_enough_title'), $r('app.string.battery_not_enough_content',
-      FormatUtils.getNumberFormat(0.3)), operator);
+      FormatUtils.getNumberFormat(0.3)));
+  }
+
+/**
+   * 下载空间不足弹框
+   *
+   * @param operator 回调
+   */
+  export function displayDownloadNotEnoughSpaceDialog(): void {
+    defaultKnowDialog($r('app.string.space_not_enough_title'), $r('app.string.space_not_enough_content'),
+      retryDownloadAction);
   }
 
   /**
@@ -121,8 +180,9 @@ export namespace DialogHelper {
    *
    * @param operator 回调
    */
-  export function displayNotEnoughSpaceDialog(operator ?: DialogOperator): void {
-    defaultKnowDialog($r('app.string.space_not_enough_title'), $r('app.string.space_not_enough_content'), operator);
+  export function displayUpgradeNotEnoughSpaceDialog(): void {
+    defaultKnowDialog($r('app.string.space_not_enough_title'), $r('app.string.space_not_enough_content'),
+      retryUpgradeAction);
   }
 
   /**
@@ -130,8 +190,8 @@ export namespace DialogHelper {
    *
    * @param operator 回调
    */
-  export function displayVerifyFailDialog(operator ?: DialogOperator): void {
-    defaultNoTitleDialog($r('app.string.package_verify_fail'), operator);
+  export function displayVerifyFailDialog(): void {
+    defaultNoTitleDialog($r('app.string.package_verify_fail'), retryCheckAction);
   }
 
   /**
@@ -163,7 +223,7 @@ export namespace DialogHelper {
    * @param confirmText 确认按钮显示内容
    * @param operator 回调
    */
-  function showDialog(title: string | Resource, message: string | Resource, confirmText?: string | Resource,
+  function showDialog(title: string | Resource | null, message: string | Resource, confirmText?: string | Resource,
     operator ?: DialogOperator): void {
     AlertDialog.show(
       {
@@ -173,7 +233,7 @@ export namespace DialogHelper {
           value: confirmText,
           action: () => {
             logInfo('defaultKnowDialog button is clicked');
-            if (operator) {
+            if (operator && operator.onConfirm) {
               operator.onConfirm();
             }
           },
@@ -181,8 +241,8 @@ export namespace DialogHelper {
         },
         cancel: () => {
           logInfo('Closed callbacks');
-          if(operator) {
-            operator.onCancel();
+          if(operator && operator.onCancel) {
+            operator?.onCancel();
           }
         },
         alignment: DeviceUtils.getDialogLocation(),

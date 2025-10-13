@@ -27,11 +27,11 @@ import { HomeCardView } from '@ohos/common/src/main/ets/component/HomeCardView';
 import { CheckingDots } from '@ohos/common/src/main/ets/component/CheckingDots';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
-import RouterUtils from '@ohos/ota/src/main/ets/util/RouterUtils';
-import { VersionUtils } from '@ohos/ota/src/main/ets/util/VersionUtils';
-import { OtaUpdateManager } from '@ohos/ota/src/main/ets/manager/OtaUpdateManager';
-import { StateManager, UpdateAction } from '@ohos/ota/src/main/ets/manager/StateManager';
-import ToastUtils from '@ohos/ota/src/main/ets/util/ToastUtils';
+import RouterUtils from 'ota/src/main/ets/util/RouterUtils';
+import { VersionUtils } from 'ota/src/main/ets/util/VersionUtils';
+import { OtaUpdateManager } from 'ota/src/main/ets/manager/OtaUpdateManager';
+import { StateManager, UpdateAction } from 'ota/src/main/ets/manager/StateManager';
+import ToastUtils from 'ota/src/main/ets/util/ToastUtils';
 
 /**
  * 搜包的状态
@@ -56,20 +56,20 @@ struct Index {
   @State dotTextPlay: boolean = false;
   @State newVersionStatus: string = NewVersionStatus.NO_NEW_VERSION;
   @StorageProp('updateStatus')
-  private updateStatus: number = AppStorage.Get('updateStatus');
+  private updateStatus: number = AppStorage.Get('updateStatus') as number;
   private displayVersion: string = VersionUtils.getDisplayVersionForIndex();
   private videoController: VideoController = new VideoController();
-  private initUpdateStatus: number = OtaUpdateManager.getInstance().getUpdateState();
+  private initUpdateStatus: number | null | undefined = OtaUpdateManager.getInstance().getUpdateState();
   private actionCallBack: Array<() => void> = [];
   private checkTimes: number= 0;
-  private checkIntervalId: number;
+  private checkIntervalId: number | null = null;
   private checkLoopTimes: number = 0;
   @State private buttonText: string = '';
 
   /**
    * 是否已经有搜包结果
    */
-  private checkEndStatus: NewVersionStatus = null;
+  private checkEndStatus: NewVersionStatus | null = null;
 
   /**
    * 用来控制视频显示或者隐藏，解决卡顿
@@ -94,6 +94,7 @@ struct Index {
         RouterUtils.openNewVersionPage();
       }, 50);
     } else if (this.checkEndStatus == NewVersionStatus.NO_NEW_VERSION) {
+      this.log('afterNewVersionFound no new version');
       this.newVersionStatus = NewVersionStatus.NO_NEW_VERSION;
       this.newVersionActionText = $r('app.string.check_version_status_no_new');
     }
@@ -101,7 +102,7 @@ struct Index {
     return true;
   }
 
-  private notifyNewVersionStatus(newVersionStatus): void {
+  private notifyNewVersionStatus(newVersionStatus: NewVersionStatus): void {
     this.log('perform updateNewVersionStatus:' + newVersionStatus);
     this.checkEndStatus = newVersionStatus; // 延时更新
     if (newVersionStatus == NewVersionStatus.CHECKING) {
@@ -119,7 +120,8 @@ struct Index {
     this.checkLoopTimes = 0;
     this.notifyNewVersionStatus(NewVersionStatus.CHECKING);
     let upgradeData: UpgradeData<OtaStatus> = await OtaUpdateManager.getInstance().getOtaStatus();
-    let otaStatus: OtaStatus = upgradeData.callResult == UpgradeCallResult.OK ? upgradeData.data : null;
+    let otaStatus: OtaStatus | undefined | null = upgradeData.callResult ==
+      UpgradeCallResult.OK ? upgradeData.data : null;
     this.initUpdateStatus = otaStatus?.status;
     if (StateManager.isAllowExecute(this.updateStatus, UpdateAction.CHECK_NEW_VERSION)) {
       this.performCheckNewVersion();
@@ -152,7 +154,7 @@ struct Index {
         return;
       }
     }
-    let errorCode: ErrorCode = upgradeData.error?.data?.[0]?.errorCode;
+    let errorCode: ErrorCode | undefined = upgradeData.error?.data?.[0]?.errorCode;
     if (errorCode == ErrorCode.CHECK_SYSTEM_BUSY) {
       setTimeout(() => {
         if (this.checkLoopTimes >= UpdateConstant.CHECKING_RETRY_TIME) {
@@ -167,7 +169,7 @@ struct Index {
 
     if (errorCode == ErrorCode.CHECK_NETWORK_ERR) {
       this.actionCallBack.push(async () => {
-        let message = await globalThis.abilityContext.resourceManager.getString($r('app.string.network_err_toast').id);
+        let message: string = await globalThis.abilityContext.resourceManager.getString($r('app.string.network_err_toast').id);
         ToastUtils.showToast(message);
       })
     }
@@ -247,9 +249,9 @@ struct Index {
     }
     let currentStatus = OtaUpdateManager.getInstance().getUpdateState();
     this.log(`checkNewVersion, currentStatus = ${currentStatus} `);
-    if (this.initUpdateStatus != currentStatus) {
+    if (this.initUpdateStatus != currentStatus && currentStatus !== null) {
       const checkedStatus = [UpdateState.INIT, UpdateState.UPGRADE_FAILED, UpdateState.UPGRADE_SUCCESS];
-      return currentStatus in checkedStatus;
+      return checkedStatus.includes(currentStatus);
     }
     return false;
   }
@@ -263,9 +265,10 @@ struct Index {
       Column() {
         Scroll() {
           Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Start }) {
-            HomeCardView({ playVideo: this.displayVideo, videoController: this.videoController, onVideoFinished: () => {
+            HomeCardView({ playVideo: this.displayVideo, videoController: this.videoController, onVideoFinished:
+            (): boolean => {
               this.checkTimes++;
-              return this.onCheckAction.call(this);
+              return this.onCheckAction.bind(this)();
             } })
             Text(this.displayVersion)
               .fontSize($r('app.float.home_text_size_version_name'))

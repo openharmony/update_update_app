@@ -78,7 +78,7 @@ export namespace StateManager {
    * @param status 状态
    * @return 按钮点击行为
    */
-  export function getButtonClickAction(status: number): UpdateAction {
+  export function getButtonClickAction(status: number): UpdateAction | undefined {
     return OtaUpdateManager.getInstance().getStateObj(status).buttonClickAction;
   }
 
@@ -89,8 +89,8 @@ export namespace StateManager {
    * @return 实例对象
    */
   export function createInstance(status: OtaStatus | number): BaseState {
-    let state: number = (typeof status === 'number') ? status : status?.status;
-    let stateObject: BaseState = null;
+    let state: number = (typeof status === 'number') ? status : Number(status?.status);
+    let stateObject: BaseState | null = null;
     switch (state) {
       case UpdateState.DOWNLOAD_CANCEL: // fall through
       case UpdateState.CHECK_SUCCESS:
@@ -107,9 +107,6 @@ export namespace StateManager {
         break;
       case UpdateState.INSTALLING:
         stateObject = new Installing();
-        break;
-      case UpdateState.INSTALL_PAUSE:
-        stateObject = new InstallPaused();
         break;
       case UpdateState.INSTALL_FAILED:
         stateObject = new InstallFailed();
@@ -196,7 +193,7 @@ export class BaseState {
   /**
    * 状态对象
    */
-  public otaStatus: OtaStatus;
+  public otaStatus?: OtaStatus;
 
   /**
    * 进度
@@ -231,7 +228,7 @@ export class BaseState {
   /**
    * 按钮对应的升级行为
    */
-  public buttonClickAction: UpdateAction;
+  public buttonClickAction?: UpdateAction;
 
   /**
    * 数据刷新
@@ -240,8 +237,8 @@ export class BaseState {
    */
   refresh(otaStatus: OtaStatus): void {
     this.otaStatus = otaStatus;
-    if (this.otaStatus?.percent) {
-      this.percent = otaStatus?.percent;
+    if (this.otaStatus?.percent !== undefined && this.otaStatus?.percent !== null) {
+      this.percent = otaStatus?.percent as number;
     }
   }
 
@@ -283,10 +280,10 @@ export class CheckSuccess extends BaseState {
     this.buttonClickAction = UpdateAction.DOWNLOAD;
   }
 
-  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
+  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
     if (this.otaStatus?.endReason) {
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
-      switch (this.otaStatus.endReason) {
+      switch (Number(this.otaStatus.endReason)) {
         case ErrorCode.NETWORK_ERROR:
           let message = await context.resourceManager.getString($r('app.string.network_err_toast').id);
           ToastUtils.showToast(message);
@@ -318,7 +315,7 @@ export class Downloading extends BaseState {
     this.buttonClickAction = UpdateAction.CANCEL;
   }
 
-  async notify(context?: common.Context): Promise<void> {
+  async notify(context: common.Context): Promise<void> {
     if (this.percent == 100) {
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
       return;
@@ -327,35 +324,6 @@ export class Downloading extends BaseState {
       let versionName = await VersionUtils.obtainNewVersionName(globalThis.cachedNewVersionInfo);
       await UpgradeAdapter.getInstance().getNotifyInstance()?.showDownloading(versionName, this.percent, context);
     }
-  }
-}
-
-export class InstallPaused extends BaseState {
-  constructor() {
-    super();
-    this.actionSet.push(UpdateAction.SHOW_NEW_VERSION);
-    this.actionSet.push(UpdateAction.SHOW_PROCESS_VIEW);
-
-    this.actionSet.push(UpdateAction.INSTALL);
-
-    this.state = UpdateState.INSTALL_PAUSE;
-    this.downloadStateText = $r('app.string.download_status_download_pause');
-    this.buttonText = $r('app.string.continue');
-    this.buttonClickAction = UpdateAction.INSTALL;
-
-    this.isButtonClickable = true;
-  }
-
-  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
-    if (!VersionUtils.isInNewVersionPage()) {
-      return;
-    }
-    if (this.otaStatus?.endReason) {
-      await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
-      let message = await context.resourceManager.getString($r('app.string.install_pause_message').id);
-      ToastUtils.showToast(message);
-    }
-
   }
 }
 
@@ -376,13 +344,13 @@ export class DownloadPause extends BaseState {
     this.buttonClickAction = UpdateAction.RESUME;
   }
 
-  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
+  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
     if (!VersionUtils.isInNewVersionPage()) {
       return;
     }
     if (this.otaStatus?.endReason) {
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
-      switch (this.otaStatus?.endReason) {
+      switch (Number(this.otaStatus?.endReason)) {
         case ErrorCode.NETWORK_ERROR:
           if (eventId == update.EventId.EVENT_DOWNLOAD_PAUSE) {
             DialogUtils.showDownloadNoNetworkDialog(context, this.otaStatus, eventId);
@@ -421,9 +389,9 @@ export class DownloadFailed extends BaseState {
     this.buttonClickAction = UpdateAction.CANCEL;
   }
 
-  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
+  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
     await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
-    switch (this.otaStatus.endReason) {
+    switch (Number(this.otaStatus?.endReason)) {
       case ErrorCode.VERIFY_PACKAGE_FAIL:
         DialogUtils.showVerifyFailDialog(context, this.otaStatus, eventId);
         break;
@@ -452,7 +420,7 @@ export class DownloadSuccess extends BaseState {
     this.buttonClickAction = UpdateAction.INSTALL;
   }
 
-  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
+  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
     let isABInstall = await VersionUtils.isABInstall();
     LogUtils.info('StateManager:', 'notify ab flag ' + isABInstall + ',eventId:' + eventId);
     if (eventId == update.EventId.EVENT_DOWNLOAD_SUCCESS && isABInstall) {
@@ -470,7 +438,7 @@ export class DownloadSuccess extends BaseState {
     }
 
     if (this.otaStatus?.endReason) {
-      switch (this.otaStatus.endReason) {
+      switch (Number(this.otaStatus.endReason)) {
         case ErrorCode.NO_ENOUGH_MEMORY:
           DialogUtils.showUpgradeNotEnoughSpaceDialog(context, this.otaStatus, eventId);
           break;
@@ -512,7 +480,7 @@ export class Installing extends BaseState {
     }
   }
 
-  async notify(context?: common.Context): Promise<void> {
+  async notify(context: common.Context): Promise<void> {
     if (this.percent == 100) {
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
       return;
@@ -542,7 +510,7 @@ export class InstallSuccess extends BaseState {
     this.buttonClickAction = UpdateAction.REBOOT;
   }
 
-  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
+  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
     if (eventId == update.EventId.EVENT_APPLY_WAIT) {
       LogUtils.info('StateManager', 'ab install complete to count down');
       if (!VersionUtils.isInNewVersionPage()) {
@@ -569,14 +537,14 @@ export class InstallFailed extends BaseState {
     this.isButtonClickable = false;
   }
 
-  async notify(context?: common.Context): Promise<void> {
+  async notify(context: common.Context): Promise<void> {
     AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
     await UpgradeAdapter.getInstance().getNotifyInstance()?.isServiceReady();
     await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
     if (VersionUtils.isInNewVersionPage()) {
       DialogUtils.showUpgradeFailDialog(context, this.otaStatus);
     } else {
-      let versionName = globalThis.lastVersionName;
+      let versionName: string = globalThis.lastVersionName as string;
       LogUtils.log('StateManager', 'InstallFailed versionName is ' + versionName);
       await UpgradeAdapter.getInstance().getNotifyInstance()?.showUpgradeFailed(versionName, context);
     }
@@ -621,13 +589,13 @@ export class UpgradeSuccess extends BaseState {
     this.isButtonClickable = false;
   }
 
-  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
+  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
     if (eventId == update.EventId.EVENT_UPGRADE_SUCCESS) {
       LogUtils.info('StateManager', 'Upgrade success');
       AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
       await UpgradeAdapter.getInstance().getNotifyInstance()?.isServiceReady();
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
-      let versionName = globalThis.lastVersionName;
+      let versionName: string = globalThis.lastVersionName as string;
       LogUtils.info('StateManager', 'UpgradeSuccess versionName is ' + versionName);
       await UpgradeAdapter.getInstance().getNotifyInstance()?.showUpgradeSuccess(versionName, context);
     } else {

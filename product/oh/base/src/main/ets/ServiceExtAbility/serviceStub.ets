@@ -15,7 +15,7 @@
 
 import rpc from '@ohos.rpc';
 import update from '@ohos.update';
-import { LogUtils } from '@ohos/common';
+import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 
 /**
  * ServiceExtAbility 远端代理存根
