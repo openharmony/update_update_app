@@ -39,6 +39,8 @@ import { StateManager, UpdateAction } from 'ota/src/main/ets/manager/StateManage
 import { UpgradeAdapter } from 'ota/src/main/ets/UpgradeAdapter';
 import { VersionUtils } from 'ota/src/main/ets/util/VersionUtils';
 import { NotificationHelper } from 'ota/src/main/ets/notify/NotificationHelper';
+import prompt from '@ohos.prompt';
+import RouterUtils from 'ota/src/main/ets/util/RouterUtils';
 
 /**
  * 新版本页面
