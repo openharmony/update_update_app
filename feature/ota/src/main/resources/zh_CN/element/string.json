@@ -13,6 +13,10 @@
             "value":"安装"
         },
         {
+            "name":"btn_pause",
+            "value":"暂停"
+        },
+        {
             "name":"title_new_version",
             "value":"新版本"
         },
@@ -139,6 +143,14 @@
         {
             "name":"install_success_message",
             "value":"新版本安装成功"
+        },
+        {
+            "name":"install_pause_message",
+            "value":"安装暂停，请重试"
+        },
+        {
+            "name":"install_pause",
+            "value":"安装暂停"
         },
         {
             "name":"install_fail_message",

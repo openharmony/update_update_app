@@ -108,6 +108,9 @@ export namespace StateManager {
       case UpdateState.INSTALLING:
         stateObject = new Installing();
         break;
+      case UpdateState.INSTALL_PAUSE:
+        stateObject = new InstallPaused();
+        break;
       case UpdateState.INSTALL_FAILED:
         stateObject = new InstallFailed();
         break;
@@ -323,6 +326,34 @@ export class Downloading extends BaseState {
     if (!VersionUtils.isInNewVersionPage()) {
       let versionName = await VersionUtils.obtainNewVersionName(globalThis.cachedNewVersionInfo);
       await UpgradeAdapter.getInstance().getNotifyInstance()?.showDownloading(versionName, this.percent, context);
+    }
+  }
+}
+
+export class InstallPaused extends BaseState {
+  constructor() {
+    super();
+    this.actionSet.push(UpdateAction.SHOW_NEW_VERSION);
+    this.actionSet.push(UpdateAction.SHOW_PROCESS_VIEW);
+
+    this.actionSet.push(UpdateAction.INSTALL);
+
+    this.state = UpdateState.INSTALL_PAUSE;
+    this.downloadStateText = $r('app.string.download_status_download_pause');
+    this.buttonText = $r('app.string.continue');
+    this.buttonClickAction = UpdateAction.INSTALL;
+
+    this.isButtonClickable = true;
+  }
+
+  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
+    if (!VersionUtils.isInNewVersionPage()) {
+      return;
+    }
+    if (this.otaStatus?.endReason) {
+      await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
+      let message = await context.resourceManager.getString($r('app.string.install_pause_message').id);
+      ToastUtils.showToast(message);
     }
   }
 }

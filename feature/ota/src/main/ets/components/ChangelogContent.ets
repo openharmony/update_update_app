@@ -119,7 +119,7 @@ export struct ChangelogContent {
         });
       });
       this.isParseChangelogFinished = true;
-      this.changelogInfoList = isParseSuccess ? list : [];
+      this.changelogInfoList = isParseSuccess ? list : null;
     } else {
       this.logInfo('description is null');
     }

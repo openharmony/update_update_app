@@ -13,6 +13,10 @@
             "value":"Install"
         },
         {
+            "name":"btn_pause",
+            "value":"pause"
+        },
+        {
             "name":"title_new_version",
             "value":"New version"
         },
@@ -139,6 +143,14 @@
         {
             "name":"install_success_message",
             "value":"Update successfully installed"
+        },
+        {
+            "name":"install_pause_message",
+            "value":"Update pause. Please try again."
+        },
+        {
+            "name":"install_pause",
+            "value":"Update pause"
         },
         {
             "name":"install_fail_message",
