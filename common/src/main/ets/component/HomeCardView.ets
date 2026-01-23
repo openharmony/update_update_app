@@ -14,6 +14,7 @@
  */
 
 import {DeviceUtils} from '../util/DeviceUtils'
+import {LogUtils} from '../util/LogUtils'
 
 /**
  * 主界面LOGO视频/图片
@@ -60,6 +61,7 @@ export struct HomeCardView {
         .clip(true)
         .objectFit(ImageFit.Cover)
         .onFinish(() => {
+          this.log('video onFinished')
           if (this.onVideoFinished) {
             if (!this.onVideoFinished()) {
               this.videoController.start();
@@ -86,5 +88,9 @@ export struct HomeCardView {
     } else {
       this.showLogoMedia({ minWidth: $r('app.float.home_card_min_width'), maxWidth: $r('app.float.home_card_max_width')})
     }
+  }
+
+  private log(message: string): void {
+    LogUtils.log('HomeCardView', message)
   }
 }
