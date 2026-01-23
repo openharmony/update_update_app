@@ -14,7 +14,7 @@
  */
 
 import update from '@ohos.update';
-import { StartOptions } from '@kit.AbilityKit';
+import { StartOptions, Want } from '@kit.AbilityKit';
 import type { BusinessError } from '../const/update_const';
 import type common from '@ohos.app.ability.common';
 import { LogUtils } from './LogUtils';
