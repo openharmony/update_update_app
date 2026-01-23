@@ -168,6 +168,7 @@ struct Index {
     }
 
     if (errorCode == ErrorCode.CHECK_NETWORK_ERR) {
+      this.log(`check network error`)
       this.actionCallBack.push(async () => {
         let message: string = await globalThis.abilityContext.resourceManager.getString($r('app.string.network_err_toast').id);
         ToastUtils.showToast(message);
@@ -183,6 +184,7 @@ struct Index {
    * @param running
    */
   private uiCheckLoop(running: boolean): void {
+    this.log(`uiCheckLoop, running ${running}`)
     this.displayVideo = running;
     this.dotTextPlay = running;
     if (this.checkIntervalId != null) {
@@ -316,6 +318,7 @@ struct Index {
         .opacity(this.newVersionStatus != NewVersionStatus.CHECKING ? 1 : 0.4)
         .onClick(()=>{
           if(this.newVersionStatus != NewVersionStatus.CHECKING) {
+            this.log(`checkNewVersion, click buttonText`)
             this.checkNewVersionIfNeed()
           }
         })
