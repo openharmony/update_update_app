@@ -14,7 +14,7 @@
  */
 
 import type common from '@ohos.app.ability.common';
-import { StartOptions } from '@kit.AbilityKit';
+import { StartOptions, Want } from '@kit.AbilityKit';
 import {
   Action,
   PACKAGE_NAME,
