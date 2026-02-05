@@ -22,6 +22,7 @@ import type window from '@ohos.window';
 import type { Configuration } from '@ohos.app.ability.Configuration';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import type { OtaStatus } from '@ohos/common/src/main/ets/const/update_const';
+import { OtaUpdateManager } from 'ota/src/main/ets/manager/OtaUpdateManager';
 import { StateManager } from 'ota/src/main/ets/manager/StateManager';
 import { NotificationHelper } from 'ota/src/main/ets/notify/NotificationHelper';
 
@@ -90,11 +91,13 @@ export default class MainAbility extends Ability {
       this.routePage();
       this.handleReceivedUpdatePageMessage();
     }, MainAbility.WAITING_PREPARE_TIME); // for env prepare
+    OtaUpdateManager.getInstance().on()
   }
 
   onBackground(): void {
     globalThis.AbilityStatus = null;
     this.log('BaseAbility onBackground');
+    OtaUpdateManager.getInstance().off()
   }
 
   private routePage(): void {
