@@ -568,6 +568,13 @@ export class InstallFailed extends BaseState {
     this.isButtonClickable = false;
   }
 
+  async setInstallProgress() {
+    let isABStreamInstall = await VersionUtils.isABStreamInstall();
+    if (!isABStreamInstall) {
+      this.percent = 100;
+    }
+  }
+
   async notify(context: common.Context): Promise<void> {
     AppStorage.Set('installStatusRefresh', JSON.stringify(this.otaStatus));
     await UpgradeAdapter.getInstance().getNotifyInstance()?.isServiceReady();
