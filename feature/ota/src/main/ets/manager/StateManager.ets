@@ -563,9 +563,16 @@ export class InstallFailed extends BaseState {
     this.actionSet.push(UpdateAction.CHECK_NEW_VERSION);
     this.actionSet.push(UpdateAction.SHOW_PROCESS_VIEW);
     this.state = UpdateState.INSTALL_FAILED;
-    this.percent = 100;
+    this.setInstallProgress();
     this.buttonText = $r('app.string.btn_upgrade');
     this.isButtonClickable = false;
+  }
+
+  async setInstallProgress() {
+    let isABStreamInstall = await VersionUtils.isABStreamInstall();
+    if (!isABStreamInstall) {
+      this.percent = 100;
+    }
   }
 
   async notify(context: common.Context): Promise<void> {
