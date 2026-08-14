@@ -364,7 +364,13 @@ struct NewVersion {
     if (this.isABInstall()) {
       return;
     }
-    let otaStatus: OtaStatus = JSON.parse(this.installStatusRefresh);
+    let otaStatus: OtaStatus;
+    try {
+      otaStatus = JSON.parse(this.installStatusRefresh);
+    } catch (e) {
+      LogUtils.error('NewVersion', 'parse otaStatus to json failed');
+      return;
+    }
     let status: UpdateState | undefined = otaStatus?.status;
     if (status === UpdateState.INSTALL_FAILED || status === UpdateState.UPGRADE_FAILED ||
       status === UpdateState.UPGRADE_SUCCESS) {

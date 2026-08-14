@@ -76,7 +76,9 @@ export struct CountDownInstallDialogBuilder {
   }
 
   aboutToDisappear() {
-
+    if (this.intervalID != null) {
+      clearInterval(this.intervalID);
+    }
   }
 
   private getCount() {

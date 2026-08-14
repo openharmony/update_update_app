@@ -97,7 +97,12 @@ export struct ChangelogContent {
     this.logInfo('parseChangelog');
     let list: ChangelogInfo[] | null = null;
     if (this.description) {
-      list = JSON.parse(this.description);
+      try {
+        list = JSON.parse(this.description);
+      } catch (e) {
+        LogUtils.error('ChangelogContent', 'parse description to json failed');
+        return;
+      }
     }
     if (list) {
       this.logInfo('aboutToAppear parseXml');
