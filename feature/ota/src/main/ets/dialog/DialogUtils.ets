@@ -109,7 +109,6 @@ export class DialogUtils {
    * @param context 上下文
    */
   // 新增延迟10s后弹出功能可能不在前台，所以注释装饰器
-  // @foregroundCheck()
   static showDownloadNoNetworkDialog(context: common.Context, otaStatus: OtaStatus,
     eventId?: update.EventId): void {
     LogUtils.log('DialogUtils', 'showDownloadNoNetworkDialog');

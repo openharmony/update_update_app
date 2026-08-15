@@ -178,7 +178,8 @@ export class NotificationHelper implements INotify {
    * @param context 上下文
    */
   async showDownloadPaused(version: string, progress: number, context: common.Context): Promise<void> {
-    let pausedText: string = await context.resourceManager.getString($r('app.string.download_status_download_pause').id);
+    let pausedText: string =
+      await context.resourceManager.getString($r('app.string.download_status_download_pause').id);
     let request: notification.NotificationRequest = {
       content: {
         notificationContentType: notification.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT,
@@ -333,7 +334,8 @@ export class NotificationHelper implements INotify {
    * @param context 实际上下文
    */
   async showNightUpgradeNotice(context: common.Context): Promise<void> {
-    let description: string = await context.resourceManager.getString($r('app.string.setting_auto_update_description').id);
+    let description: string =
+      await context.resourceManager.getString($r('app.string.setting_auto_update_description').id);
     let detailText: string = await context.resourceManager.getString($r('app.string.detail_info').id);
     let installText: string = await context.resourceManager.getString($r('app.string.btn_install_now').id);
     let request: notification.NotificationRequest = {
