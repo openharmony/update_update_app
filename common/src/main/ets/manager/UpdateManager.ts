@@ -436,8 +436,8 @@ export class UpdateManager implements IUpdate {
       this.otaUpdater?.setUpgradePolicy(policy).then(() => {
         resolve();
       }).catch((err: BusinessError) => {
-        this.logError('setUpdatePolicy err: ' + JSON.stringify(err))
-        reject(err)
+        this.logError('setUpdatePolicy err: ' + JSON.stringify(err));
+        reject(err);
       })
     })
   }
