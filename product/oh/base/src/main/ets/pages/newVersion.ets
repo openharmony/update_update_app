@@ -372,7 +372,6 @@ struct NewVersion {
       Column() {
         Scroll() {
           Column() {
-            // ProgressContent();
             Row() {
               Image($r('app.media.home_bg'))
                 .width('100%')
