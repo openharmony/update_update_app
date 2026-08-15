@@ -69,11 +69,23 @@
       "value": "24vp"
     },
     {
+      "name": "title_bar_icon_background_height",
+      "value": "40vp"
+    },
+    {
+      "name": "title_bar_icon_background_width",
+      "value": "40vp"
+    },
+    {
       "name": "title_bar_icon_margin_left",
-      "value": "24vp"
+      "value": "16vp"
     },
     {
       "name": "title_bar_icon_margin_right",
+      "value": "24vp"
+    },
+    {
+      "name": "title_bar_symbol_font_size",
       "value": "24vp"
     },
     {
@@ -95,6 +107,10 @@
     {
       "name": "index_dot_width",
       "value": "18vp"
+    },
+    {
+      "name": "page_left_or_right_margin",
+      "value": "16vp"
     },
     {
       "name": "progress_stroke_width",
@@ -124,7 +140,14 @@
       "name": "progress_logo_other_text_margin_top",
       "value": "16vp"
     },
-
+    {
+      "name": "setting_border_radius",
+      "value": "16vp"
+    },
+    {
+      "name": "setting_options_height",
+      "value": "56vp"
+    },
     {
       "name": "setting_options_margin_top",
       "value": "8vp"

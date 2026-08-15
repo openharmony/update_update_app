@@ -14,6 +14,7 @@
  */
 
 import type common from '@ohos.app.ability.common';
+import Settings from '@ohos.settings';
 import update from '@ohos.update';
 import { ErrorCode, OtaStatus, UpdateState } from '@ohos/common/src/main/ets/const/update_const';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
@@ -22,7 +23,28 @@ import { OtaUpdateManager } from '../manager/OtaUpdateManager';
 import VersionUtils from '../util/VersionUtils';
 import ToastUtils from '../util/ToastUtils';
 import { UpgradeAdapter } from '../UpgradeAdapter';
-import { NotificationManager } from '../notify/NotificationManager';
+import { SceneBoardDialogManager, SceneBoardDialogType } from '../notify/SceneBoardDialogManager';
+
+const SETTINGS_DEVICE_PROVISIONED = 'device_provisioned';
+const SETTINGS_USER_SETUP_COMPLETE = 'user_setup_complete';
+const SETTINGS_IS_OTA_FINISHED = 'is_ota_finished';
+
+function isInOobe(context: common.Context): boolean {
+  try {
+    const deviceProvisioned = Settings.getValueSync(context, SETTINGS_DEVICE_PROVISIONED, '0',
+      Settings.domainName.DEVICE_SHARED);
+    const userSetupComplete = Settings.getValueSync(context, SETTINGS_USER_SETUP_COMPLETE, '0',
+      Settings.domainName.USER_SECURITY);
+    const isOtaFinished = Settings.getValueSync(context, SETTINGS_IS_OTA_FINISHED, '1',
+      Settings.domainName.USER_SECURITY);
+    const result = !(deviceProvisioned === '1' && userSetupComplete === '1' && isOtaFinished === '1');
+    LogUtils.info('StateManager', `isInOobe=${result}`);
+    return result;
+  } catch (err) {
+    LogUtils.error('StateManager', `isInOobe query failed: ${JSON.stringify(err)}`);
+    return true;
+  }
+}
 
 /**
  * 状态工厂
@@ -263,8 +285,12 @@ export class Init extends BaseState {
     this.actionSet.push(UpdateAction.CHECK_NEW_VERSION);
   }
 
-  async notify(): Promise<void> {
+  async notify(context?: common.Context, eventId?: update.EventId): Promise<void> {
     await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
+    // 升级包失效时清空通知栏
+    if (context && eventId == update.EventId.EVENT_TASK_CANCEL) {
+      DialogUtils.showVersionInfoChangedDialog(context, this.otaStatus, eventId);
+    }
   }
 }
 
@@ -298,6 +324,25 @@ export class CheckSuccess extends BaseState {
           DialogUtils.showDownloadFailDialog(context, this.otaStatus, eventId);
           break;
       }
+      return;
+    }
+    const isBackgroundReminder = globalThis.AbilityStatus !== 'ON_FOREGROUND' &&
+      (eventId === update.EventId.EVENT_DOWNLOAD_WAIT || eventId === update.EventId.EVENT_TASK_RECEIVE);
+    if (isBackgroundReminder && isInOobe(context)) {
+      LogUtils.info('StateManager', 'OOBE is not complete, skip download reminder.');
+      return;
+    }
+    if (eventId === update.EventId.EVENT_DOWNLOAD_WAIT && globalThis.AbilityStatus !== 'ON_FOREGROUND') {
+      LogUtils.info('StateManager', 'Check success in background, show download reminder dialog.');
+      await SceneBoardDialogManager.showDialog(context, {
+        dialogType: SceneBoardDialogType.DOWNLOAD_REMINDER
+      });
+      return;
+    }
+    if (eventId === update.EventId.EVENT_TASK_RECEIVE && globalThis.AbilityStatus !== 'ON_FOREGROUND') {
+      LogUtils.info('StateManager', 'Download reminder reached notification threshold, show notification.');
+      const versionName = await VersionUtils.obtainNewVersionName(globalThis.cachedNewVersionInfo);
+      await UpgradeAdapter.getInstance().getNotifyInstance()?.showDownloadReminder(versionName, context);
     }
   }
 }
@@ -318,7 +363,10 @@ export class Downloading extends BaseState {
     this.buttonClickAction = UpdateAction.CANCEL;
   }
 
-  async notify(context: common.Context): Promise<void> {
+  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
+    if (eventId == update.EventId.EVENT_DOWNLOAD_RESUME) {
+      DialogUtils.clearDownloadNoNetworkDialog();
+    }
     if (this.percent == 100) {
       await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
       return;
@@ -376,29 +424,50 @@ export class DownloadPause extends BaseState {
   }
 
   async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
-    if (!VersionUtils.isInNewVersionPage()) {
+    const otaStatus = this.otaStatus;
+    if (!otaStatus) {
       return;
     }
-    if (this.otaStatus?.endReason) {
-      await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
-      switch (Number(this.otaStatus?.endReason)) {
-        case ErrorCode.NETWORK_ERROR:
-          if (eventId == update.EventId.EVENT_DOWNLOAD_PAUSE) {
-            DialogUtils.showDownloadNoNetworkDialog(context, this.otaStatus, eventId);
-          } else {
-            let message = await context.resourceManager.getString($r('app.string.network_err_toast').id);
-            ToastUtils.showToast(message);
-          }
-          break;
-        case ErrorCode.NETWORK_NOT_ALLOW:
-          if (eventId == update.EventId.EVENT_DOWNLOAD_PAUSE) {
-            DialogUtils.showDownloadNoNetworkDialog(context, this.otaStatus, eventId);
-          }
-          break;
-        default:
-          DialogUtils.showDownloadFailDialog(context, this.otaStatus, eventId);
-          break;
+    const isDownloadPauseEvent = eventId == update.EventId.EVENT_DOWNLOAD_PAUSE;
+    if (isDownloadPauseEvent) {
+      if (VersionUtils.isInNewVersionPage()) {
+        await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
+      } else {
+        let versionName = await VersionUtils.obtainNewVersionName(globalThis.cachedNewVersionInfo);
+        await UpgradeAdapter.getInstance().getNotifyInstance()?.showDownloadPaused(versionName, this.percent, context);
       }
+    }
+    if (!VersionUtils.isInNewVersionPage()) {
+      if (globalThis.AbilityStatus !== 'ON_FOREGROUND' && isDownloadPauseEvent) {
+        DialogUtils.delayShowDownloadNoNetworkDialog(context, otaStatus, eventId);
+      }
+      return;
+    }
+    if (!otaStatus.endReason) {
+      if (isDownloadPauseEvent) {
+        DialogUtils.delayShowDownloadNoNetworkDialog(context, otaStatus, eventId);
+      }
+      return;
+    }
+    switch (Number(otaStatus.endReason)) {
+      case ErrorCode.NETWORK_ERROR:
+        if (isDownloadPauseEvent) {
+          DialogUtils.delayShowDownloadNoNetworkDialog(context, otaStatus, eventId);
+        } else {
+          await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
+          let message = await context.resourceManager.getString($r('app.string.network_err_toast').id);
+          ToastUtils.showToast(message);
+        }
+        break;
+      case ErrorCode.NETWORK_NOT_ALLOW:
+        if (isDownloadPauseEvent) {
+          DialogUtils.delayShowDownloadNoNetworkDialog(context, otaStatus, eventId);
+        }
+        break;
+      default:
+        await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
+        DialogUtils.showDownloadFailDialog(context, otaStatus, eventId);
+        break;
     }
   }
 }
@@ -424,6 +493,10 @@ export class DownloadFailed extends BaseState {
     await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
     switch (Number(this.otaStatus?.endReason)) {
       case ErrorCode.VERIFY_PACKAGE_FAIL:
+        await UpgradeAdapter.getInstance().getNotifyInstance()?.showVerifyFailed(context);
+        if (globalThis.AbilityStatus !== 'ON_FOREGROUND') {
+          break;
+        }
         DialogUtils.showVerifyFailDialog(context, this.otaStatus, eventId);
         break;
       default:
@@ -454,17 +527,20 @@ export class DownloadSuccess extends BaseState {
   async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
     let isABInstall = await VersionUtils.isABInstall();
     LogUtils.info('StateManager:', 'notify ab flag ' + isABInstall + ',eventId:' + eventId);
-    if (eventId == update.EventId.EVENT_DOWNLOAD_SUCCESS && isABInstall) {
-      OtaUpdateManager.getInstance().upgrade(update.Order.INSTALL);
+    if (eventId == update.EventId.EVENT_DOWNLOAD_SUCCESS) {
+      if (isABInstall) {
+        OtaUpdateManager.getInstance().upgrade(update.Order.INSTALL);
+        return;
+      }
+      if (VersionUtils.isInNewVersionPage()) {
+        AppStorage.Set('isClickInstall', 1);
+      }
       return;
     }
 
     if (eventId == update.EventId.EVENT_UPGRADE_WAIT && !isABInstall) {
-      LogUtils.info('StateManager', 'manual download complete to count down');
-      if (!VersionUtils.isInNewVersionPage()) {
-        NotificationManager.startToNewVersion(context);
-      }
-      AppStorage.Set('isClickInstall', 1);
+      LogUtils.info('StateManager', 'download complete, show night upgrade notice');
+      await UpgradeAdapter.getInstance().getNotifyInstance()?.showNightUpgradeNotice(context);
       return;
     }
 
@@ -541,13 +617,12 @@ export class InstallSuccess extends BaseState {
     this.buttonClickAction = UpdateAction.REBOOT;
   }
 
-  async notify(context: common.Context, eventId?: update.EventId): Promise<void> {
+  async notify(_context: common.Context, eventId?: update.EventId): Promise<void> {
     if (eventId == update.EventId.EVENT_APPLY_WAIT) {
-      LogUtils.info('StateManager', 'ab install complete to count down');
-      if (!VersionUtils.isInNewVersionPage()) {
-        NotificationManager.startToNewVersion(context);
+      LogUtils.info('StateManager', 'AB install complete, handle countdown only in new version page.');
+      if (VersionUtils.isInNewVersionPage()) {
+        AppStorage.Set('isClickInstall', 1);
       }
-      AppStorage.Set('isClickInstall', 1);
     }
   }
 }

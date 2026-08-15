@@ -35,6 +35,7 @@ import VersionUtils from '../util/VersionUtils';
 import { CommonUtils } from '@ohos/common/src/main/ets/util/CommonUtils';
 import { UpgradeAdapter } from '../UpgradeAdapter';
 import { FormatUtils } from '@ohos/common/src/main/ets/util/FormatUtils';
+import { SettingsSyncUtils } from '../util/SettingsSyncUtils';
 
 /**
  * 升级接口管理类
@@ -145,12 +146,15 @@ export class OtaUpdateManager {
   async checkNewVersion(): Promise<UpgradeData<update.CheckResult>> {
     return new Promise((resolve, reject) => {
       this.updateManager.checkNewVersion().then((result: UpgradeData<update.CheckResult>) => {
-        if (result?.callResult === UpgradeCallResult.OK) {
-          globalThis.cachedNewVersionInfo = result?.data?.newVersionInfo;
-          resolve(result);
-        } else {
-          resolve(result);
+        if (result?.data) {
+          const hasNewVersion: boolean = Boolean(result.data.isExistNewVersion);
+          globalThis.cachedNewVersionInfo = hasNewVersion ? result.data.newVersionInfo : undefined;
+          SettingsSyncUtils.syncCheckResult(hasNewVersion, globalThis.abilityContext);
+        } else if (result?.callResult === UpgradeCallResult.OK) {
+          globalThis.cachedNewVersionInfo = undefined;
+          SettingsSyncUtils.syncReset(globalThis.abilityContext);
         }
+        resolve(result);
       });
     });
   }
@@ -222,6 +226,7 @@ export class OtaUpdateManager {
   async cancel(): Promise<void>  {
     this.setUpdateState(UpdateState.CHECK_SUCCESS);
     this.setDownloadProgress(0);
+    SettingsSyncUtils.syncCancel(globalThis.abilityContext);
     await UpgradeAdapter.getInstance().getNotifyInstance()?.cancelAll();
     this.updateManager.cancel();
   }
@@ -233,6 +238,25 @@ export class OtaUpdateManager {
    */
   async getCurrentVersionInfo(): Promise<UpgradeData<update.CurrentVersionInfo>> {
     return this.updateManager.getCurrentVersionInfo();
+  }
+
+  /**
+   * 获取升级策略
+   *
+   * @returns resolve 升级策略/reject 错误信息
+   */
+  async getUpdatePolicy(): Promise<update.UpgradePolicy> {
+    return this.updateManager.getUpdatePolicy();
+  }
+
+  /**
+   * 设置升级策略
+   *
+   * @param policy 升级策略
+   * @returns resolve 设置结果/reject 错误信息
+   */
+  async setUpdatePolicy(policy: update.UpgradePolicy): Promise<void> {
+    await this.updateManager.setUpdatePolicy(policy);
   }
 
   /**
@@ -295,6 +319,12 @@ export class OtaUpdateManager {
       this.stateObj = StateManager.createInstance(otaStatus);
     }
     this.stateObj.refresh(otaStatus);
+    if (otaStatus.status === UpdateState.DOWNLOADING || otaStatus.status === UpdateState.DOWNLOAD_PAUSE) {
+      let currentProgress: number = this.getDownloadProgress() ?? 0;
+      if (currentProgress > this.stateObj.percent) {
+        this.stateObj.percent = currentProgress;
+      }
+    }
     this.lastStatus = otaStatus.status;
     this.setUpdateState(this.stateObj.state);
     this.setDownloadProgress(this.stateObj.percent);
@@ -318,6 +348,12 @@ export class OtaUpdateManager {
   private async handleMessage(message: Message): Promise<void> {
     let eventInfo: CustomEventInfo = message.eventInfo as CustomEventInfo;
     let otaStatus: OtaStatus = this.getFormattedOtaStatus(eventInfo);
+    const previousEndReason = this.stateObj?.otaStatus?.endReason;
+    if (eventInfo.eventId === update.EventId.EVENT_DOWNLOAD_FAIL && !otaStatus.endReason &&
+      Number(previousEndReason) === ErrorCode.VERIFY_PACKAGE_FAIL) {
+      this.log('Ignore empty duplicate download failure after verify failure.');
+      return;
+    }
     if (this.isTerminalState(otaStatus)) {
       globalThis.lastVersionName = await VersionUtils.obtainNewVersionName(eventInfo?.taskBody);
     }
@@ -334,6 +370,7 @@ export class OtaUpdateManager {
       LogUtils.warn('UpdateManager', 'notifyUpdateStatus is repeating, abandon.');
       return;
     }
+    SettingsSyncUtils.syncFromOtaStatus(otaStatus, context);
     if (!globalThis.cachedNewVersionInfo && !this.isTerminalState(otaStatus)) {
       await this.getNewVersion();
     }
@@ -454,7 +491,11 @@ export class OtaUpdateManager {
         status = UpdateState.INIT;
         break;
       case update.EventId.EVENT_DOWNLOAD_START:
+      case update.EventId.EVENT_DOWNLOAD_RESUME:
         status = UpdateState.DOWNLOADING;
+        break;
+      case update.EventId.EVENT_DOWNLOAD_PAUSE:
+        status = UpdateState.DOWNLOAD_PAUSE;
         break;
       case update.EventId.EVENT_DOWNLOAD_SUCCESS:
         status = UpdateState.DOWNLOAD_SUCCESS;

@@ -5,6 +5,10 @@
             "value":"Check for updates"
         },
         {
+            "name":"btn_checking_new_version",
+            "value":"Checking for updates"
+        },
+        {
             "name":"btn_download",
             "value":"Download & install"
         },
@@ -69,12 +73,32 @@
             "value":"Update verification failed."
         },
         {
+            "name":"download_verify_fail_notification_title",
+            "value":"New version download failed"
+        },
+        {
+            "name":"download_verify_fail_notification_content",
+            "value":"Update package verification failed"
+        },
+        {
+            "name":"package_changed_title",
+            "value":"Update package changed"
+        },
+        {
+            "name":"package_changed_content",
+            "value":"The update package has changed. Please wait for a later push."
+        },
+        {
             "name":"later",
             "value":"Later"
         },
         {
             "name":"install_now",
             "value":"Install now (%d)"
+        },
+        {
+            "name":"btn_install_now",
+            "value":"Install now"
         },
         {
             "name":"software_update",
@@ -98,7 +122,7 @@
         },
         {
             "name":"download_fail",
-            "value":"Download failed. Please check for updates again."
+            "value":"Tap \"OK\" to check for updates again."
         },
         {
             "name":"update_fail",
@@ -182,6 +206,50 @@
         {
             "name":"reboot_now",
             "value":"Reboot Now (%d)"
+        },
+        {
+            "name": "setting_auto_download_title",
+            "value": "Automatically download updates"
+        },
+        {
+            "name": "setting_auto_download_description",
+            "value": "Updates for this device will be downloaded over WLAN."
+        },
+        {
+            "name": "setting_auto_update_title",
+            "value": "Update overnight"
+        },
+        {
+            "name": "setting_auto_update_description",
+            "value": "When enabled, your device will automatically install updates and restart between %s if not in use. Some battery power will be used."
+        },
+        {
+            "name": "local_settings",
+            "value": "Update options"
+        },
+        {
+            "name":"detail_info",
+            "value":"Details"
+        },
+        {
+            "name":"cancel_download",
+            "value":"Cancel download"
+        },
+        {
+            "name":"continue_download",
+            "value":"Continue download"
+        },
+        {
+            "name":"cancel_download_confirm_title",
+            "value":"Cancel download?"
+        },
+        {
+            "name":"cancel_download_confirm_message",
+            "value":"Tap \"Cancel download\" to cancel this update package download."
+        },
+        {
+            "name":"desktop_download_dialog_content",
+            "value":"A new software update is available. Download and install it now?"
         }
     ]
 }

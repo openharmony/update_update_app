@@ -376,7 +376,12 @@ export enum Action {
   /**
    * 动作--升级失败跳转主页面搜包
    */
-  NOTIFICATION_HOT_UPGRADE_FAILED = 'com.ohos.updateapp.hot_upgrade_failed'
+  NOTIFICATION_HOT_UPGRADE_FAILED = 'com.ohos.updateapp.hot_upgrade_failed',
+
+  /**
+   * 动作--跳转夜间升级设置页
+   */
+  NOTIFICATION_SETTINGS = 'com.ohos.updateapp.settings'
 }
 
 /**
@@ -491,3 +496,13 @@ export interface CustomEventInfo {
    */
   taskBody: update.TaskBody;
 }
+
+/**
+ * 夜间升级开始时间
+ */
+export const NIGHT_UPGRADE_START = 2;
+
+/**
+ * 夜间升级结束时间
+ */
+export const NIGHT_UPGRADE_END = 4;

@@ -61,7 +61,7 @@ export namespace DeviceUtils {
    * @return dialog位置
    */
   export function getDialogLocation(): DialogAlignment{
-      return DialogAlignment.Bottom;
+      return DialogAlignment.Center;
   }
 
   /**
@@ -70,6 +70,6 @@ export namespace DeviceUtils {
    * @return dialog偏移
    */
   export function getDialogOffsetY(): string | Resource {
-    return $r('app.float.dialog_location_offset_y');
+    return '0vp';
   }
 }
