@@ -274,23 +274,11 @@ struct Index {
       Column() {
         Scroll() {
           Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Center }) {
-            // HomeCardView({ playVideo: this.displayVideo, videoController: this.videoController, onVideoFinished:
-            // (): boolean => {
-            //   this.checkTimes++;
-            //   return this.onCheckAction.bind(this)();
-            // } })
             Column() {
               Image($r('app.media.center'))
                 .width($r('app.float.index_center_image_width'))
                 .objectFit(ImageFit.Contain)
                 .margin({bottom: '10vp'})
-              // Text(this.displayVersion)
-              //   .fontSize($r('app.float.home_text_size_version_name'))
-              //   .fontWeight(FontWeight.Medium)
-              //   .margin({
-              //     top: $r('app.float.index_version_name_margin_top'),
-              //     bottom: $r('app.float.index_version_name_margin_bottom')
-              //   })
               Row() {
                 Text(this.newVersionActionText)
                   .fontSize($r('app.float.text_size_body'))
@@ -348,7 +336,7 @@ struct Index {
         bottom: $r('app.float.index_content_padding_bottom')
       })
     }
-    .backgroundImage($r("app.media.background"))
+    .backgroundImage($r('app.media.background'))
     .backgroundImageSize(ImageSize.Cover)
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundColor($r('app.color.page_background'))
