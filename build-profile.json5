@@ -4,14 +4,29 @@
       {
         "name": "default",
         "signingConfig": "release",
-        "compileSdkVersion": 20,
+        "compileSdkVersion": 23,
         "compatibleSdkVersion": 20,
+        "targetSdkVersion": 20,
         "runtimeOS": "OpenHarmony",
         "buildOption": {
           "strictMode": {
             "caseSensitiveCheck": true,
             "useNormalizedOHMUrl": true
           }
+        }
+      }
+    ],
+    "signingConfigs": [
+      {
+        "name": "release",
+        "material": {
+          "storeFile": "signature/OpenHarmony.p12",
+          "storePassword": "00000016F657C3513233C0691A4CB761368F8674780E0FA1E5115D2CD38E1A378203F9A232CD",
+          "keyAlias": "OpenHarmony Application Release",
+          "keyPassword": "0000001618FE1FC8EE919CBDD32E6D48440BB900C030258644853134C4EE40B4665C6BB37BB3",
+          "signAlg": "SHA256withECDSA",
+          "profile": "signature/updateapp.p7b",
+          "certpath": "signature/OpenHarmony.cer"
         }
       }
     ]

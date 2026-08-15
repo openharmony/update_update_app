@@ -26,15 +26,21 @@ export struct TitleBar {
   private static readonly TAG = 'TitleBar';
   private title: string | Resource = '';
   private onBack?: () => boolean;
+  @Prop private showMenu: boolean = false;
 
   build() {
     Flex({ justifyContent: FlexAlign.SpaceBetween }) {
       Row() {
         Row() {
-          Image($r('app.media.back'))
-            .width($r('app.float.title_bar_icon_width'))
-            .height($r('app.float.title_bar_icon_height'))
-            .objectFit(ImageFit.Contain)
+          Button({ type: ButtonType.Circle, stateEffect: true }) {
+            SymbolGlyph($r('sys.symbol.chevron_backward'))
+              .fontSize($r('app.float.title_bar_symbol_font_size'))
+              .fontColor([$r('sys.color.ohos_id_color_text_primary')])
+          }
+          .width($r('app.float.title_bar_icon_width'))
+          .height($r('app.float.title_bar_icon_height'))
+          .backgroundColor($r('sys.color.ohos_id_color_button_normal'))
+          .borderRadius($r('sys.float.ohos_id_corner_radius_icon'))
         }.height($r('app.float.title_bar_height'))
         .margin({ left: $r('app.float.title_bar_icon_margin_left') })
         .onClick(() => {
@@ -54,6 +60,25 @@ export struct TitleBar {
           .fontWeight(FontWeight.Bold)
       }.flexGrow(1)
       .height($r('app.float.title_bar_height'))
+
+      if (this.showMenu) {
+        this.showMenuBuilder();
+      }
     }
+  }
+
+  @Builder
+  showMenuBuilder() {
+    Button({ type: ButtonType.Circle, stateEffect: true }) {
+      SymbolGlyph($r('sys.symbol.dot_grid_2x2'))
+    }
+    .width('28vp')
+    .backgroundColor('#0C000000')
+    .margin({ right: $r('app.float.title_bar_text_margin_left'), top: $r('app.float.title_bar_text_margin_left') })
+    .height('28vp')
+    .onClick(() => {
+      LogUtils.info(TitleBar.TAG, 'show menu click.');
+      router.push({ url: 'pages/settingsView' })
+    })
   }
 }

@@ -14,7 +14,7 @@
  */
 
 import type common from '@ohos.app.ability.common';
-import { StartOptions, Want } from '@kit.AbilityKit';
+import { Want } from '@kit.AbilityKit';
 import {
   Action,
   PACKAGE_NAME,
@@ -48,6 +48,12 @@ export class NotificationManager {
       case Action.NOTIFICATION_DETAIL:
         await NotificationManager.handleDetailAction(context);
         return true;
+      case Action.NOTIFICATION_INSTALL:
+        NotificationManager.startAbility('pages/newVersion', context, true);
+        return true;
+      case Action.NOTIFICATION_SETTINGS:
+        NotificationManager.handleSettingsAction(context);
+        return true;
       default:
         return false;
     }
@@ -60,11 +66,12 @@ export class NotificationManager {
 
   private static async handleDetailAction(context: common.Context): Promise<void> {
     LogUtils.log(TAG, 'handleDetailAction');
-    if (await RouterUtils.isCanToNewVersion()) {
-      NotificationManager.startAbility('pages/newVersion', context);
-    } else {
-      NotificationManager.startAbility('pages/index', context);
-    }
+    NotificationManager.startAbility('pages/newVersion', context);
+  }
+
+  private static handleSettingsAction(context: common.Context): void {
+    LogUtils.log(TAG, 'handleSettingsAction');
+    NotificationManager.startAbility('pages/settingsView', context);
   }
 
   public static async startToNewVersion(context: common.Context): Promise<void> {
@@ -73,16 +80,20 @@ export class NotificationManager {
     }
   }
 
-  private static startAbility(uri: string, context: common.Context): void {
+  private static startAbility(uri: string, context: common.Context, autoInstall?: boolean): void {
     let want: Want = {
       bundleName: PACKAGE_NAME,
       abilityName: MAIN_ABILITY_NAME,
       uri: uri
     };
-    let options: StartOptions = {
-      windowMode: 0,
-      displayId: 2
-    };
-    UpdateUtils.startAbility(context, want, options);
+    // 新增直接直接安装逻辑
+    if (autoInstall !== undefined) {
+      want.parameters = { autoInstall: autoInstall };
+    }
+    // let options: StartOptions = {
+    //   windowMode: 0,
+    //   displayId: 2
+    // };
+    UpdateUtils.startAbility(context, want);
   }
 }

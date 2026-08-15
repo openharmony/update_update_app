@@ -39,6 +39,7 @@ import { StateManager, UpdateAction } from 'ota/src/main/ets/manager/StateManage
 import { UpgradeAdapter } from 'ota/src/main/ets/UpgradeAdapter';
 import { VersionUtils } from 'ota/src/main/ets/util/VersionUtils';
 import { NotificationHelper } from 'ota/src/main/ets/notify/NotificationHelper';
+import { AlertDialog } from '@kit.ArkUI';
 import prompt from '@ohos.prompt';
 import RouterUtils from 'ota/src/main/ets/util/RouterUtils';
 
@@ -56,6 +57,8 @@ struct NewVersion {
   @State private displayNewVersionName: string = '';
   @State private isButtonEnable: boolean = true;
   @State private isButtonVisible: boolean = true;
+  @StorageProp('downloadProgress')
+  private downloadProgress: number = AppStorage.Get('downloadProgress') as number;
   @StorageProp('updateStatus')
   @Watch('initDataByStatus') private updateStatus: number = AppStorage.Get('updateStatus') as number;
   @StorageProp('isClickInstall') @Watch('onInstallClick')
@@ -68,6 +71,10 @@ struct NewVersion {
   @State private buttonText: string = '';
   @StorageProp('installStatusRefresh') @Watch('refresh')
   private installStatusRefresh: string = AppStorage.Get('installStatusRefresh') as string;
+  @StorageProp('downloadNoNetworkDialogVisible') @Watch('syncDownloadNoNetworkDialog')
+  private downloadNoNetworkDialogVisible: boolean =
+    AppStorage.Get('downloadNoNetworkDialogVisible') as boolean;
+  @State private isNoNetworkDialogOpen: boolean = false;
 
   private countdownDialogController = new CustomDialogController({
     builder: CountDownInstallDialogBuilder({
@@ -103,6 +110,26 @@ struct NewVersion {
     })
   });
 
+  private noNetworkDialogController: CustomDialogController = new CustomDialogController({
+    builder: AlertDialog({
+      primaryTitle: $r('app.string.net_error_title'),
+      content: $r('app.string.net_error_content'),
+      primaryButton: {
+        value: $r('app.string.button_know'),
+        action: () => {
+          this.isNoNetworkDialogOpen = false;
+          AppStorage.Set('downloadNoNetworkDialogVisible', false);
+        }
+      }
+    }),
+    autoCancel: false,
+    alignment: DeviceUtils.getDialogLocation(),
+    offset: ({
+      dx: '0vp',
+      dy: DeviceUtils.getDialogOffsetY()
+    })
+  });
+
   private refreshDescription(): void {
     this.log('refreshDescription');
     this.description = JSON.stringify(this.changelogArray);
@@ -119,6 +146,8 @@ struct NewVersion {
     this.initDataByStatus();
     new NotificationHelper().cancelAll();
     this.handleAbnormalState();
+    this.handleAbilityWantAction();
+    this.syncDownloadNoNetworkDialog();
   }
 
   private async handleAbnormalState(): Promise<void> {
@@ -135,6 +164,10 @@ struct NewVersion {
 
   onPageHide() {
     this.log('onPageHide NewVersionPage');
+    if (this.isNoNetworkDialogOpen) {
+      this.noNetworkDialogController.close();
+      this.isNoNetworkDialogOpen = false;
+    }
   }
 
   onBackPress(): boolean {
@@ -162,6 +195,28 @@ struct NewVersion {
       globalThis.displayCountdownDialog = true; // dialog display
       AppStorage.Set('isClickInstall', 0); // reset
       this.countdownDialogController.open();
+    }
+  }
+
+  private syncDownloadNoNetworkDialog(): void {
+    if (this.downloadNoNetworkDialogVisible) {
+      this.showNoNetworkDialog();
+      return;
+    }
+    this.hideNoNetworkDialog();
+  }
+
+  showNoNetworkDialog(): void {
+    if (!this.isNoNetworkDialogOpen) {
+      this.isNoNetworkDialogOpen = true;
+      this.noNetworkDialogController.open();
+    }
+  }
+
+  hideNoNetworkDialog(): void {
+    if (this.isNoNetworkDialogOpen) {
+      this.noNetworkDialogController.close();
+      this.isNoNetworkDialogOpen = false;
     }
   }
 
@@ -241,19 +296,48 @@ struct NewVersion {
     }
   }
 
+  private async handleAbilityWantAction(): Promise<void> {
+    const autoDownload = Boolean(globalThis.abilityWant?.parameters?.autoDownload);
+    const autoInstall = Boolean(globalThis.abilityWant?.parameters?.autoInstall);
+    if (!autoDownload && !autoInstall) {
+      return;
+    }
+    globalThis.abilityWant = null;
+    const statusResult = await OtaUpdateManager.getInstance().getOtaStatus();
+    if (statusResult?.callResult !== UpgradeCallResult.OK || statusResult?.data?.status === undefined) {
+      this.log('Ignore ability want action because the current update status is unavailable.');
+      return;
+    }
+    const currentStatus = statusResult.data.status;
+    await this.initDataByStatus();
+    if (autoDownload) {
+      if (StateManager.getButtonClickAction(currentStatus) === UpdateAction.DOWNLOAD) {
+        await this.startDownload();
+      }
+      return;
+    }
+    if (StateManager.getButtonClickAction(currentStatus) === UpdateAction.INSTALL) {
+      await this.upgrade();
+    }
+  }
+
+  private async startDownload(): Promise<void> {
+    if (await NetUtils.isCellularNetwork()) {
+      DialogHelper.displayNetworkDialog();
+      return;
+    }
+    if (this.isABStreamInstall()) {
+      await this.upgrade();
+      return;
+    }
+    await OtaUpdateManager.getInstance().download();
+  }
+
   private async handleButtonClick(): Promise<void> {
     this.log('handleButtonClick');
     switch (StateManager.getButtonClickAction(this.updateStatus)) {
       case UpdateAction.DOWNLOAD:
-        if (await NetUtils.isCellularNetwork()) {
-          DialogHelper.displayNetworkDialog();
-        } else {
-          if (this.isABStreamInstall()) {
-            this.upgrade();
-          } else {
-            OtaUpdateManager.getInstance().download();
-          }
-        }
+        await this.startDownload();
         break;
       case UpdateAction.INSTALL:
         this.upgrade();
@@ -262,7 +346,11 @@ struct NewVersion {
         this.reboot();
         break;
       case UpdateAction.CANCEL:
-        OtaUpdateManager.getInstance().cancel();
+        if (this.updateStatus === UpdateState.DOWNLOADING) {
+          DialogHelper.displayCancelDownloadDialog();
+        } else {
+          OtaUpdateManager.getInstance().cancel();
+        }
         break;
       case UpdateAction.RESUME:
           if (this.isABStreamInstall()) {
@@ -279,28 +367,37 @@ struct NewVersion {
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Start }) {
       Column() {
-        TitleBar({ title: $r('app.string.title_new_version'), onBack: this.onBackPress.bind(this)});
+        TitleBar({ title: $r('app.string.title_new_version'), onBack: this.onBackPress.bind(this), showMenu: true});
       }.flexShrink(0);
       Column() {
         Scroll() {
           Column() {
-            ProgressContent();
+            // ProgressContent();
+            Row() {
+              Image($r('app.media.home_bg'))
+                .width('100%')
+                .constraintSize({ maxWidth: 600 })
+                .objectFit(ImageFit.Contain)
+            }
+            .width('100%')
+            .padding({ left: 20, right: 20, bottom: 20 })
+            .justifyContent(FlexAlign.Center)
             if (this.isInitComplete) {
-              Text(this.displayNewVersionName)
-                .fontSize($r('app.float.text_size_version_name'))
-                .maxLines(5)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-                .padding({
-                  right: $r('app.float.changelog_detail_content_padding_horizontal'),
-                  left: $r('app.float.changelog_detail_content_padding_horizontal'),
-                })
-                .fontWeight(FontWeight.Medium);
-              Text(this.displayFileSize)
-                .fontSize($r('app.float.text_size_version_size')).fontWeight(FontWeight.Regular).opacity(0.6)
-                .margin({
-                  top: $r('app.float.new_version_size_margin_top'),
-                  bottom: $r('app.float.new_version_size_margin_bottom')
-                })
+              // Text(this.displayNewVersionName)
+              //   .fontSize($r('app.float.text_size_version_name'))
+              //   .maxLines(5)
+              //   .textOverflow({ overflow: TextOverflow.Ellipsis })
+              //   .padding({
+              //     right: $r('app.float.changelog_detail_content_padding_horizontal'),
+              //     left: $r('app.float.changelog_detail_content_padding_horizontal'),
+              //   })
+              //   .fontWeight(FontWeight.Medium);
+              // Text(this.displayFileSize)
+              //   .fontSize($r('app.float.text_size_version_size')).fontWeight(FontWeight.Regular).opacity(0.6)
+              //   .margin({
+              //     top: $r('app.float.new_version_size_margin_top'),
+              //     bottom: $r('app.float.new_version_size_margin_bottom')
+              //   })
               ChangelogContent({
                 isCurrentPage: false,
                 isNeedFold: this.changelogArray?.length > 1,
@@ -315,23 +412,49 @@ struct NewVersion {
       }.flexGrow(1)
 
       Column() {
-        Button() {
-          Text(this.buttonText)
-            .fontSize($r('app.float.text_size_btn')).fontColor(Color.White).fontWeight(FontWeight.Medium)
-            .margin({ left: $r('app.float.custom_button_text_margin_left'),
-              right: $r('app.float.custom_button_text_margin_right') })
-        }
-        .type(ButtonType.Capsule)
-        .constraintSize({ minWidth: $r('app.float.custom_button_width') })
-        .height($r('app.float.custom_button_height'))
-        .backgroundColor($r('app.color.blue'))
-        .opacity(this.isButtonEnable ? 1 : 0.4)
-        .visibility(this.isButtonVisible ? Visibility.Visible : Visibility.None)
-        .onClick(() => {
-          if(this.isButtonEnable) {
-            this.handleButtonClick();
+        if (this.updateStatus === UpdateState.DOWNLOADING) {
+          Stack({ alignContent: Alignment.Center }) {
+            Progress({
+              value: this.downloadProgress,
+              total: 100,
+              type: ProgressType.Capsule
+            })
+              .width($r('app.float.custom_button_width'))
+              .height($r('app.float.custom_button_height'))
+              .color($r('app.color.blue'))
+              .backgroundColor($r('app.color.white'))
+            Text(`下载中 ${this.getDisplayProgress(this.downloadProgress)} %`)
+              .fontSize($r('app.float.text_size_btn'))
+              .fontColor($r('app.color.black'))
+              .fontWeight(FontWeight.Medium)
           }
-        })
+          .width($r('app.float.custom_button_width'))
+          .height($r('app.float.custom_button_height'))
+          .visibility(this.isButtonVisible ? Visibility.Visible : Visibility.None)
+          .onClick(() => {
+            if (this.isButtonEnable) {
+              this.handleButtonClick();
+            }
+          })
+        } else {
+          Button() {
+            Text(this.buttonText)
+              .fontSize($r('app.float.text_size_btn')).fontColor(Color.White).fontWeight(FontWeight.Medium)
+              .margin({ left: $r('app.float.custom_button_text_margin_left'),
+                right: $r('app.float.custom_button_text_margin_right') })
+          }
+          .type(ButtonType.Capsule)
+          .constraintSize({ minWidth: $r('app.float.custom_button_width') })
+          .height($r('app.float.custom_button_height'))
+          .backgroundColor($r('app.color.blue'))
+          .opacity(this.isButtonEnable ? 1 : 0.4)
+          .visibility(this.isButtonVisible ? Visibility.Visible : Visibility.None)
+          .onClick(() => {
+            if(this.isButtonEnable) {
+              this.handleButtonClick();
+            }
+          })
+        }
       }
       .flexShrink(0)
       .padding({
@@ -341,7 +464,15 @@ struct NewVersion {
     }
     .width('100%')
     .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .backgroundColor($r('app.color.page_background'))
+  }
+
+  private getDisplayProgress(progress: number): number {
+    if (isNaN(progress)) {
+      return 0;
+    }
+    return Number((progress).toFixed(0));
   }
 
   private log(message: string): void {

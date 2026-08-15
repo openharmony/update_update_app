@@ -16,6 +16,7 @@
 import Ability from '@ohos.app.ability.UIAbility';
 import type Want from '@ohos.app.ability.Want';
 import type AbilityConstant from '@ohos.app.ability.AbilityConstant';
+import notification from '@ohos.notificationManager';
 import router from '@ohos.router';
 import type update from '@ohos.update';
 import type window from '@ohos.window';
@@ -54,8 +55,8 @@ export default class MainAbility extends Ability {
     globalThis.AbilityStatus = null;
     if (globalThis.abilityWant?.uri === 'pages/newVersion') {
       windowStage.loadContent('pages/newVersion', null);
-    } else if (globalThis.abilityWant?.uri === 'pages/setting') {
-      windowStage.loadContent('pages/setting', null);
+    } else if (globalThis.abilityWant?.uri === 'pages/settingsView') {
+      windowStage.loadContent('pages/settingsView', null);
     } else {
       windowStage.loadContent('pages/index', null);
     }
@@ -63,6 +64,7 @@ export default class MainAbility extends Ability {
 
   onNewWant(want: Want): void {
     this.log('BaseAbility onNewWant:' + JSON.stringify(want));
+    globalThis.abilityWant = want;
     globalThis.newPage = want.uri;
     if (globalThis.AbilityStatus === 'ON_FOREGROUND') {
       this.routePage();
@@ -85,6 +87,7 @@ export default class MainAbility extends Ability {
 
   onForeground(): void {
     this.log('BaseAbility onForeground');
+    this.requestEnableNotificationIfNeeded();
     new NotificationHelper().cancelAll();
     globalThis.AbilityStatus = 'ON_FOREGROUND';
     setTimeout(() => {
@@ -119,6 +122,18 @@ export default class MainAbility extends Ability {
       this.log('handleReceivedUpdatePageMessage otaStatus ' + JSON.stringify(otaStatus) + 'eventId is ' + eventId);
       StateManager.createInstance(otaStatus).notify(globalThis.abilityContext, eventId);
       globalThis.reNotify = undefined;
+    }
+  }
+
+  private async requestEnableNotificationIfNeeded(): Promise<void> {
+    try {
+      if (await notification.isNotificationEnabled()) {
+        return;
+      }
+      await notification.requestEnableNotification(this.context);
+      this.log('requestEnableNotification success');
+    } catch (err) {
+      this.log('requestEnableNotificationIfNeeded failed: ' + JSON.stringify(err));
     }
   }
 

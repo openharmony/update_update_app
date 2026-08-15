@@ -7,6 +7,14 @@
     {
       "name": "white",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "black",
+      "value": "#000000"
+    },
+    {
+      "name": "deep_blue",
+      "value": "#0A59F7"
     }
   ]
 }

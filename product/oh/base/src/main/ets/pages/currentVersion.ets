@@ -79,7 +79,7 @@ struct CurrentVersion {
   build() {
     Flex({ direction: FlexDirection.Column, alignItems: ItemAlign.Center, justifyContent: FlexAlign.Start }) {
       Column() {
-        TitleBar({ title: $r('app.string.title_current_version'), onBack: this.onBackPress.bind(this) })
+        TitleBar({ title: $r('app.string.title_current_version'), onBack: this.onBackPress.bind(this), showMenu: true})
       }.flexShrink(0)
 
       Scroll() {

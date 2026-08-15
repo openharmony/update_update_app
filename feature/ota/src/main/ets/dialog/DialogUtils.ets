@@ -81,6 +81,9 @@ class RetryCheckAction implements DialogOperator {
 };
 
  export const retryCheckAction: DialogOperator = new RetryCheckAction();
+const DOWNLOAD_NO_NETWORK_DIALOG_DELAY_MS = 10 * 1000;
+let downloadNoNetworkDialogTimer: number | undefined = undefined;
+const DOWNLOAD_NO_NETWORK_DIALOG_VISIBLE_KEY = 'downloadNoNetworkDialogVisible';
 
 /**
  * 弹框工具类
@@ -105,11 +108,43 @@ export class DialogUtils {
    *
    * @param context 上下文
    */
-  @foregroundCheck()
+  // 新增延迟10s后弹出功能可能不在前台，所以注释装饰器
+  // @foregroundCheck()
   static showDownloadNoNetworkDialog(context: common.Context, otaStatus: OtaStatus,
     eventId?: update.EventId): void {
     LogUtils.log('DialogUtils', 'showDownloadNoNetworkDialog');
-    DialogHelper.displayNoNetworkDialog();
+    if (globalThis.newVersionThis?.showNoNetworkDialog) {
+      globalThis.newVersionThis.showNoNetworkDialog();
+    }
+    AppStorage.SetOrCreate(DOWNLOAD_NO_NETWORK_DIALOG_VISIBLE_KEY, true);
+  }
+  /**
+   * 延时显示下载断网弹框
+   *
+   * @param context 上下文
+   */
+  static delayShowDownloadNoNetworkDialog(context: common.Context, otaStatus: OtaStatus,
+    eventId?: update.EventId): void {
+    DialogUtils.clearDownloadNoNetworkDialog();
+    downloadNoNetworkDialogTimer = setTimeout(() => {
+      downloadNoNetworkDialogTimer = undefined;
+      DialogUtils.showDownloadNoNetworkDialog(context, otaStatus, eventId);
+    }, DOWNLOAD_NO_NETWORK_DIALOG_DELAY_MS);
+  }
+
+  /**
+   * 清除下载断网弹框
+   *
+   */
+  static clearDownloadNoNetworkDialog(): void {
+    if (downloadNoNetworkDialogTimer !== undefined) {
+      clearTimeout(downloadNoNetworkDialogTimer);
+      downloadNoNetworkDialogTimer = undefined;
+    }
+    if (globalThis.newVersionThis?.hideNoNetworkDialog) {
+      globalThis.newVersionThis.hideNoNetworkDialog();
+    }
+    AppStorage.SetOrCreate(DOWNLOAD_NO_NETWORK_DIALOG_VISIBLE_KEY, false);
   }
 
   /**
@@ -132,6 +167,16 @@ export class DialogUtils {
   static showDownloadFailDialog(context: common.Context, otaStatus?: OtaStatus, eventId?: update.EventId): void {
     LogUtils.log('DialogUtils', 'showDownloadFailDialog');
     DialogHelper.displayDownloadFailDialog();
+  }
+
+  /**
+   * 更新包变更弹框
+   *
+   * @param context 上下文
+   */
+  static showVersionInfoChangedDialog(context: common.Context, otaStatus?: OtaStatus, eventId?: update.EventId): void {
+    LogUtils.log('DialogUtils', 'showVersionInfoChangedDialog');
+    DialogHelper.displayVersionInfoChangedDialog();
   }
 
   /**

@@ -3,6 +3,10 @@
     {
       "name": "card_border_radius",
       "value": "24vp"
+    },
+    {
+      "name": "index_center_image_width",
+      "value": "150vp"
     }
   ]
 }

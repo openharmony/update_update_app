@@ -81,6 +81,19 @@ class RetryUpgradeAction implements DialogOperator {
 const retryUpgradeAction: DialogOperator = new RetryUpgradeAction();
 
 /**
+ * 更新包变更后重新搜包动作
+ */
+class VersionInfoChangedAction implements DialogOperator {
+  onConfirm(): void {
+    RouterUtils.singletonHomePage();
+  }
+  onCancel(): void {
+  }
+}
+
+const versionInfoChangedAction: DialogOperator = new VersionInfoChangedAction();
+
+/**
  * 弹框辅助者
  *
  * @since 2022-06-05
@@ -143,7 +156,18 @@ export namespace DialogHelper {
    * @param operator 回调
    */
   export function displayDownloadFailDialog(): void {
-    defaultNoTitleDialog($r('app.string.download_fail'), retryCheckAction);
+    showDialog($r('app.string.download_status_download_failed'), $r('app.string.download_fail'),
+      $r('app.string.ok'), retryCheckAction);
+  }
+
+  /**
+   * 更新包变更弹框
+   *
+   * @param operator 回调
+   */
+  export function displayVersionInfoChangedDialog(): void {
+    showDialog($r('app.string.package_changed_title'), $r('app.string.package_changed_content'),
+      $r('app.string.ok'), versionInfoChangedAction);
   }
 
   /**
@@ -151,6 +175,39 @@ export namespace DialogHelper {
    *
    * @param operator 回调
    */
+  export function displayCancelDownloadDialog(): void {
+    AlertDialog.show(
+      {
+        title: $r('app.string.cancel_download_confirm_title'),
+        message: $r('app.string.cancel_download_confirm_message'),
+        primaryButton: {
+          value: $r('app.string.continue_download'),
+          action: () => {
+            logInfo('Continue download button clicked');
+          },
+          backgroundColor: $r('sys.float.ohos_id_corner_radius_button')
+        },
+        secondaryButton: {
+          value: $r('app.string.cancel_download'),
+          action: () => {
+            logInfo('Cancel download button clicked');
+            OtaUpdateManager.getInstance().cancel();
+          },
+          backgroundColor: $r('sys.float.ohos_id_corner_radius_button')
+        },
+        cancel: () => {
+          logInfo('Closed callbacks');
+        },
+        alignment: DeviceUtils.getDialogLocation(),
+        offset: ({
+          dx: '0vp',
+          dy: DeviceUtils.getDialogOffsetY()
+        }),
+        autoCancel: false
+      }
+    )
+  }
+
   export function displayNoNetworkDialog(): void {
     defaultKnowDialog($r('app.string.net_error_title'), $r('app.string.net_error_content'));
   }
@@ -201,7 +258,7 @@ export namespace DialogHelper {
    * @param message 内容
    * @param operator 回调
    */
-  function defaultKnowDialog(title: string | Resource, message: string | Resource, operator ?: DialogOperator): void {
+  function defaultKnowDialog(title: ResourceStr, message: ResourceStr, operator ?: DialogOperator): void {
     showDialog(title, message, $r('app.string.button_know'), operator);
   }
 
@@ -211,8 +268,8 @@ export namespace DialogHelper {
    * @param message 内容
    * @param operator 回调
    */
-  function defaultNoTitleDialog(message: string | Resource, operator ?: DialogOperator): void {
-    showDialog(null, message, $r('app.string.button_know'), operator);
+  function defaultNoTitleDialog(message: ResourceStr, operator ?: DialogOperator): void {
+    showDialog(undefined, message, $r('app.string.button_know'), operator);
   }
 
   /**
@@ -223,7 +280,7 @@ export namespace DialogHelper {
    * @param confirmText 确认按钮显示内容
    * @param operator 回调
    */
-  function showDialog(title: string | Resource | null, message: string | Resource, confirmText?: string | Resource,
+  function showDialog(title: ResourceStr | undefined, message: ResourceStr, confirmText: ResourceStr,
     operator ?: DialogOperator): void {
     AlertDialog.show(
       {
