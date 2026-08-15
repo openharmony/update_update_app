@@ -90,10 +90,6 @@ export class NotificationManager {
     if (autoInstall !== undefined) {
       want.parameters = { autoInstall: autoInstall };
     }
-    // let options: StartOptions = {
-    //   windowMode: 0,
-    //   displayId: 2
-    // };
     UpdateUtils.startAbility(context, want);
   }
 }

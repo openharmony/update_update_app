@@ -383,21 +383,6 @@ struct NewVersion {
             .padding({ left: 20, right: 20, bottom: 20 })
             .justifyContent(FlexAlign.Center)
             if (this.isInitComplete) {
-              // Text(this.displayNewVersionName)
-              //   .fontSize($r('app.float.text_size_version_name'))
-              //   .maxLines(5)
-              //   .textOverflow({ overflow: TextOverflow.Ellipsis })
-              //   .padding({
-              //     right: $r('app.float.changelog_detail_content_padding_horizontal'),
-              //     left: $r('app.float.changelog_detail_content_padding_horizontal'),
-              //   })
-              //   .fontWeight(FontWeight.Medium);
-              // Text(this.displayFileSize)
-              //   .fontSize($r('app.float.text_size_version_size')).fontWeight(FontWeight.Regular).opacity(0.6)
-              //   .margin({
-              //     top: $r('app.float.new_version_size_margin_top'),
-              //     bottom: $r('app.float.new_version_size_margin_bottom')
-              //   })
               ChangelogContent({
                 isCurrentPage: false,
                 isNeedFold: this.changelogArray?.length > 1,
