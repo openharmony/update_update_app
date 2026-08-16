@@ -438,7 +438,7 @@ export class UpdateManager implements IUpdate {
       }).catch((err: BusinessError) => {
         this.logError('setUpdatePolicy err: ' + JSON.stringify(err));
         reject(err);
-      })
+      });
     });
   }
 
