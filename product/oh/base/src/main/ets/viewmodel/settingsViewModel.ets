@@ -52,7 +52,7 @@ export class SettingsViewModel {
         OtaUpdateManager.getInstance().setUpdatePolicy(upgradePolicy);
       }
       this.refreshSwitches(upgradePolicy);
-    })
+    });
   }
 
   async autoDownloadToggleChange(isOn: boolean): Promise<void> {
