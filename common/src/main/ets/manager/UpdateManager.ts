@@ -439,7 +439,7 @@ export class UpdateManager implements IUpdate {
         this.logError('setUpdatePolicy err: ' + JSON.stringify(err));
         reject(err);
       })
-    })
+    });
   }
 
   private log(message: string): void {
