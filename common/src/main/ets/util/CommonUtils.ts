@@ -108,7 +108,7 @@ export function foregroundCheck() {
         }, TIME_OUT_FOR_START_ABILITY);
         return;
       }
-      original.call(this, ...args);
+      original.call(this, context, otaStatus, eventId, ...args);
     };
   };
 }

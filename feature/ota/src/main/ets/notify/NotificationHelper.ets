@@ -63,13 +63,14 @@ export class NotificationHelper implements INotify {
    */
   async showDownloading(version: string, progress: number, context: common.Context): Promise<void> {
     let templateName: string = 'downloadTemplate';
-    if (!globalThis.isSupportTemplate) {
-      globalThis.isSupportTemplate = await notification.isSupportTemplate(templateName).catch((err: BusinessError) => {
-        this.logError('showDownloading isSupportTemplate failed because ' + JSON.stringify(err));
-        return false;
-      });
+    if (!globalThis.isSupportDownloadTemplate) {
+      globalThis.isSupportDownloadTemplate =
+        await notification.isSupportTemplate(templateName).catch((err: BusinessError) => {
+          this.logError('showDownloading isSupportTemplate failed because ' + JSON.stringify(err));
+          return false;
+        });
     }
-    if (!globalThis.isSupportTemplate) {
+    if (!globalThis.isSupportDownloadTemplate) {
       this.logError('showDownloading is not supportTemplate');
       return;
     }
@@ -103,7 +104,7 @@ export class NotificationHelper implements INotify {
   }
 
   /**
-   * 下载进度通知
+   * 安装进度通知
    *
    * @param version 版本号
    * @param progress 进度
@@ -111,13 +112,14 @@ export class NotificationHelper implements INotify {
    */
   async showInstalling(version: string, progress: number, context: common.Context): Promise<void> {
     let templateName: string = 'installTemplate';
-    if (!globalThis.isSupportTemplate) {
-      globalThis.isSupportTemplate = await notification.isSupportTemplate(templateName).catch((err: BusinessError) => {
-        this.logError('showInstalling isSupportTemplate failed because ' + JSON.stringify(err));
-        return false;
-      });
+    if (!globalThis.isSupportInstallTemplate) {
+      globalThis.isSupportInstallTemplate =
+        await notification.isSupportTemplate(templateName).catch((err: BusinessError) => {
+          this.logError('showInstalling isSupportTemplate failed because ' + JSON.stringify(err));
+          return false;
+        });
     }
-    if (!globalThis.isSupportTemplate) {
+    if (!globalThis.isSupportInstallTemplate) {
       this.logError('showInstalling is not supportTemplate');
       return;
     }
@@ -138,7 +140,7 @@ export class NotificationHelper implements INotify {
         }
       },
       wantAgent: await wantAgent.getWantAgent(this.downloadingWantAgentInfo),
-      id: 5,
+      id: 6,
       label: '111',
       notificationSlotType: notification.SlotType.SERVICE_INFORMATION,
       deliveryTime: new Date().getTime()
@@ -216,7 +218,7 @@ export class NotificationHelper implements INotify {
     let isReady: boolean = false;
     while (count < retryTimes) {
       try {
-        await notification.isDistributedEnabled().then(() => {
+        await notification.isNotificationEnabled().then(() => {
           this.logInfo('notification service is ready');
           isReady = true;
         });

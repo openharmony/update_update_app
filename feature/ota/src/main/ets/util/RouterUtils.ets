@@ -14,6 +14,7 @@
  */
 
 import router from '@ohos.router';
+import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
 import { UpdateState, UpgradeCallResult } from '@ohos/common/src/main/ets/const/update_const';
 import { StateManager, UpdateAction } from '../manager/StateManager';
 import { OtaUpdateManager } from '../manager/OtaUpdateManager';
@@ -89,6 +90,9 @@ namespace RouterUtils {
         } else {
           resolve(false);
         }
+      }).catch((err: BusinessError) => {
+        LogUtils.error('RouterUtils', 'isCanToNewVersion, getOtaStatus err ' + JSON.stringify(err));
+        reject(err);
       });
     });
   }
