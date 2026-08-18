@@ -63,8 +63,6 @@ let options: convertXml.ConvertOptions = {
   elementsKey: '_elements',
 };
 
-let changelog: Changelog;
-
 /**
  * Changelog解析工具
  *
@@ -79,7 +77,7 @@ namespace ChangelogParseUtils {
    */
   export function parseXml(res: string, callback: (data?: Changelog) => void): void {
     logInfo('read file parse start');
-    changelog = { language: new Map() };
+    let changelog: Changelog = { language: new Map() };
     if (!res) {
       logError('res is null!');
       callback();
@@ -97,12 +95,12 @@ namespace ChangelogParseUtils {
       callback();
       return;
     }
-    parseRoot(root);
+    parseRoot(root, changelog);
     logInfo('read file parse end');
     callback(changelog);
   }
 
-  function parseRoot(root: XmlElement): void {
+  function parseRoot(root: XmlElement, changelog: Changelog): void {
     // 倒序解析，先解析Icon
     let icons: Map<string, Icon> = new Map();
     if (root?._elements === undefined) {
@@ -129,11 +127,11 @@ namespace ChangelogParseUtils {
         let iconsElement = element._elements ?? [];
         parseIcons(iconsElement, icons);
       }
-      parseLanguage(element, icons);
+      parseLanguage(element, icons, changelog);
     }
   }
 
-  function parseLanguage(element: XmlElement, icons: Map<string, Icon>): void {
+  function parseLanguage(element: XmlElement, icons: Map<string, Icon>, changelog: Changelog): void {
     let language: Language = { featuresArray: [] };
     if (element._type === 'element' && element._name === 'language') {
       let attribute: string;
@@ -218,11 +216,11 @@ namespace ChangelogParseUtils {
     let feature: Feature | null = null;
     for (let index = 0; index < featureElement.length; index++) {
       let featureItem = featureElement[index];
-      if (featureItem._type !== 'element' || featureItem._name !== 'feature') {
-        continue;
-      }
       if (!featureItem) {
         logError('featureItem is null: ' + JSON.stringify(featureItem));
+        continue;
+      }
+      if (featureItem._type !== 'element' || featureItem._name !== 'feature') {
         continue;
       }
 

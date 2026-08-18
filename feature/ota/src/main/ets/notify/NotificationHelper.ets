@@ -230,7 +230,7 @@ export class NotificationHelper implements INotify {
   }
 
   /**
-   * 下载进度通知
+   * 安装进度通知
    *
    * @param version 版本号
    * @param progress 进度
@@ -386,7 +386,7 @@ export class NotificationHelper implements INotify {
     let isReady: boolean = false;
     while (count < retryTimes) {
       try {
-        await notification.isDistributedEnabled().then(() => {
+        await notification.isNotificationEnabled().then(() => {
           this.logInfo('notification service is ready');
           isReady = true;
         });

@@ -113,8 +113,6 @@ export namespace DialogHelper {
           value: FormatUtils.toUpperCase(globalThis.abilityContext, $r('app.string.cancel')),
           action: () => {
             logInfo('Callback when the first button is clicked');
-            onCancel: () => {
-            };
           },
           backgroundColor: $r('sys.float.ohos_id_corner_radius_button')
         },
@@ -122,9 +120,7 @@ export namespace DialogHelper {
           value: $r('app.string.ok'),
           action: () => {
             logInfo('Callback when the second button is clicked');
-            onConfirm: () => {
-              OtaUpdateManager.getInstance().download(update.NetType.CELLULAR);
-            };
+            OtaUpdateManager.getInstance().download(update.NetType.CELLULAR);
           },
           backgroundColor: $r('sys.float.ohos_id_corner_radius_button')
         },
@@ -290,17 +286,13 @@ export namespace DialogHelper {
           value: confirmText,
           action: () => {
             logInfo('defaultKnowDialog button is clicked');
-            if (operator && operator.onConfirm) {
-              operator.onConfirm();
-            }
+            operator?.onConfirm();
           },
           backgroundColor: $r('sys.float.ohos_id_corner_radius_button')
         },
         cancel: () => {
           logInfo('Closed callbacks');
-          if(operator && operator.onCancel) {
-            operator?.onCancel();
-          }
+          operator?.onCancel();
         },
         alignment: DeviceUtils.getDialogLocation(),
         offset: ({

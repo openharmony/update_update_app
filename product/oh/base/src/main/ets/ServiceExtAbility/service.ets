@@ -88,7 +88,10 @@ export default class ServiceExtAbility extends Extension {
   }
 
   private stopSelf(startId: number): void {
-    this.startIdArray.splice(this.startIdArray.indexOf(startId), 1);
+    const idx = this.startIdArray.indexOf(startId);
+    if (idx !== -1) {
+      this.startIdArray.splice(idx, 1);
+    }
     LogUtils.info(ServiceExtAbility.TAG, 'stopSelf length ' + this.startIdArray.length);
     if (this.startIdArray.length === 0 && this.isTerminal()) {
       const terminateDelayTime = 2000;

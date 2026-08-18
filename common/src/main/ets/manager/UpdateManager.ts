@@ -268,7 +268,7 @@ export class UpdateManager implements IUpdate {
           }
         };
         if (!result && err) {
-          this.logError('getCurrentVersionDescription error is ${JSON.stringify(err)}');
+          this.logError(`getCurrentVersionDescription error is ${JSON.stringify(err)}`);
           upgradeData.callResult = UpgradeCallResult.ERROR;
         }
         resolve(upgradeData);
