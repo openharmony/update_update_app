@@ -16,6 +16,7 @@
 import type common from '@ohos.app.ability.common';
 import { DeviceUtils } from '../util/DeviceUtils';
 import { LogUtils } from './LogUtils';
+import i18n from '@ohos.i18n';
 
 const DECIMAL_POINT = 2;
 
@@ -101,5 +102,22 @@ export class FormatUtils {
     let language: string = DeviceUtils.getSystemLanguage();
     let numfmt: Intl.NumberFormat = new Intl.NumberFormat(language, {style:'percent', notation:'standard'});
     return numfmt.format(num);
+  }
+
+  /**
+   * 获取小时范围格式化
+   *
+   * @param start 开始时间
+   * @param end 结束时间
+   * @returns string 格式化之后的小时范围
+   */
+  static getDateRangeFormat(start: number, end: number): string {
+    let current = new Date();
+    let startDate = new Date(current.getFullYear(), current.getMonth(), current.getDate(), start, 0, 0);
+    let endDate = new Date(current.getFullYear(), current.getMonth(), current.getDate(), end, 0, 0);
+    let language: string = DeviceUtils.getSystemLanguage();
+    let datefmt: Intl.DateTimeFormat =
+      new Intl.DateTimeFormat(language, { hour12: !i18n.System.is24HourClock(), hour: 'numeric', minute: 'numeric' });
+    return datefmt.formatRange(startDate, endDate) as string;
   }
 }

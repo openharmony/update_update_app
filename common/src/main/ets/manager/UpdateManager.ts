@@ -415,6 +415,33 @@ export class UpdateManager implements IUpdate {
     });
   }
 
+  /**
+   * 获取升级策略
+   *
+   * @returns resolve 升级策略
+   */
+  async getUpdatePolicy(): Promise<update.UpgradePolicy> {
+    return this.otaUpdater.getUpgradePolicy();
+  }
+
+  /**
+   * 设置升级策略
+   *
+   * @param policy 策略
+   * @returns resolve 设置结果/reject 错误信息
+   */
+  async setUpdatePolicy(policy: update.UpgradePolicy): Promise<void> {
+    this.log(`setUpdatePolicy download:${policy.downloadStrategy}, autoUpgrade:${policy.autoUpgradeStrategy}`);
+    return new Promise((resolve, reject) => {
+      this.otaUpdater?.setUpgradePolicy(policy).then(() => {
+        resolve();
+      }).catch((err: BusinessError) => {
+        this.logError('setUpdatePolicy err: ' + JSON.stringify(err));
+        reject(err);
+      });
+    });
+  }
+
   private log(message: string): void {
     LogUtils.log('UpdateManager', message);
   }
