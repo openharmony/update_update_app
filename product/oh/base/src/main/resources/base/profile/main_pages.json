@@ -2,6 +2,8 @@
   "src": [
     "pages/index",
     "pages/newVersion",
-    "pages/currentVersion"
+    "pages/currentVersion",
+    "pages/settingsView",
+    "UpdateSystemDialog/pages/UpdateSystemDialogPage"
   ]
 }

@@ -68,6 +68,13 @@
         "type": "service",
         "visible": true,
         "srcEntrance": "./ets/ServiceExtAbility/service.ets"
+      },
+      {
+        "name": "UpdateSystemDialogAbility",
+        "srcEntry": "./ets/UpdateSystemDialog/UpdateSystemDialogAbility.ets",
+        "description": "Software update system dialog",
+        "type": "sysDialog/common",
+        "exported": true
       }
     ],
     "requestPermissions": [
@@ -79,6 +86,12 @@
       },
       {
         "name": "ohos.permission.START_ABILITIES_FROM_BACKGROUND"
+      },
+      {
+        "name": "ohos.permission.MANAGE_SECURE_SETTINGS"
+      },
+      {
+        "name": "ohos.permission.START_SYSTEM_DIALOG"
       }
     ]
   }

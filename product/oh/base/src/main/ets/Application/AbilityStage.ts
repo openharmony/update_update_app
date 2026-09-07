@@ -32,5 +32,6 @@ export default class MyAbilityStage extends AbilityStage {
     AppStorage.SetOrCreate('isClickInstall', 0);
     AppStorage.SetOrCreate('configLanguage', '');
     AppStorage.SetOrCreate('installStatusRefresh', '');
+    AppStorage.SetOrCreate('downloadNoNetworkDialogVisible', false);
   }
 }
