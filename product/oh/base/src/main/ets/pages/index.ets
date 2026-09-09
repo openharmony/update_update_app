@@ -210,8 +210,7 @@ struct Index {
 
   onBackPress() {
     this.log('index back');
-    globalThis.abilityContext.terminateSelf();
-    return true;
+    return false;
   }
 
   onPageShow() {
