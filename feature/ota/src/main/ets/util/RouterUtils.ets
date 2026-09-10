@@ -15,7 +15,7 @@
 
 import router from '@ohos.router';
 import { LogUtils } from '@ohos/common/src/main/ets/util/LogUtils';
-import { UpdateState, UpgradeCallResult } from '@ohos/common/src/main/ets/const/update_const';
+import { UpdateState, UpgradeCallResult, BusinessError } from '@ohos/common/src/main/ets/const/update_const';
 import { StateManager, UpdateAction } from '../manager/StateManager';
 import { OtaUpdateManager } from '../manager/OtaUpdateManager';
 
