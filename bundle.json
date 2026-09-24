@@ -1,0 +1,32 @@
+{
+  "name": "@ohos/update_update_app",
+  "description": "UpdateApp for standard system.",
+  "version": "3.0",
+  "license": "Apache License 2.0",
+  "publishAs": "code-segment",
+  "segment": {
+    "destPath": "base/update/update_app"
+  },
+  "dirs": {},
+  "scripts": {},
+  "component": {
+    "name": "update_update_app",
+    "subsystem": "updater",
+    "syscap": [],
+    "features": [],
+    "adapted_system_type": [
+      "standard"
+    ],
+    "rom": "6188KB",
+    "ram": "73728KB",
+    "deps": {
+      "components": [],
+      "third_party": []
+    },
+    "build": {
+      "sub_component": [],
+      "inner_kits": [],
+      "test": []
+    }
+  }
+}
